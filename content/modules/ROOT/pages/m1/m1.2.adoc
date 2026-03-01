@@ -1,0 +1,403 @@
+:imagesdir: ../../assets/images
+:imageshtml: ../_images/
+include::../style.adoc[]
+
+[time=8]
+[id="local"]
+== Start local development
+{style-all}
+
+For reference, here's again the processing flow to implement:
+
+[.text-center]
+image::m1/processing-flow.jpg[width=80%]
+
+
+The Camel route will include 3 processing steps:
+
+====
+* *A source _Kamelet_* +
+Consumes events from _Matrix_.
+
+* *A data mapping* +
+Transforms _Matrix_ events to _Rocket.Chat_ events (in JSON format).
+
+* *A sink _Kamelet_* +
+Produces events to _Rocket.Chat_.
+====
+
+{empty} +
+
+[IMPORTANT]
+--
+You need to already be onboarded into _Matrix_ and _Rocket.Chat_. +
+Ensure you have previously completed:
+
+- *_Lab 1.intro - MessageHub - Scenario and Onboarding_*.
+--
+
+{empty} +
+
+The development tool that will help us iterate our code in our local environment is _Camel JBang_.
+
+image::m1/camel-jbang.png[width=70%]
+
+{empty} +
+
+TIP: Camel JBang is an upstream tool for _Camel_. The tool is included in Red Hat build of Apache Camel under the name _"Camel CLI"_. +
+It is an extremely useful tool for all things Camel. It simplifies many of the common tasks a Camel developer undergoes.
+
+
+=== Start the lab
+
+At first, your `lab` directory is empty:
+
+--
+[.indent2]
+📁 workshop +
+&nbsp;&nbsp;📁 *lab* +
+pass:[<mark style="padding-left: 1rem; background-color: white; color: grey"></mark>] [empty]
+--
+
+{empty} +
+
+IMPORTANT: All the commands you'll be asked to run all along the workshop are designed to be executed from your root `lab` folder. +
+Stay always on your `lab` folder, there's no need to change directories.
+
+{empty} +
+
+From your UI terminal...
+
+image::m1/crw-terminal.png[width=100%]
+
+{blank}
+
+We provide below a base skeleton to get you started:
+
+[IMPORTANT]
+====
+Issue the command below to officially start your lab:
+
+--
+{copypaste}
+----
+start
+----
+--
+
+NOTE: The command will initialise the lab with a couple of files.
+====
+
+=== Your files
+
+After initialisation, under the `lab` directory, you'll find the following source files:
+
+
+--
+[.indent2]
+📁 workshop +
+&nbsp;&nbsp;📁 lab +
+&nbsp;&nbsp;&nbsp;&nbsp;📁 m2r +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *m2r.camel.yaml* +
+pass:[<mark style="padding-left: 1rem; background-color: white; color: grey"><b>⚙</b></mark>] matrix.properties +
+pass:[<mark style="padding-left: 1rem; background-color: white; color: grey"><b>⚙</b></mark>] rocketchat.properties +
+
+[.indent2]
+NOTE: Make sure the files are visible in your file explorer in the left panel of _VSCode_.
+--
+
+. Open in Kaoto the first Camel route.
++
+Under your `lab/m2r` directory, find and open the following flow definition:
++
+--
+* `m2r.camel.yaml`
+--
++
+{blank}
++
+The image below shows the Camel route you should see in the canvas:
++
+{blank}
++
+[TIP]
+====
+Click the Horizontal layout to match the documentation pictures.
+
+image::m1/canvas-horizontal-layout.jpg[width=60%]
+====
++
+image::m1/route-matrix-log.jpg[width=50%]
++
+{blank}
++
+[pass,subs=attributes]
+<details>
+  <summary>
+    <span class="triangle"></span>
+    <span class="sumtext"><b>Warning:</b> If you don't see the rendering above, install <i>Kaoto</i> manually. Click for more information</span>
+  </summary>
+  <div style="border: 2px solid #d0d7de; border-radius: 6px; padding: 0 12px 12px; margin: 1.5em 0;">
+<p style="margin-top: 1em;">Follow the steps below to ensure your <i>Kaoto</i> extension is installed in VS Code.</br>
+<ol>
+  <li>Open the <i>Extensions</i> view.</li>
+  <li>Find the <i>Kaoto</i> extension and click <b>Install</b>.</li>
+  <li>On the confirmation prompt, click "<b>Trust Publisher &amp; Install</b>".</li>
+  <li>Go back to the <i>Explorer</i> view.</li>
+  <li>Click <code>m2r.camel.yaml</code> to open the file in <i>Kaoto</i>.</li>
+</ol>
+<img src="{imageshtml}m1/kaoto-extension-install.jpg" style="max-width:100%"/>
+</p></div>
+</details>
++
+{blank}
++
+What you see above is a *_'Kamelet to Log'_* route, basically a Camel route with 2 processing steps. +
+The Kamelet source _(Matrix)_ receives message notifications. The Log activity outputs the contents of the message.
++
+[NOTE]
+--
+About the `matrix-source` _Kamelet_:
+
+* It's not provided out of the box by Camel. It has been specifically created and deployed for this workshop.
+* It's implemented following the specification of the Matrix Sync API (new Matrix's API) to consume events from the server. To know more, read its API documentation here: https://spec.matrix.org/v1.6/client-server-api/#syncing
+--
++
+[NOTE]
+--
+When inspecting the route configuration in Kaoto, you'll see the following:
+
+* The Kamelet defines `variableReceive: matrix` to allocate the data of the incoming message (`body` is ignored).
+* The route logs the incoming event using the Camel's simple expression `${variable.matrix}`.
+--
++
+{empty} +
+
+. Configure the _Matrix_ credentials
++
+Open in your editor your `matrix.properties` file and add the following entries:
++
+--
+{copypaste}/configuration/matrix/{user-username}
+----
+# Matrix credentials
+matrix.token=REPLACE
+matrix.room=REPLACE
+----
+--
++
+NOTE: both parameters have been automatically pre-configured for your use in this lab.
++
+{empty} +
+
+
+. Run your YAML definition with Camel JBang
++
+Use the following command to run locally your _Camel_ route:
++
+--
+{copypaste}
+----
+camel run \
+--source-dir m2r \
+--properties matrix.properties \
+--local-kamelet-dir ../support/kamelets
+----
+--
++
+NOTE: The command above includes flags to tell _Camel JBang_ where to find the resources needed (code, properties, _Kamelets_).
++
+{blank}
++
+_Camel JBang_ will build a local runnable and start it. +
+In your terminal logs, you should see _Camel_ connecting to _Matrix_, similar to the following:
++
+++++
+<pre style="background-color: #272822; padding: 5px 15px; line-height: 1;white-space: pre-wrap"><span style="color:grey;font-family: monospace;font-size: 12px;">2025-10-30 21:59:34.277 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [           main] <span style="color: cyan;">.impl.engine.AbstractCamelContext</span><span style="color: white;"> : Apache Camel 4.15.0 (m2r) started in 800ms (build:0ms ...)</span>
+2025-10-30 21:59:35.176 <span style="color: limegreen;">INFO</span> <span style="color: deeppink">4330</span> --- [atrix-streaming] <span style="color: cyan">matrix-source.kamelet.yaml:58</span><span style="color: white;">     : Opening connection to Matrix...</span>
+2025-10-30 21:59:35.390 <span style="color: limegreen;">INFO</span> <span style="color: deeppink">4330</span> --- [atrix-streaming] <span style="color: cyan">matrix-source.kamelet.yaml:67</span><span style="color: white;">     : Matrix HTTP Streaming started</span>
+</span></pre>
+++++
++
+[NOTE]
+====
+A window notification may pop up at the bottom-right corner of your screen. +
+Close it, or simply ignore it, as it disappears after a few seconds.
+
+image::m1/che-port-8080.png[width=45%]
+====
++
+{empty} +
++
+Now, from the _Matrix_ chat room, send a message.
++
+* For example:
++
+--
+{copypaste}
+----
+Hello Camel
+----
+--
++
+//image::images/gitter-send-message.png[align="left", width=60%]
++
+[subs=attributes]
+++++
+<div class="matrix-flow-wrapper">
+  <!-- Scoped Styles for this component -->
+  <style>
+    .matrix-flow-wrapper {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 20px;
+      background-color: white;
+    }
+
+    .platform-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 5px;
+    }
+
+    /* Icons */
+    .icon-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 60px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .icon-box {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 5px;
+      margin-left: 15px;
+      z-index: 2;
+    }
+
+    .icon-label {
+      font-size: 18px;
+      color: #000;
+      font-weight: 500;
+      margin-left: 15px;
+    }
+
+    .matrix-bg { background-color: #33C69D; }
+
+    /* Message Bubbles (Light) */
+    .msg-bubble-light {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: #fcfcfc;
+      width: 260px;
+      padding: 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      position: relative;
+      z-index: 2;
+    }
+  </style>
+
+  <!-- Main Flex Container -->
+  <div style="display: flex; align-items: flex-end;">
+
+    <!-- Arrow Column -->
+    <div style="margin-right: 10px; margin-bottom: 40px;">
+      <svg width="120" height="120" viewBox="0 0 130 180" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+        <path d="M20 10H45V80C45 113.137 71.8629 140 105 140H120V120L150 150L120 180V160H105C58.0558 160 20 121.944 20 75V10Z" fill="#EDEDED" stroke="#777" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <!-- Content Column -->
+    <div style="display: flex; flex-direction: column; align-items: flex-start;">
+      <div class="platform-row">
+        <!-- Matrix Icon -->
+        <div class="icon-container">
+          <div class="icon-box matrix-bg" style="margin-top: 5px; transform: scale(1);">
+            <svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <g transform="translate(-11 -11) scale(0.09)">
+                <path stroke-width="30" d="m153.25 277.15c.47-46.35 37.79-81.6 81.6-81.6m0-42.3c46.35.47 81.6 37.79 81.6 81.6m42.3 0c-.47 46.35-37.79 81.6-81.6 81.6m0 42.3c-46.35 0-81.6-37.79-81.6-81.6"/>
+              </g>
+            </svg>
+          </div>
+          <span class="icon-label">Matrix</span>
+        </div>
+
+        <!-- Matrix Message Box -->
+        <div style="border: 1px solid #ddd; border-radius: 4px; background: #fff; width: 260px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 5px 5px; gap: 2px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+          <div style="display: flex; align-items: center;">
+            <div style="width: 30px; height: 30px; background-color: #4a90e2; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 16px; flex-shrink: 0;">
+              U
+            </div>
+            <div style="margin-left: 12px; font-weight: bold; font-size: 15px; color: #00d781; line-height: 1;">
+              {user-username}
+            </div>
+          </div>
+          <div style="background-color: #eee; display: flex; align-items: baseline; padding: 5px 0px;">
+            <div style="width: 30px; text-align: center; font-size: 10px; color: #6c757d; flex-shrink: 0;">
+              21:59
+            </div>
+            <div style="margin-left: 12px; font-size: 15px; color: #333; line-height: .5;">
+              Hello Camel
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+++++
++
+{blank}
++
+Your terminal should show the arrival of a _Matrix_ event similar to the following JSON payload:
++
+[subs="attributes+"]
+++++
+<pre style="background-color: #272822; padding: 5px 15px; line-height: 1;white-space: pre-wrap"><span style="color:grey;font-family: monospace;font-size: 12px;">2025-10-30 21:59:55.672 <span style="color: limegreen;">INFO</span> <span style="color: deeppink">4330</span> --- [ad #7 - WireTap] <span style="color: cyan">m2r.camel.yaml:12</span><span style="color: white;">     : {"fromUser":{"username":"{user-username}","displayName":"{user-username}"},"text":"<span style="background-color: #ffff00; color: #000000; padding: 0px 0px;">Hello Camel</span>","sent":"2025-10-30T21:59:55.000Z"}</span>
+</span></pre>
+++++
++
+NOTE: Find the message content highlighted in yellow.
++
+{blank}
++
+Hopefully you've been successful in capturing _Matrix_ messages with _Camel_.
++
+{empty} +
+
+
+. Stop Camel JBang
++
+Press kbd:[Ctrl+C], from your terminal, to stop the running _Camel_ process.
++
+[TIP]
+--
+_Camel JBang_ also implements the following very handy commands when running multiple _Camel_ integrations:
+
+* `camel ps` to list running _Camel_ integrations.
+* `camel stop <instance_name>` to shut down a running _Camel_ integration.
+--
++
+{empty} +
+
+
+This completes your first iteration and execution consuming messages from _Matrix_.
+
+In your next exercise you keep iterating, completing the flow with the following:
+
+* Adding data transformation using Kaoto's DataMapper.
+* Directing the messages to _Rocket.Chat_
+
+{empty} +
+
+
+[.verification]
+****
+Did you see the message sent from _Matrix_ show up in your terminal?
+****

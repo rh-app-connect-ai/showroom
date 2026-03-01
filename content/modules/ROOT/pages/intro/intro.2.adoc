@@ -1,0 +1,31 @@
+:imagesdir: ../../assets/images
+include::../style.adoc[]
+
+[time=1]
+[id="scenario-intro"]
+== Scenario introduction
+
+As the internet evolves and technologies and trends emerge, so does the way people and organisations connect. Not only is digitalization transforming and automating processes, but also social changes and events are making an impact that is shaping how we interact.
+
+Email and SMSs started to replace direct phone conversations, and soon instant messaging platforms gained popularity over them. Today we have a big landscape of messaging platforms and often we feel divided on which one to use to communicate with family and friends.
+
+On the professional side, organisations mandate one common communication platform for all associates, but often, more than one survives, splitting work discussions between them.
+
+It becomes even more inconvenient when a sales department, for example, needs to communicate with customers. Telephone / email are old fashioned channels that are no longer effective. Sales agents try to stay in close contact with their customers via instant messaging platforms, and of course, each customer uses a different one.
+
+[.text-center]
+image::intro/scenario-problem.png[width=40%]
+
+In the picture above, the _Service Agent_ needs to manage multiple and diverse platform accounts in order to stay in contact with different customers.
+
+The workshop proposes to build a platform that addresses this problem. It would integrate all platforms as one, and plug in additional services associated with those interactions. Additionally, the platform would provide new collaboration possibilities and new capabilities to help complying with government regulations, like data privacy and security.
+
+The picture below illustrates a system that integrates all platforms and allows communication exchanges between different members from unrelated entities
+
+[.text-center]
+image::intro/scenario-message-hub.png[width=40%]
+
+Under such solution, The _Service Agent_ would be abstracted from all external platforms and would simply be another member of the unified platform. 
+
+{empty} +
+

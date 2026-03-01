@@ -1,0 +1,37 @@
+---
+site:
+  title: Integrate Platforms and Plugin AI Capabilities with Apache Camel and Kafka
+  url: https://github.com/rh-app-connect-ai
+  start_page: modules::index.adoc
+  keys:
+    google_analytics: 'G-CFX85CRBQW'
+content:
+  sources:
+    - url: .
+      start_path: content
+
+asciidoc:
+  extensions:
+    - ./content/lib/room-macro.js
+
+ui:
+  bundle:
+    url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/v0.0.1/ui-bundle.zip
+    snapshot: true # forced pull of the bundle
+  supplemental_files:
+    - path: ./content/supplemental-ui
+    - path: ./content/lib
+    - path: .nojekyll
+    - path: ui.yml
+      contents: "static_files: [ .nojekyll ]"
+
+runtime:
+  cache_dir: ./.cache/antora
+
+antora:
+  extensions:
+    - require: ./content/lib/dev-mode.js
+      enabled: false
+
+output:
+  dir: ./www

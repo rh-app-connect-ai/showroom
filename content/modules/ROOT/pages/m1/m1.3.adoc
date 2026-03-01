@@ -1,0 +1,467 @@
+:imagesdir: ../../assets/images
+include::../style.adoc[]
+
+[time=10]
+[id="data-mapping"]
+== Add data transformation
+{style-all}
+
+Your next task is to add a data transformation step in your Camel route.
+
+Kaoto comes with a visual _DataMapper_ tool you will use to define your _Matrix_ to _Rocket.Chat_ data transformation, as a first introductory exposure to the tool.
+
+Let's get started.
+
+
+
+. Include data transformation
++
+You will extend the _Camel_ route definition by including a data transformation that matches the JSON structure the target system (_Rocket.Chat_) expects.
++
+NOTE: The first time you define a data mapping, the process feels laborious. +
+With practice, you will create data mappings quickly and intuitively.
++
+.. Include in your Camel route a Kaoto data transformation step
++
+--
+From Kaoto:
+
+. Click the kbd:[+] button in the transition
+. Type `mapper` in the filter to find the _Kaoto DataMapper_
+. Click the _Kaoto DataMapper_ tile
+. Click the mapper to open the configuration panel
+. Click the pass:a[<span {btn-stl-blue}>{map-wrench}  Configure</span>] button
+
+image::m1/canvas-create-mapper.jpg[width=100%]
+
+
+
+When you create and open a new mapping definition, you will find it empty. +
+The picture belows shows some of the main parts you will interact with:
+
+image::m1/mapper-empty.png[width=100%]
+
+{empty} +
+
+--
++
+.. Next, define the inputs and outputs
++
+--
+From the DataMapper editor:
+
+. Define the source:
+.. On **Parameters** click the button kbd:[+] to add new parameter
+.. Enter `matrix` and click the checkmark button kbd:[{map-tick}]
+.. Click kbd:[{map-att}] (Attach schema), next click
+pass:a[<span {btn-stl-blue}>{map-import}</span>] and then pick at the top of your screen: `support/schemas/*matrix-in.json*`.
+.. Click pass:a[<span {btn-stl-blue}>Attach</span>] to complete the action.
++
+{blank}
++
+. Define the target
+.. On the right hand side of the DataMapper screen: +
+Click kbd:[{map-att}] (Attach schema), next click
+pass:a[<span {btn-stl-blue}>{map-import}</span>] and then pick at the top of your screen: `support/schemas/*rocketchat-out.json*`.
+.. Click pass:a[<span {btn-stl-blue}>Attach</span>] to complete the action.
+
+{empty} +
+
+Once your in and out schemas have been attached your DataMapper should look as follows:
+
+[.text-center]
+image::m1/mapper-m2r.png[width=95%]
+
+--
++
+{empty} +
++
+.. Define the data mappings from source to target
++
+Copy and Paste (in the *Target*) the values below to define the given field entries:
++
+... `string[@key = channel]`:
++
+--
+{copypaste}/roomid/{user-username}
+----
+"REPLACE"
+----
+--
++
+[TIP]
+====
+To paste the value, click `⠇` and select **Add selector expression**, as shown below:
+
+image::m1/mapper-add-expression.jpg[width=70%]
+====
++
+{blank}
++
+... `string[@key = text]`:
++
+To map the field, click and drag kbd:[string [@key = text\]] from the source (left) to the target (right).
++
+A connection will be created between source and target, rendered as follows:
++
+image::m1/mapper-text.jpg[width=90%]
++
+{empty} +
++
+.. Refine the mapping by using a function
++
+The last mapping above simply copies the message from source to target, as in the _hello_ example below:
++
+--
+* `hello` -> `hello`
+--
++
+{blank}
++
+However, we want to see in Rocket.Chat information about the user and origin. +
+It means the mapping would need to happen as follows:
++
+--
+* `hello` -> `*{user-username}@matrix:* hello`
++
+NOTE: The message above includes **bold** letters. +
+As the target system understands _Markdown_, we will use it to format the message, as follows: +
+`pass:a[*{user-username}@matrix:* hello]`
+--
++
+For the result above to happen, the following concatenation of segments needs to occur:
++
+====
+* `*`: the _Markdown_ symbol to start a bold string
+* `{user-username}`: from the source field *username*
+* ``@matrix:* ``: the originating system and the closing _Markdown_ symbol
+* `hello`: from the source field *text*
+====
++
+{blank}
++
+All the segments above can be concatenated in the Data Mapper using the XPath function `concatenate`.
++
+NOTE: XPath is a simple language for finding and selecting specific parts in a data structure. The language comes with many handy out-of-the-box functions.
++
+Open the XPath editor by clicking kbd:[{pen-btn}] at the end of the row.
++
+image::m1/mapper-xpath-editor-view.png[width=90%]
++
+{blank}
++
+On the left you'll find fields and functions you can drag and drop into the blue text area. +
+You'll find in the text blue area the current mapping expression for the target field kbd:[string[@key = text\]] (text in Rocket.Chat).
++
+You're going to perform 2 actions:
++
+--
+. Define the string segments (as explained earlier)
+. Wrap the segments with a `concatenate` function
+--
++
+{empty} +
++
+Let's start with 1. Define the segments:
++
+[NOTE]
+====
+The *preview* below shows the expected outcome of the actions you're about to do:
+
+++++
+<div style="background:#EAFAFA; padding:15px 15px 15px 8px; border-radius:8px; font-family:Consolas,monospace; font-size:14px; line-height:1.6; position:relative;">
+  <pre style="margin:0; background:#EAFAFA; padding-left:50px; border:none; outline:none;">
+<span style="counter-increment:line; position:absolute; left:10px; width:30px; text-align:right; color:#888; user-select:none;">1</span><span style="color:#000;">'*'</span>
+<span style="counter-increment:line; position:absolute; left:10px; width:30px; text-align:right; color:#888; user-select:none;">2</span><span style="color:#000;">, $matrix-x/fn:map/fn:map[@key='fromUser']/fn:string[@key='username'],</span>
+<span style="counter-increment:line; position:absolute; left:10px; width:30px; text-align:right; color:#888; user-select:none;">3</span><span style="color:#000;">'@matrix:* '</span>
+<span style="counter-increment:line; position:absolute; left:10px; width:30px; text-align:right; color:#888; user-select:none;">4</span><span style="color:#000;">, $matrix-x/fn:map/fn:string[@key='text']</span></pre>
+</div>
+++++
+====
++
+====
+[lowerroman]
+. Delete current expression (blue text area empty).
+. Copy and paste:
++
+--
+{copypaste}
+----
+'*'
+----
+--
++
+. Drag and drop from the left to the editor +
+kbd:[string [@key = username\]] -> `editor`
++
+{blank}
++
+. Copy and paste (including the comma and new line):
++
+--
+{copypaste}
+----
+,
+'@matrix:* '
+----
+--
++
+. Drag and drop from the left to the editor +
+kbd:[string [@key = text\]] -> `editor`
++
+{empty} +
+
+IMPORTANT: Your segments should now be defined matching the *preview* shown earlier. +
+Verify they match, and make corrections if necessary.
+====
++
+{empty} +
++
+Let's now do 2.
++
+--
+. On the editor's left panel click the tab: +
+ **[    Function    ]**
++
+{blank}
++
+. Drag and drop the _String_ function *_Concatenate_* from left to right +
+kbd:[Concatenate] -> `editor`
++
+{blank}
++
+[NOTE]
+====
+After you drop the function, you should see in your blue text area the following result:
+
+++++
+<div style="background:#EAFAFA; padding:15px 15px 15px 8px; border-radius:8px; font-family:Consolas,monospace; font-size:14px; line-height:1.6; position:relative;">
+  <pre style="margin:0; background:#EAFAFA; padding-left:50px; border:none; outline:none;">
+<span style="counter-increment:line; position:absolute; left:10px; width:30px; text-align:right; color:#888; user-select:none;">1</span><span style="color:#999;"><b style="color:#000;">concat(</b>'*'</span>
+<span style="counter-increment:line; position:absolute; left:10px; width:30px; text-align:right; color:#888; user-select:none;">2</span><span style="color:#999;">, $matrix-x/fn:map/fn:map[@key='fromUser']/fn:string[@key='username'],</span>
+<span style="counter-increment:line; position:absolute; left:10px; width:30px; text-align:right; color:#888; user-select:none;">3</span><span style="color:#999;">'@matrix:* '</span>
+<span style="counter-increment:line; position:absolute; left:10px; width:30px; text-align:right; color:#888; user-select:none;">4</span><span style="color:#999;">, $matrix-x/fn:map/fn:string[@key='text']<b style="color:#000;">)</b></span></pre>
+</div>
+++++
+====
++
+. The definition is complete, click pass:a[<span {btn-stl-blue}>Close</span>]
+--
++
+{empty} +
++
+When you close the editor you should see the field connections in your mapper as follows:
++
+image::m1/mapper-user-text.jpg[width=95%]
++
+[TIP]
+====
+If you don't see the data connections above try again as follows:
+
+. Click the trash button to delete the current expression
+. Click the dots to add a new expression
+. Copy and paste the expression below:
++
+--
+{copypaste}
+----
+concat('*', $matrix-x/fn:map/fn:map[@key='fromUser']/fn:string[@key='username'],'@matrix:* ', $matrix-x/fn:map/fn:string[@key='text'])
+----
+--
+====
++
+Your data mapping definition is now complete with multiple input fields mapped to output fields.
++
+{empty} +
+
+. Log the body
++
+Click the **Design** view to go back to Kaoto's canvas: +
+image:m1/kaoto-views.jpg[width=45%]
++
+From the canvas, find and click the **LOG** step and update the message from:
++
+* `${variable.matrix}` -> to `${body}`
++
+NOTE: The Matrix Kamelet is configured to store events in a variable `matrix`, however, the data mapper outputs the result in the `body`.
++
+{empty} +
+
+. Run the flow again by issuing the following command:
++
+--
+{copypaste}
+----
+labrun m2r \
+--properties matrix.properties
+----
+--
++
+[pass]
+<details>
+  <summary>
+    <span class="triangle"></span>
+    <span class="sumtext">Click for more information</span>
+  </summary>
+<p style="margin-top: 1em;">We provide the script <code>labrun</code> to help you read the commands more clearly.</br>
+Under the hood the script calls <i>Camel JBang</i> as per the snippet below:
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">
+camel run \
+--source-dir m2r \
+--properties matrix.properties \
+--local-kamelet-dir ../support/kamelets
+</pre></p>
+</details>
++
+{empty} +
+
+
+. From Matrix send another chat message and inspect your terminal output.
++
+Try one more time:
++
+--
+{copypaste}
+----
+Hello Camel
+----
+--
++
+//image::images/gitter-send-message.png[align="left", width=60%]
++
+[subs=attributes]
+++++
+<div class="matrix-flow-wrapper">
+  <!-- Scoped Styles for this component -->
+  <style>
+    .matrix-flow-wrapper {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 20px;
+      background-color: white;
+    }
+
+    .platform-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 5px;
+    }
+
+    /* Icons */
+    .icon-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 60px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .icon-box {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 5px;
+      margin-left: 15px;
+      z-index: 2;
+    }
+
+    .icon-label {
+      font-size: 18px;
+      color: #000;
+      font-weight: 500;
+      margin-left: 15px;
+    }
+
+    .matrix-bg { background-color: #33C69D; }
+
+    /* Message Bubbles (Light) */
+    .msg-bubble-light {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: #fcfcfc;
+      width: 260px;
+      padding: 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      position: relative;
+      z-index: 2;
+    }
+  </style>
+
+  <!-- Main Flex Container -->
+  <div style="display: flex; align-items: flex-end;">
+
+    <!-- Arrow Column -->
+    <div style="margin-right: 10px; margin-bottom: 40px;">
+      <svg width="120" height="120" viewBox="0 0 130 180" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+        <path d="M20 10H45V80C45 113.137 71.8629 140 105 140H120V120L150 150L120 180V160H105C58.0558 160 20 121.944 20 75V10Z" fill="#EDEDED" stroke="#777" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <!-- Content Column -->
+    <div style="display: flex; flex-direction: column; align-items: flex-start;">
+      <div class="platform-row">
+        <!-- Matrix Icon -->
+        <div class="icon-container">
+          <div class="icon-box matrix-bg" style="margin-top: 5px; transform: scale(1);">
+            <svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <g transform="translate(-11 -11) scale(0.09)">
+                <path stroke-width="30" d="m153.25 277.15c.47-46.35 37.79-81.6 81.6-81.6m0-42.3c46.35.47 81.6 37.79 81.6 81.6m42.3 0c-.47 46.35-37.79 81.6-81.6 81.6m0 42.3c-46.35 0-81.6-37.79-81.6-81.6"/>
+              </g>
+            </svg>
+          </div>
+          <span class="icon-label">Matrix</span>
+        </div>
+
+        <!-- Matrix Message Box -->
+        <div style="border: 1px solid #ddd; border-radius: 4px; background: #fff; width: 260px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 5px 5px; gap: 2px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+          <div style="display: flex; align-items: center;">
+            <div style="width: 30px; height: 30px; background-color: #4a90e2; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 16px; flex-shrink: 0;">
+              U
+            </div>
+            <div style="margin-left: 12px; font-weight: bold; font-size: 15px; color: #00d781; line-height: 1;">
+              {user-username}
+            </div>
+          </div>
+          <div style="background-color: #eee; display: flex; align-items: baseline; padding: 5px 0px;">
+            <div style="width: 30px; text-align: center; font-size: 10px; color: #6c757d; flex-shrink: 0;">
+              22:10
+            </div>
+            <div style="margin-left: 12px; font-size: 15px; color: #333; line-height: .5;">
+              Hello Camel
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+++++
++
+{blank}
++
+You should see an incoming event now transformed and looking similar to this:
++
+--
+{snippet}{user-username}
+[subs="attributes+"]
+----
+{"channel":"REPLACE","text":"*{user-username}@matrix:* Hello Camel"}
+----
+--
++
+{empty} +
+
+Hopefully your test worked. +
+Your next task will be to complete the process by connecting the flow to _Rocket.Chat_.
+
+{empty} +
+
+
+
+[.verification]
+****
+Did you see the message successfully transformed into Rocket.Chat format?
+****

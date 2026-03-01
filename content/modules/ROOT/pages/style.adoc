@@ -1,0 +1,630 @@
+++++
+
+<style> 
+.doc {
+    max-width: 70rem;
+} 
+
+.underline {
+  cursor: pointer;
+}
+
+u {
+    cursor: pointer;
+}
+
+summary  {
+    cursor: pointer;
+}
+
+/* Push TOC down to make room for fixed overlays */
+.toc.sidebar .toc-menu {
+  top: 13rem !important;
+}
+
+.label {
+    color: #fff;
+    padding: .2em .6em .3em;
+    font-weight: 700;
+    border-radius: .25em;
+    font-size: 90%;
+}
+
+.added {background-color: #007700;}
+.changed {background-color: #088;}
+.updated {background-color: #3344bb;}
+
+.imageblock {
+    align-items: flex-start !important;
+}
+.imageblock.text-center .content {
+    width: 100%;
+    text-align: center;
+}
+.imageblock.text-center .content img {
+    display: inline-block;
+}
+
+/* Inline images: vertically center with surrounding text */
+.doc span.image img {
+    vertical-align: middle;
+}
+
+/* Inline code styling — :not([style]) excludes passthrough <code> with inline styles */
+.doc code:not([style]) {
+  background-color: #DDF4FF !important;
+  font-family: monospace !important;
+}
+
+/* kbd styling — override Antora theme */
+.doc kbd {
+  color: black;
+  background-color: white;
+  border: 1px solid black;
+  box-shadow: 0px 1px black;
+  font-size: .85em;
+  line-height: .85em;
+  display: inline-block;
+  font-weight: 600;
+  letter-spacing: .05em;
+  padding: 3px 5px;
+  white-space: nowrap;
+  border-radius: 5px;
+}
+
+/* Inline code inside admonitions: keep same color */
+.doc .admonitionblock code {
+  background-color: #DDF4FF !important;
+}
+
+/* Copypaste textarea inside admonitions: darker background for contrast */
+.admonitionblock textarea {
+  background-color: #ddd !important;
+}
+
+/* Terminal-style listing blocks — override Antora theme */
+.doc .listingblock pre {
+  background-color: #272822 !important;
+  color: white;
+  padding: 10px 15px;
+  line-height: 1.4;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+/* Right sidebar: .doc-sidebar — fixed status overlay at top-right */
+.doc-sidebar {
+  position: fixed !important;
+  top: 6.5rem;
+  right: 1rem;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  z-index: 1000;
+  border-radius: 4px !important;
+}
+.doc-sidebar .sidebarblock {
+  padding: 0.3rem 0.5rem !important;
+}
+.doc-sidebar .sidebarblock p {
+  margin: 0 !important;
+}
+
+/* Task sidebar: fixed overlay below doc-sidebar */
+.task-sidebar {
+  position: fixed !important;
+  top: 12rem;
+  right: 1rem;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0;
+  box-sizing: border-box;
+  z-index: 1000;
+  font-size: 0.85em;
+}
+.task-sidebar .sidebarblock {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.4rem;
+}
+.task-sidebar .sidebarblock .title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+.task-sidebar .sidebarblock ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+/* Verification "Check your work" component */
+.verification-box {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+  max-width: 600px;
+}
+.verification-box .vb-header {
+  background-color: #3e8635;
+  color: white;
+  font-weight: 600;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+.verification-box .vb-body {
+  padding: 16px;
+  background: #fff;
+}
+.verification-box .vb-question {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+.verification-box .vb-options label {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.verification-box .vb-options input[type="radio"] {
+  margin-right: 5px;
+  cursor: pointer;
+}
+.verification-box .vb-feedback {
+  margin-top: 10px;
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  display: none;
+}
+.verification-box .vb-feedback.success {
+  background-color: #e6f4ea;
+  color: #1e7e34;
+}
+.verification-box .vb-feedback.fail {
+  background-color: #fce8e6;
+  color: #c5221f;
+}
+
+/* Tile grid for index page */
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 10px 0;
+}
+.tile-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s;
+}
+.tile-card:hover {
+  box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+}
+.tile-card a {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.tile-card .tile-header {
+  background-color: #3e8635;
+  color: white;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 15px;
+}
+.tile-card .tile-body {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.tile-card .tile-desc {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.5;
+  flex: 1;
+}
+.tile-card .tile-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+  font-size: 13px;
+  color: #777;
+}
+.tile-card .tile-footer .tile-time,
+.tile-card .tile-footer .tile-tasks {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Hide raw tile sidebarblocks before JS transforms them */
+.sidebarblock.tile {
+  display: none;
+}
+
+</style>
+
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+  // Transform AsciiDoc .tile sidebar blocks into tile-card HTML
+  var tiles = document.querySelectorAll('.sidebarblock.tile');
+  if (tiles.length) {
+    var grid = document.createElement('div');
+    grid.className = 'tile-grid';
+    var clockSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+    tiles[0].parentNode.insertBefore(grid, tiles[0]);
+    tiles.forEach(function(sb) {
+      var content = sb.querySelector('.content');
+      if (!content) return;
+      var paragraphs = content.querySelectorAll('.paragraph');
+      var link = '', title = '', desc = '', time = '', tasks = '';
+      paragraphs.forEach(function(p) {
+        var a = p.querySelector('a');
+        if (a && !link) {
+          link = a.getAttribute('href');
+          title = a.textContent;
+        } else if (p.classList.contains('meta')) {
+          var text = p.textContent.trim();
+          var parts = text.split('|');
+          if (parts.length >= 1) time = parts[0].trim();
+          if (parts.length >= 2) tasks = parts[1].trim();
+        } else if (link) {
+          desc += (desc ? ' ' : '') + (p.querySelector('p') ? p.querySelector('p').textContent : p.textContent).trim();
+        }
+      });
+      var card = document.createElement('div');
+      card.className = 'tile-card';
+      card.innerHTML =
+        '<a href="' + link + '">' +
+          '<div class="tile-header">' + title + '</div>' +
+          '<div class="tile-body">' +
+            '<div class="tile-desc">' + desc + '</div>' +
+            (time || tasks ?
+              '<div class="tile-footer">' +
+                (time ? '<span class="tile-time">' + clockSvg + ' ' + time + '</span>' : '') +
+                (tasks ? '<span class="tile-tasks">' + tasks + '</span>' : '') +
+              '</div>' : '') +
+          '</div>' +
+        '</a>';
+      grid.appendChild(card);
+      sb.remove();
+    });
+  }
+
+  // Transform AsciiDoc .verification sidebar blocks into verification-box HTML
+  var sidebars = document.querySelectorAll('.sidebarblock.verification');
+  sidebars.forEach(function(sb, idx) {
+    var content = sb.querySelector('.content');
+    if (!content) return;
+    var paragraphs = content.querySelectorAll('.paragraph');
+    var question = '', successMsg = '', failMsg = '';
+    paragraphs.forEach(function(p) {
+      if (p.classList.contains('success')) {
+        successMsg = p.querySelector('p') ? p.querySelector('p').innerHTML : p.textContent;
+      } else if (p.classList.contains('fail')) {
+        failMsg = p.querySelector('p') ? p.querySelector('p').innerHTML : p.textContent;
+      } else if (!question) {
+        question = p.querySelector('p') ? p.querySelector('p').innerHTML : p.textContent;
+      }
+    });
+    if (!successMsg) successMsg = 'Great, you may continue to the next section.';
+    if (!failMsg) failMsg = 'Review your steps and try again.';
+    var name = 'verify-' + idx;
+    var box = document.createElement('div');
+    box.className = 'verification-box';
+    box.innerHTML =
+      '<div class="vb-header">Check your work</div>' +
+      '<div class="vb-body">' +
+        '<div class="vb-question">' + question + '</div>' +
+        '<div class="vb-options">' +
+          '<label><input type="radio" name="' + name + '" value="yes"> Yes</label>' +
+          '<label><input type="radio" name="' + name + '" value="no"> No</label>' +
+        '</div>' +
+        '<div class="vb-feedback success">' + successMsg + '</div>' +
+        '<div class="vb-feedback fail">' + failMsg + '</div>' +
+      '</div>';
+    sb.parentNode.replaceChild(box, sb);
+  });
+
+  // Now process all verification boxes (both pre-existing HTML and transformed ones)
+  var boxes = document.querySelectorAll('.verification-box');
+  if (!boxes.length) return;
+
+  // Find Antora's Next page link
+  var navNext = document.querySelector('.nav-next a')
+    || document.querySelector('.pagination .next a')
+    || document.querySelector('a.page-next');
+  if (!navNext) {
+    document.querySelectorAll('a').forEach(function(a) {
+      if (a.closest('.toolbar') || a.closest('.nav-container')) {
+        if (a.textContent.trim().toLowerCase().indexOf('next') !== -1) navNext = a;
+      }
+    });
+  }
+
+  // Disable Next link on load
+  if (navNext) {
+    navNext.style.pointerEvents = 'none';
+    navNext.style.opacity = '0.3';
+  }
+
+  function checkAll() {
+    var allYes = true;
+    boxes.forEach(function(box) {
+      var selected = box.querySelector('input[type="radio"]:checked');
+      if (!selected || selected.value !== 'yes') allYes = false;
+    });
+    if (navNext) {
+      navNext.style.pointerEvents = allYes ? '' : 'none';
+      navNext.style.opacity = allYes ? '' : '0.3';
+    }
+  }
+
+  boxes.forEach(function(box) {
+    box.querySelectorAll('input[type="radio"]').forEach(function(r) {
+      r.addEventListener('change', function() {
+        var ok = box.querySelector('.vb-feedback.success');
+        var fail = box.querySelector('.vb-feedback.fail');
+        if (this.value === 'yes') {
+          ok.style.display = 'block'; fail.style.display = 'none';
+        } else {
+          ok.style.display = 'none'; fail.style.display = 'block';
+        }
+        checkAll();
+      });
+    });
+  });
+});
+</script>
+
+++++
+
+
+:m1: pass:quotes[[.label.added]#Module 1#]
+:m2: pass:q[[.label.changed]#Module 2#]
+:m3: pass:q[[.label.updated]#Module 3#]
+
+:experimental:
+
+// :url-docserver: https://docserver-webapp.{openshift-app-host}
+:url-docserver: http://0.0.0.0:9090
+
+:btn-replace: pass:[<svg fill="#000000" width="1.5em" height="1.5em"  viewBox="0 0 912.193 912.193" xml:space="preserve"> \
+  <g stroke-width="0"></g><g stroke-linecap="round" stroke-linejoin="round"></g><g> <g> <path d="M807.193,170.092v83.973c-6.033-10.458-12.529-20.674-19.512-30.606c-24.436-34.762-54.037-65.357-87.984-90.937 c-34.352-25.885-72.34-46.014-112.908-59.827c-41.957-14.286-85.891-21.529-130.577-21.529c-46.663,0-92.432,7.883-136.03,23.431 c-42.135,15.025-81.295,36.846-116.393,64.858c-34.751,27.735-64.539,60.747-88.534,98.119 c-24.444,38.072-42.191,79.621-52.748,123.492c-6.783,28.19,10.57,56.542,38.761,63.325c4.128,0.993,8.259,1.469,12.325,1.469 c23.705,0,45.21-16.167,51-40.229c15.47-64.292,52.651-122.573,104.694-164.109c26.001-20.751,54.989-36.909,86.16-48.024 c32.249-11.5,66.151-17.331,100.765-17.331c65.672,0,128.018,20.822,180.297,60.214c35.375,26.656,64.541,61.161,85.139,100.095 h-58.166c-28.994,0-52.5,23.505-52.5,52.5s23.506,52.5,52.5,52.5h196.211c28.996,0,52.5-23.505,52.5-52.5V170.092 c0-28.995-23.504-52.5-52.5-52.5C830.699,117.592,807.193,141.097,807.193,170.092z"></path> <path d="M52.5,794.602c28.995,0,52.5-23.504,52.5-52.5v-84.326c31.275,54.438,74.821,100.955,127.654,135.994 c66.246,43.936,143.417,67.186,223.196,67.254c0.044,0,0.087,0.004,0.13,0.004c0.035,0,0.071-0.002,0.106-0.002 c0.041,0,0.083,0.002,0.124,0.002c0.056,0,0.109-0.004,0.166-0.004c46.524-0.045,92.157-7.924,135.633-23.428 c42.135-15.025,81.295-36.846,116.393-64.857c34.752-27.734,64.539-60.748,88.535-98.119 c24.443-38.072,42.191-79.621,52.748-123.492c6.783-28.189-10.57-56.541-38.762-63.324s-56.541,10.57-63.324,38.76 c-15.471,64.293-52.652,122.574-104.695,164.109c-26,20.75-54.988,36.91-86.16,48.023c-32.217,11.488-66.082,17.318-100.657,17.33 c-59.154-0.023-116.346-17.229-165.398-49.762c-42.3-28.053-76.562-66.006-100.007-110.545h58.028c28.996,0,52.5-23.506,52.5-52.5 c0-28.996-23.505-52.5-52.5-52.5H52.5c-28.995,0-52.5,23.504-52.5,52.5v198.883C0,771.098,23.505,794.602,52.5,794.602z"></path> </g> </g></svg>]
+
+:docserver-status: pass:a[<img hidden="true" src="invalid-image.jpg" onerror=" \
+        fetch('{url-docserver}/status') \
+        .then(response => response.text()) \
+        .then(data => this.parentElement.innerHTML = 'Status: <div style=&quot;width:15px;height:15px;border-radius:50%;background:#4caf50;display:inline-block;vertical-align:middle;margin-top:-2px&quot;></div>') \
+        .catch(error => this.parentElement.innerHTML = 'Status: <div style=&quot;width:15px;height:15px;border-radius:50%;background:red;display:inline-block;vertical-align:middle;margin-top:-2px&quot;></div>') \
+      ">]
+
+:freplace: pass:[function replaceTokens(templateString, values) { \
+    const valueArray = values.split(',').map(val => val.trim()); \
+    let result = templateString; \
+    let replaceIndex = 0; \
+    while (result.includes('REPLACE') && replaceIndex < valueArray.length) { \
+        result = result.replace('REPLACE', valueArray[replaceIndex]); \
+        replaceIndex++; \
+    } \
+    return result; \
+}]
+
+:fdocserver: pass:a[function docserver(target,template,params) { \
+    {freplace} \
+    fetch('{url-docserver}'+params.trim()) \
+        .then(response => response.text()) \
+        .then(data => {target.firstChild.data=replaceTokens(text, data);target.style.height = (target.scrollHeight) + 'px';}) \
+        .catch(error => room = 'Error fetching data: ' + error.message); \
+}]
+
+
+:fcopy: pass:a[function copy(el) { \
+  el.previousElementSibling.select(); \
+  text = el.previousElementSibling.textContent; \
+  console.log(text); \
+  navigator.clipboard.writeText(text + '\n') \
+        .then(response => console.log('Text with carriage return copied to clipboard!')) \
+        .catch(err => console.error('Failed to copy: ', err)); \
+}]
+
+:copypaste: pass:a[ \
+<div style="border: 1px solid #f0f0f0; border-bottom-color: #8a8d90; display: flex; align-items: flex-start;"> \
+  <textarea readonly style="field-sizing: content;border: none; background-color: #f0f0f0; width: 100%; resize: none; font-size:14px; font-family: monospace;padding: 10px 15px" rows="1">function example() { \
+  console.log("Hello {replace-with-previous}!"); \
+  return true; \
+}</textarea> \
+  <button class="mytooltip" onclick="{fcopy} copy(this);" style="border: none; background-color: white; padding: 5px 15px; border-bottom: 1px solid transparent; transition: border-bottom-color 0.2s;"> \
+    <svg fill="currentColor" height="1em" width="1em" viewBox="0 0 448 512" aria-hidden="true" role="img" style="vertical-align: -0.125em;"> \
+      <path d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"></path> \
+    </svg> \
+    <span class="mytooltiptext">Copy to clipboard</span> \
+  </button> \
+  <style> \
+.mytooltip{position:relative;display:inline-block;border-bottom:1px dotted black}.mytooltip .mytooltiptext{visibility:hidden;width:120px;background-color:#555;color:#fff;text-align:center;border-radius:6px;padding:5px 0;position:absolute;z-index:1;bottom:125%;left:50%;margin-left:-60px;opacity:0;transition:opacity 0.3s}.mytooltip .mytooltiptext::after{content:"";position:absolute;top:100%;left:50%;margin-left:-5px;border-width:5px;border-style:solid;border-color:#555 transparent transparent transparent}.mytooltip:hover .mytooltiptext{visibility:visible;opacity:1} \
+  </style> \
+</div> \
+<img hidden="true" src="invalid-image.jpg" onerror="{ \
+  {fdocserver} \
+  let txtarea = this.parentElement.querySelector('textarea'); \
+  let div = this.closest('.paragraph'); \
+  if(!div.closest('.openblock')){div = div.parentElement} \
+  let source = div.nextElementSibling; \
+  let pre = source.querySelector('pre'); \
+  let text = pre.textContent; \
+  let lineCount = text.split('\n').length; \
+  let tokens = this.nextSibling; \
+  console.log('tokens: [' +tokens.data.trim()+']'); \
+  if(tokens.data.trim()!=''){docserver(txtarea,text,tokens.data);} else {txtarea.firstChild.data=text;} \
+  source.remove(); \
+  tokens.remove(); \
+  this.remove(); \
+  txtarea.style.height = 'auto'; \
+  txtarea.style.height = (txtarea.scrollHeight) + 'px'; \
+}"> \
+]
+
+:cp-btn: pass:[<svg fill="currentColor" height="1em" width="1em" viewBox="0 0 448 512" aria-hidden="true" role="img" style="vertical-align: -0.125em;"> <path d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"></path></svg>]
+
+:btn-paste: pass:[<svg fill="#000000" width="1em" height="1em" viewBox="-32 0 512 512" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M128 184c0-30.879 25.122-56 56-56h136V56c0-13.255-10.745-24-24-24h-80.61C204.306 12.89 183.637 0 160 0s-44.306 12.89-55.39 32H24C10.745 32 0 42.745 0 56v336c0 13.255 10.745 24 24 24h104V184zm32-144c13.255 0 24 10.745 24 24s-10.745 24-24 24-24-10.745-24-24 10.745-24 24-24zm184 248h104v200c0 13.255-10.745 24-24 24H184c-13.255 0-24-10.745-24-24V184c0-13.255 10.745-24 24-24h136v104c0 13.2 10.8 24 24 24zm104-38.059V256h-96v-96h6.059a24 24 0 0 1 16.97 7.029l65.941 65.941a24.002 24.002 0 0 1 7.03 16.971z"></path></g></svg>]
+
+:pen-btn: pass:[<svg height="2em" width="2em" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path fill="#444" d="M1 11.9l-1 4.1 4.1-1 9.2-9.2-3.1-3.1-9.2 9.2zM1.5 15l-0.4-0.5 0.4-2 2 2-2 0.5zM10.9 4.4l-8.1 8-0.6-0.6 8.1-8 0.6 0.6z"></path><path fill="#444" d="M15.3 0.7c-1.1-1.1-2.6-0.5-2.6-0.5l-1.5 1.5 3.1 3.1 1.5-1.5c0-0.1 0.6-1.5-0.5-2.6zM13.4 1.6l-0.5-0.5c0.6-0.6 1.1-0.1 1.1-0.1l-0.6 0.6z"></path></svg>]
+
+:map-att: pass:[<svg width="1em" height="1em" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="bi bi-box-arrow-in-down-right"> \
+  <path d="M6.364 2.5a.5.5 0 0 1 .5-.5H13.5A1.5 1.5 0 0 1 15 3.5v10a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 2 13.5V6.864a.5.5 0 1 1 1 0V13.5a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5v-10a.5.5 0 0 0-.5-.5H6.864a.5.5 0 0 1-.5-.5z" /> \
+  <path d="M11 10.5a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1 0-1h3.793L1.146 1.854a.5.5 0 1 1 .708-.708L10 9.293V5.5a.5.5 0 0 1 1 0v5z" /> \
+</svg>]
+
+:map-tick: pass:[<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="1"> \
+<path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke="#000000" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/> \
+</svg>]
+
+:map-import: pass:[<svg width="1em" height="1em" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF"> \
+  <path d="M16 288c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h112v-64zm489-183L407.1 7c-4.5-4.5-10.6-7-17-7H384v128h128v-6.1c0-6.3-2.5-12.4-7-16.9zm-153 31V0H152c-13.3 0-24 10.7-24 24v264h128v-65.2c0-14.3 17.3-21.4 27.4-11.3L379 308c6.6 6.7 6.6 17.4 0 24l-95.7 96.4c-10.1 10.1-27.4 3-27.4-11.3V352H128v136c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H376c-13.2 0-24-10.8-24-24z"/> \
+</svg>]
+
+:map-wrench: pass:[<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" \
+   height="1em" fill="white" viewBox="0 0 479.79 479.79" style="enable-background:new 0 0 479.79 479.79;" \
+   xml:space="preserve"> \
+<g> \
+  <path d="M478.409,116.617c-0.368-4.271-3.181-7.94-7.2-9.403c-4.029-1.472-8.539-0.47-11.57,2.556l-62.015,62.011l-68.749-21.768 \
+    l-21.768-68.748l62.016-62.016c3.035-3.032,4.025-7.543,2.563-11.565c-1.477-4.03-5.137-6.837-9.417-7.207 \
+    c-37.663-3.245-74.566,10.202-101.247,36.887c-36.542,36.545-46.219,89.911-29.083,135.399c-1.873,1.578-3.721,3.25-5.544,5.053 \
+    L19.386,373.152c-0.073,0.071-0.145,0.149-0.224,0.219c-24.345,24.346-24.345,63.959,0,88.309 \
+    c24.349,24.344,63.672,24.048,88.013-0.298c0.105-0.098,0.201-0.196,0.297-0.305l193.632-208.621 \
+    c1.765-1.773,3.404-3.628,4.949-5.532c45.5,17.167,98.9,7.513,135.474-29.056C468.202,191.181,481.658,154.275,478.409,116.617z \
+     M75.98,435.38c-8.971,8.969-23.5,8.963-32.47,0c-8.967-8.961-8.967-23.502,0-32.466c8.97-8.963,23.499-8.963,32.47,0 \
+    C84.947,411.878,84.947,426.419,75.98,435.38z"/> \
+</g></svg>]
+
+:btn-download: pass:[<svg width="2em" height="2em" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><g transform="translate(128 128) scale(0.5)"><path d="M216 0h80c13.3 0 24 10.7 24 24v168h87.7c17.8 0 26.7 21.5 14.1 34.1L269.7 378.3c-7.5 7.5-19.8 7.5-27.3 0L90.1 226.1c-12.6-12.6-3.7-34.1 14.1-34.1H192V24c0-13.3 10.7-24 24-24zm296 376v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h146.7l49 49c20.1 20.1 52.5 20.1 72.6 0l49-49H488c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"/></g></svg>]
+
+:ico-download: pass:[<svg fill="white" width="1em" height="1em" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M216 0h80c13.3 0 24 10.7 24 24v168h87.7c17.8 0 26.7 21.5 14.1 34.1L269.7 378.3c-7.5 7.5-19.8 7.5-27.3 0L90.1 226.1c-12.6-12.6-3.7-34.1 14.1-34.1H192V24c0-13.3 10.7-24 24-24zm296 376v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h146.7l49 49c20.1 20.1 52.5 20.1 72.6 0l49-49H488c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"/></svg>]
+
+:btn-stl-blue: pass:[style="display:inline-block; padding:10px 22px; background:#0366CB; color:white; font:normal 14px Arial,sans-serif; border-radius:40px; cursor:default; user-select:none; text-decoration:none;"]
+
+// WORKS
+:style-kbd: kbd { \
+  color: black; \
+  background-color: white; \
+  border: 1px solid black; \
+  box-shadow: 0px 1px black; \
+  font-size: .85em; \
+  line-height: .85em; \
+  display: inline-block; \
+  font-weight: 600; \
+  letter-spacing: .05em; \
+  padding: 3px 5px; \
+  white-space: nowrap; \
+  border-radius:5px; \
+} \
+
+:style-summary: summary {cursor: pointer; list-style: none;}
+:style-triangle: .triangle {margin-right: .5em;} summary:hover .sumtext {text-decoration: underline;}
+:style-details:  .triangle::before {content: "▶";} details[open] .triangle::before {content: "▼";}
+:style-open-close: {style-summary}{style-triangle}{style-details}
+
+:style-preview: pre {background-color: #272822; color: white; padding: 5px 15px; font-size: 15px}
+:style-indent: .indent2 {padding-left: 2rem;}
+:style-all: pass:a[<style>{style-kbd}{style-preview}{style-indent}{style-open-close}</style>]
+
+:snippet: pass:a[ \
+<div style="border: 1px solid #f0f0f0; border-bottom-color: #8a8d90; display: flex; align-items: flex-start;"> \
+</div> \
+<img hidden="true" src="invalid-image.jpg" onerror="{ \
+  {freplace} \
+  let block = this.closest('.openblock'); \
+  let div = this.closest('.paragraph'); \
+  let source = div.nextElementSibling; \
+  let pre = source.querySelector('pre'); \
+  let text = pre.textContent; \
+  let lineCount = text.split('\n').length; \
+  let tokens = this.nextSibling; \
+  tokens.data = tokens.data.replace('user','room'); \
+  console.log('tokens: [' +tokens.data.trim()+']'); \
+  console.log('before text: [' +text+']'); \
+  text = replaceTokens(text, tokens.data.trim()); \
+  pre.textContent = text; \
+  pre.style.backgroundColor = '#272822'; \
+  pre.style.color = 'white'; \
+  pre.style.padding = '10px 15px'; \
+  pre.style.lineHeight = '1.4'; \
+  pre.style.fontFamily = 'monospace'; \
+  pre.style.fontSize = '14px'; \
+  pre.style.whiteSpace = 'pre-wrap'; \
+  console.log('after text: [' +text+']'); \
+  console.log(block); \
+  block.parentElement.insertBefore(pre,block); \
+  block.remove(); \
+}"> \
+]
+
+:room: pass:a[ \
+<img hidden="true" src="invalid-image.jpg" onerror="{ \
+  let code = this.previousElementSibling; \
+  let text = code.textContent; \
+  console.log('before text: [' +text+']'); \
+  text = text.replace('user', 'room'); \
+  code.textContent = text; \
+  console.log('after text: [' +text+']'); \
+  this.remove(); \
+}"> \
+]
+
+:url-element: https://element-matrix.{openshift-app-host}
+:url-rocketchat: https://rocketchat-rocketchat.{openshift-app-host}
+:url-codeready: http://devspaces.{openshift-app-host}/
+:url-devconsole: {openshift-host}/topology/ns/{namespace}
+
+[.doc-sidebar]
+.Doc Server
+****
+{docserver-status}
+****
+
+[pass,subs=attributes]
+++++
+<div class="task-sidebar">
+<details>
+  <summary style="cursor:pointer; font-weight:600; font-size:0.9em; padding:0.3rem 0.5rem; background:#e1e1e1; border-radius:4px 4px 0 0; list-style:none; text-align:right;">
+    Resources ▾
+  </summary>
+  <div style="background:#e1e1e1; border-radius:0 0 4px 4px; padding:0.5rem 0.75rem; font-size:0.85em;">
+    <p style="margin:0.3rem 0;"><strong>Credentials</strong></p>
+    <ul style="margin:0; padding-left:1.2rem;">
+      <li>username: <code>{user-username}</code></li>
+    </ul>
+    <p style="margin:0.5rem 0 0.3rem;"><strong>Dev Spaces</strong></p>
+    <ul style="margin:0; padding-left:1.2rem;">
+      <li><a href="{url-codeready}" target="_blank">Console</a></li>
+    </ul>
+    <p style="margin:0.5rem 0 0.3rem;"><strong>Developer Console</strong></p>
+    <ul style="margin:0; padding-left:1.2rem;">
+      <li><a href="{url-devconsole}" target="_blank">Topology View</a></li>
+    </ul>
+    <p style="margin:0.5rem 0 0.3rem;"><strong>Matrix</strong></p>
+    <ul style="margin:0; padding-left:1.2rem;">
+      <li><a href="{url-element}" target="_blank">Web Client</a></li>
+    </ul>
+    <p style="margin:0.5rem 0 0.3rem;"><strong>Rocket.Chat</strong></p>
+    <ul style="margin:0; padding-left:1.2rem;">
+      <li><a href="{url-rocketchat}" target="_blank">Web Client</a></li>
+    </ul>
+  </div>
+</details>
+</div>
+++++

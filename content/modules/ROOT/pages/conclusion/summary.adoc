@@ -1,0 +1,48 @@
+:imagesdir: ../../assets/images
+include::../style.adoc[]
+
+== Summary of this workshop
+
+By the end of this workshop, you've helped {corp} make significant strides in modernizing their application connectivity, security, and observability across hybrid cloud environments. 
+
+Leveraging OpenShift, Red Hat Service Interconnect, OpenShift Service Mesh, and Red Hat Connectivity Link, {corp} was able to:
+
+. *Bridge On-Prem and Cloud Workloads with Red Hat Service Interconnect*
++
+{corp} securely connected cloud-based services running on OpenShift to on-premises databases hosted on Red hat Enterprise Linux (RHEL). Using Virtual Application Networks and environment variables, services like cars, flights, hotels, and insurances now have seamless and secure access to legacy data.
+
+
+. *Secure Microservices Communication with OpenShift Service Mesh*
++
+With automatic sidecar injection and Kiali for observability, {corp} gained visibility and control over service interactions. Fine-grained access policies ensured that only authorized services, like discounts, were reachable by authorized services, reinforcing zero-trust principles.
+
+
+. *Adopt Progressive Delivery for Safer Releases*
++
+Using canary deployments, {corp} gradually rolled out new versions of the discounts service, closely monitoring behavior and traffic with Kiali. This reduced risk and increased confidence in production changes.
+
+
+. *Simplify External Access with Red Hat Connectivity Link*
++
+Platform engineers implemented secure Gateways with DNS, TLS, authentication, and rate limiting. Developers defined HTTPRoutes and applied custom policies to expose services safely to external partners, without compromising core systems.
+
+
+. *Enable Proactive Observability with Grafana Dashboards*
++
+Tailored Grafana dashboards provided real-time visibility into API performance, latency, and system health. These insights supported operational, development, and business teams in managing and improving the application stack.
+
+
+With these enhancements, {corp} is better equipped to operate securely and efficiently across hybrid environments, ready for growth, innovation, and future integrations.
+
+//TODO
+// == Next steps
+
+// You can setup this workshop in your cluster as well. git clone https://github.com/app-connectivity-workshop/acw-ansible and run the Ansible playbook
+
+== Resources
+
+* https://developers.redhat.com/products/service-interconnect/overview[Red Hat Service Interconnect on Red Hat Developers, window=_blank]
+
+* https://kiali.io/[More information about Kiali, window=_blank] | https://docs.redhat.com/en/documentation/red_hat_openshift_service_mesh/3.0/html/observability/kiali-operator-provided-by-red-hat[Kiali Operator provided by Red Hat, window=_blank]
+
+* https://www.redhat.com/en/topics/security/what-is-zero-trust[What is Zero Trust ?, window=_blank]  

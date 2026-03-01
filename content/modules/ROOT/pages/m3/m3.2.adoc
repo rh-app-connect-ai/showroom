@@ -1,0 +1,362 @@
+:imagesdir: ../../assets/images
+include::../style.adoc[]
+
+[time=5]
+[id="matrix-rocketchat-to-kafka"]
+== Matrix/Rocket.Chat to Kafka
+{style-all}
+
+The two data flows we have created in previous labs are almost identical in terms of processing steps, those are:
+
+. Receive events
+. Filter events
+. Transform events
+. Push events
+
+{empty} +
+
+For the processes from _Matrix_/_Rocket.Chat_ to _Kafka_, the steps remain the same, we just need to switch to the standard data model (step 3) and target _Kafka_ instead (step 4).
+
+{empty} +
+
+=== Process overview
+
+The diagram below applies to the data flows (2 of them) from _Matrix_/_Rocket.Chat_ respectively to _Kafka_:
+
+[.text-center]
+image::m3/processing-flow-chat2kafka.jpg[width=90%]
+
+{empty} +
+
+There are 4 processing steps in use:
+
+====
+* *1 source _Kamelet_* +
+Consumes events from _Matrix/Rocket.Chat_.
+
+* *2 mid-flow steps* +
+One filters messages to prevent death loops. +
+One transforms _Matrix/Rocket.Chat_ events to the standard data model.
+
+* *1 producer* +
+Produces events to _Kafka_.
+====
+
+{empty} +
+
+=== Matrix to Kafka
+
+The picture below shows the original _Matrix to Rocket.Chat_ flow you defined earlier:
+
+image::m3/flow-m2r.jpg[width=70%]
+
+{blank}
+
+The changes you need to apply on the flow above are minimal:
+
+1. Redefine the data mapping using the common interface
+1. Send the event to Kafka (instead of _Rocket.Chat_)
+
+{blank}
+
+To simplify the work you need to do, we've prepared the flow so that you just need to fill the blanks. The picture below illustrates the two focus areas where you need to work on:
+
+image::m3/flow-m2k-todo.jpg[width=80%]
+
+{blank}
+
+To open the Camel route definition (picture above), find in your directory tree the following resource:
+
+* `m2k.camel.yaml`
++
+Click to open it in _Kaoto_.
++
+{empty} +
+
+Then, follow the instructions below to complete its definition:
+
+{empty} +
+
+. *Define the data transformation*
++
+In the new data transformation, the source system remains the same (_Matrix_). However, because the event to push to _Kafka_ will target various systems, we need to use a common schema shared with all other _Camel_ flows.
++
+{empty} +
++
+A. Include in your Camel route a Kaoto data transformation step
++
+--
+From Kaoto:
+
+. Click the kbd:[+] button inside the pass:[<code style="background-color: #4494E5; color: white;">&nbsp;To do: Mapping&nbsp;</code>] step
+. Type `mapper` in the filter to find the _Kaoto DataMapper_
+. Click the _Kaoto DataMapper_ tile
+. Click the mapper to open the configuration panel
+. Click the pass:a[<span {btn-stl-blue}>{map-wrench}  Configure</span>] button
+--
++
+{empty} +
+
+A. Next, define the inputs and outputs
++
+--
+From the DataMapper editor:
+
+. Define the source:
+.. On **Parameters** click the button kbd:[+] to add new parameter
+.. Enter `matrix` and click the checkmark button kbd:[{map-tick}]
+.. Click kbd:[{map-att}] (Attach schema), next click
+pass:a[<span {btn-stl-blue}>{map-import}</span>] and then pick at the top of your screen: `support/schemas/*matrix-in.json*`.
+.. Click pass:a[<span {btn-stl-blue}>Attach</span>] to complete the action.
++
+{blank}
++
+. Define the target
+.. On the right hand side of the DataMapper screen: +
+Click kbd:[{map-att}] (Attach schema), next click
+pass:a[<span {btn-stl-blue}>{map-import}</span>] and then pick at the top of your screen: `support/schemas/*common.json*`.
+.. Click pass:a[<span {btn-stl-blue}>Attach</span>] to complete the action.
++
+{empty} +
+--
+
+A. Define the data mappings rules
++
+Copy and Paste (in the *Target*) the values below to define the given field entries:
++
+... `string[@key = timestamp]`:
++
+--
+{copypaste}
+----
+$matrix-x/fn:map/fn:string[@key='sent']
+----
+--
++
+{blank}
++
+... `string[@key = source]`:
++
+--
+{copypaste}
+----
+"matrix"
+----
+--
++
+{blank}
++
+... `string[@key = user]`:
++
+--
+{copypaste}
+----
+$matrix-x/fn:map/fn:map[@key='fromUser']/fn:string[@key='displayName']
+----
+--
++
+{blank}
++
+... `string[@key = text]`:
++
+--
+{copypaste}
+----
+$matrix-x/fn:map/fn:string[@key='text']
+----
+--
++
+{blank}
++
+The mapping rendering should be similar to:
++
+image::m3/mapping-matrix-kafka.png[width=80%]
++
+{empty} +
+
+. *Define Kafka as the target system*
++
+The last step of the flow is where you need to define Kafka as the target system where events will be pushed.
++
+NOTE: Your _OpenShift_ namespace already contains an _Streams for Apache Kafka_ cluster (_Kafka_) ready for you to use.
++
+
+1. Click the kbd:[+] button inside the pass:[<code style="background-color: #4494E5; color: white;">&nbsp;To do: Kafka&nbsp;</code>] step
+1. Find and select the _Kafka_ component.
+1. Select the `All` configuration tab
+1. Configure the following 2 properties:
++
+`Topic`:
++
+--
+{copypaste}
+----
+myroom
+----
+--
++
+`Brokers`:
++
+--
+{copypaste}
+----
+my-cluster-kafka-bootstrap:9092
+----
+--
++
+{empty} +
+
+And that's all it takes for this first data flow between _Matrix_ and _Kafka_.
+
+{empty} +
+
+
+
+=== Rocket.Chat to Kafka
+
+Very similar changes apply for the _Rocket.Chat_ -> _Kafka_ flow.
+
+Find in your directory tree the following resource:
+
+* `r2k.camel.yaml`
++
+Click to open it in _Kaoto_.
++
+{empty} +
+
+Then, follow the instructions below to complete its definition:
+
+{empty} +
+
+. *Define the data transformation*
++
+The source system remains the same (_Rocket.Chat_). In similar fashion we also need to use a common schema shared with all other _Camel_ flows.
++
+{empty} +
++
+A. Include in your Camel route a Kaoto data transformation step
++
+--
+From Kaoto:
+
+. Click the kbd:[+] button inside the pass:[<code style="background-color: #4494E5; color: white;">&nbsp;To do: Mapping&nbsp;</code>] step
+. Type `mapper` in the filter to find the _Kaoto DataMapper_
+. Click the _Kaoto DataMapper_ tile
+. Click the mapper to open the configuration panel
+. Click the pass:a[<span {btn-stl-blue}>{map-wrench}  Configure</span>] button
+--
++
+{empty} +
+
+A. Next, define the inputs and outputs
++
+--
+From the DataMapper editor:
+
+. Define the source:
+.. On **Parameters** click the button kbd:[+] to add new parameter
+.. Enter `rocketchat` and click the checkmark button kbd:[{map-tick}]
+.. Click kbd:[{map-att}] (Attach schema), next click
+pass:a[<span {btn-stl-blue}>{map-import}</span>] and then pick at the top of your screen: `support/schemas/*rocketchat-in.json*`.
+.. Click pass:a[<span {btn-stl-blue}>Attach</span>] to complete the action.
++
+{blank}
++
+. Define the target
+.. On the right hand side of the DataMapper screen: +
+Click kbd:[{map-att}] (Attach schema), next click
+pass:a[<span {btn-stl-blue}>{map-import}</span>] and then pick at the top of your screen: `support/schemas/*common.json*`.
+.. Click pass:a[<span {btn-stl-blue}>Attach</span>] to complete the action.
++
+{empty} +
+--
+
+
+
+A. Define the data mappings rules
++
+Copy and Paste (in the *Target*) the values below to define the given field entries:
++
+... `string[@key = timestamp]`:
++
+--
+{copypaste}
+----
+$rocketchat-x/fn:map/fn:string[@key='timestamp']
+----
+--
++
+{blank}
++
+... `string[@key = source]`:
++
+--
+{copypaste}
+----
+"rocketchat"
+----
+--
++
+{blank}
++
+... `string[@key = user]`:
++
+--
+{copypaste}
+----
+$rocketchat-x/fn:map/fn:string[@key='user_name']
+----
+--
++
+{blank}
++
+... `string[@key = text]`:
++
+--
+{copypaste}
+----
+$rocketchat-x/fn:map/fn:string[@key='text']
+----
+--
++
+The mapping rendering should be similar to:
++
+image::m3/mapping-rocketchat-kafka.png[width=90%]
++
+{empty} +
+
+. *Define Kafka as the target system*
++
+The last step of the flow is where you need to define Kafka as the target system where events will be pushed.
++
+NOTE: Your _OpenShift_ namespace already contains an _Streams for Apache Kafka_ cluster (_Kafka_) ready for you to use.
++
+
+1. Click the kbd:[+] button inside the pass:[<code style="background-color: #4494E5; color: white;">&nbsp;To do: Kafka&nbsp;</code>] step
+1. Find and select the _Kafka_ component.
+1. Select the `All` configuration tab
+1. Configure the following 2 properties:
++
+`Topic`:
++
+--
+{copypaste}
+----
+myroom
+----
+--
++
+`Brokers`:
++
+--
+{copypaste}
+----
+my-cluster-kafka-bootstrap:9092
+----
+--
++
+{empty} +
+
+Very straightforward, nothing else to be done here.
+
+{empty} +

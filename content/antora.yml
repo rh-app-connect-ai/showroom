@@ -1,0 +1,34 @@
+name: modules
+title: Integrate Platforms and Plugin AI Capabilities with Apache Camel and Kafka
+version: master
+nav:
+  - modules/ROOT/nav.adoc
+
+asciidoc:
+  attributes:
+    release-version: master
+    page-pagination: true
+    guid: my-guid
+    ssh_user: devops
+    ssh_password: devops
+    ssh_command: ssh someone@example.com
+    page-links:
+    - url: https://redhat.com
+      text: Red Hat
+    rhcl: Red Hat Connectivity Link
+    rhsi: Red Hat Service Interconnect
+    rhossm: Red Hat OpenShift Service Mesh
+    corp: Travelz Corp
+
+    # fcopy: >-
+    #   pass:a[function copy(el) { \
+    #     el.previousElementSibling.select(); \
+    #     text = el.previousElementSibling.textContent; \
+    #     console.log(text); \
+    #     navigator.clipboard.writeText(text + '\n') \
+    #           .then(response => console.log('Text with carriage return copied to clipboard!')) \
+    #           .catch(err => console.error('Failed to copy: ', err)); \
+    #   }]  
+
+  extensions:
+    - lib/room-macro.js

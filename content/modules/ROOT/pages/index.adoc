@@ -1,0 +1,38 @@
+:imagesdir: ../assets/images
+include::style.adoc[]
+
+== Apache Camel Workshop
+
+Welcome to the Apache Camel workshop. Select a module below to get started.
+
+{empty} +
+
+[.tile]
+****
+xref:intro/intro.0.adoc[Introduction]
+
+Get familiar with the workshop goals, the technologies at play, the scenario, and set up your development environment.
+
+[.meta]
+5 min | 4 tasks
+****
+
+[.tile]
+****
+xref:m1/m1.0.adoc[Lab 1 -- Be the Camel developer]
+
+Develop Camel routes with low-code visual tools, define JSON data transformations, and connect Matrix to Rocket.Chat using Camel JBang for fast prototyping.
+
+[.meta]
+29 min | 5 tasks
+****
+
+[.tile]
+****
+xref:m3/m3.0.adoc[Lab 3 -- Decoupled Re-Architecture]
+
+Decouple the messaging architecture using Streams for Apache Kafka, define common data models, and deploy the full solution on OpenShift.
+
+[.meta]
+19 min | 4 tasks
+****

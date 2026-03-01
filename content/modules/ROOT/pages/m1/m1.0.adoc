@@ -1,0 +1,26 @@
+:imagesdir: ../../assets/images
+include::../style.adoc[]
+
+[id='lab1-camel']
+== Lab 1 - (b) - Be the Camel developer
+
+Impersonate the Camel developer to complete Lab-1's Matrix to Rocket.Chat processing flow.
+
+
+Prerequisites: +
+--
+* Ensure you have previously completed the following tiles:
++
+image::m1/prereq.png[width=100%]
+
+{empty} +
+--
+
+Technical goals and milestones:
+
+* Develop Camel routes with low-code tools
+* Define JSON data transformations.
+* Use of _Camel JBang_ for fast prototyping
+* Local execution and testing
+
+{empty} +

@@ -1,0 +1,56 @@
+:imagesdir: ../../assets/images
+include::../style.adoc[]
+
+[time=1]
+[id="tech-overview"]
+== Technologies overview
+
+If you're unfamilar with Apache Camel, in a nutshell, it is an integration framework to define data flows connecting sources to destinations, applying _EIPs_ (enterprise integration patterns) as transformational processes between the two ends.
+
+The image below illustrates typical integration flows connecting sources to detinations:
+
+[.text-center]
+image::intro/camel-nutshell.jpg[width=60%]
+
+{empty} +
+
+=== Building blocks in Camel
+
+_Apache Camel_ is unique in how you construct data flows and how you extend it by creating customized building blocks.
+
+To help you get familiarized with the different constructs you can use in Camel, the figure below shows a simplified view of how they relate to each other.
+
+[.text-center]
+image::intro/camel-abstraction-levels.jpg[width=60%]
+
+- A pipe is made out of Kamelets
+- A Kamelet is the encapsulation of a Camel route
+- A Camel route is made out of steps
+- A step is tipically a Camel component (but also includes the use of EIPs or calls to other routes or Kamelets).
+
+{empty} +
+
+The workshop will center its attention around those most commonly used: *_Camel routes_* and *_Kamelets_*.
+
+{empty} +
+
+=== Full technology stack
+
+Below is the stack of technologies you will interact with along the workshop. Combined, they unlock the potential for agile, scalable integration solutions, enabling seamless orchestration of containerized workflows, resilient data persistence across pipelines, and rapid deployment of event-driven microservices to modernize hybrid cloud architectures with minimal complexity.
+
+* **Red Hat Application Foundations**: A set of components engineered to help build, deploy, and operate applications. Among others, it includes the products below you will use in the workshop:
+
+** **Red Hat build of Apache Camel**: A versatile toolkit for streamlined application integration that simplifies and standardizes the practices of connecting diverse systems that runs in both Quarkus and Spring Boot runtimes.
+
+** **Red Hat streams for Apache Kafka**: Based on the Apache Kafka project, streams for Apache Kafka offers a distributed backbone that allows microservices and other applications to share data with extremely high throughput and extremely low latency.
++
+{blank}
+
+* **Red Hat Dev Spaces**: A collaborative Kubernetes-native development solution that delivers OpenShift workspaces and in-browser IDE for rapid cloud application development.
+
+* **Red Hat OpenShift**: A unified application development platform that lets you build, modernize, and deploy applications at scale on your choice of hybrid cloud infrastructure.
+
+* **Red Hat OpenShift Data Foundation**: Persistent software-defined storage and essential data services integrated with and optimized for Red Hat OpenShift.
+
+{empty} +
+

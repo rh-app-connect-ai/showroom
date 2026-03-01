@@ -1,0 +1,87 @@
+:imagesdir: ../../assets/images
+include::../style.adoc[]
+
+[time=5]
+[id="documentation"]
+== Generate flow documentation
+{style-all}
+
+Your final task in this chapter is to generate documentation for the _Matrix_ -> _Rocket.Chat_ integration you have built.
+
+TIP: Running short on time? A quick read of the instructions below is enough to move on.
+
+In real-world organizations, maintaining accurate and up-to-date documentation for application integrations is essential. When done manually, this process is time-consuming, error-prone, and documentation quickly becomes outdated or incomplete.
+
+Kaoto can automatically generate clean, Markdown-formatted documentation that describes your Camel integration routes. Follow the steps below to create this documentation for your project.
+
+{empty} +
+
+=== Generate and download
+
+. Click the button kbd:[{btn-download}] located in the top button bar in Kaoto. +
+The action will open a window where you can see a preview of the generated documentation.
++
+{empty} +
+
+. Click pass:a[<span {btn-stl-blue}>{ico-download} &nbsp; Download</span>] to obtain a local backup. +
+It will package and download (ZIP) the documation to your machine.
++
+-> Save the ZIP file in your local drive, for example under `Downloads`.
++
+{empty} +
+
+
+=== Open and visualise the documentation
+
+{blank}
+
+. Create a directory where to upload the ZIP file
++
+--
+{copypaste}
+----
+mkdir docs
+----
+--
++
+{empty} +
+
+
+. From the left panel (file explorer), right-click the new folder you created: +
+pass:[<div style="padding-left: 0rem;"><code style="background-color: black; color: lightgrey"> workshop ❯ lab ❯ docs </code></div>] +
+Then choose the option pass:[<code style="background-color: #0277D4; color: white;">&nbsp;Upload...&nbsp;</code>], locate and select the ZIP file `route-export.zip` you previously saved, and complete the action to upload.
++
+{empty} +
+
+. Unzip and delete the package with:
++
+--
+{copypaste}
+----
+unzip docs/route-export.zip -d docs
+rm docs/route-export.zip
+----
+--
++
+{empty} +
+
+. Right-click the _Markdown_ document: +
+pass:[<div style="padding-left: 0rem;"><code style="background-color: black; color: lightgrey"> workshop ❯ lab ❯ docs ❯ <span style="color: white;"><b>route-export.md</b></span> </code></div>] +
+Then choose the option pass:[<code style="background-color: #0277D4; color: white;">&nbsp;Open Preview&nbsp;</code>]
++
+{empty} +
++
+The _Markdown_ document will open as shown below:
++
+image::m1/kaoto-route-docs.png[width=70%]
++
+[NOTE]
+--
+Above you see:
+
+* A visual diagram rendering the Camel route
+* Details about each one of the steps in the process.
+--
+
+{empty} +
+
