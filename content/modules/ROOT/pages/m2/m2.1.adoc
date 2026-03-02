@@ -1,5 +1,7 @@
 :imagesdir: ../../assets/images
 include::../style.adoc[]
+include::partial$tools/copypaste.adoc[]
+include::partial$tools/verification.adoc[]
 
 [time=1]
 [id="setup"]
@@ -28,12 +30,10 @@ image::m2/dev-close-tabs.png[width=100%]
 
 . Setup your Lab 2 folder
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 step 5
-----
---
+****
 +
 TIP: pass:[Run the command above anytime to reset the exercise. <details>
   <summary>

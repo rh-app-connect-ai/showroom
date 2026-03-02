@@ -1,0 +1,124 @@
+++++
+
+<style>
+/* Hide raw tile sidebarblocks before JS transforms them */
+.sidebarblock.tile {
+  display: none;
+}
+
+/* Tile grid for index page */
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 10px 0;
+}
+.tile-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s;
+}
+.tile-card:hover {
+  box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+}
+.tile-card a {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.tile-card .tile-header {
+  background-color: #3e8635;
+  color: white;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 15px;
+}
+.tile-card .tile-body {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.tile-card .tile-desc {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.5;
+  flex: 1;
+}
+.tile-card .tile-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+  font-size: 13px;
+  color: #777;
+}
+.tile-card .tile-footer .tile-time,
+.tile-card .tile-footer .tile-tasks {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+</style>
+
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+
+  // Transform AsciiDoc .tile sidebar blocks into tile-card HTML
+  var tiles = document.querySelectorAll('.sidebarblock.tile');
+  if (!tiles.length) return;
+
+  var grid = document.createElement('div');
+  grid.className = 'tile-grid';
+  var clockSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+  tiles[0].parentNode.insertBefore(grid, tiles[0]);
+  tiles.forEach(function(sb) {
+    var content = sb.querySelector('.content');
+    if (!content) return;
+    var paragraphs = content.querySelectorAll('.paragraph');
+    var link = '', title = '', desc = '', time = '', tasks = '';
+    paragraphs.forEach(function(p) {
+      var a = p.querySelector('a');
+      if (a && !link) {
+        link = a.getAttribute('href');
+        title = a.textContent;
+      } else if (p.classList.contains('meta')) {
+        var text = p.textContent.trim();
+        var parts = text.split('|');
+        if (parts.length >= 1) time = parts[0].trim();
+        if (parts.length >= 2) tasks = parts[1].trim();
+      } else if (link) {
+        desc += (desc ? ' ' : '') + (p.querySelector('p') ? p.querySelector('p').textContent : p.textContent).trim();
+      }
+    });
+    var card = document.createElement('div');
+    card.className = 'tile-card';
+    card.innerHTML =
+      '<a href="' + link + '">' +
+        '<div class="tile-header">' + title + '</div>' +
+        '<div class="tile-body">' +
+          '<div class="tile-desc">' + desc + '</div>' +
+          (time || tasks ?
+            '<div class="tile-footer">' +
+              (time ? '<span class="tile-time">' + clockSvg + ' ' + time + '</span>' : '') +
+              (tasks ? '<span class="tile-tasks">' + tasks + '</span>' : '') +
+            '</div>' : '') +
+        '</div>' +
+      '</a>';
+    grid.appendChild(card);
+    sb.remove();
+  });
+
+});
+</script>
+
+++++

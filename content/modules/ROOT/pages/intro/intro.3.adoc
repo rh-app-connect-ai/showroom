@@ -1,5 +1,7 @@
 :imagesdir: ../../assets/images
 include::../style.adoc[]
+include::partial$tools/copypaste.adoc[]
+include::partial$tools/verification.adoc[]
 
 [time=2]
 [id='dev-environment']
@@ -154,13 +156,11 @@ image::intro/copypaste.png[width=60%]
 +
 . Try it with:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 echo "this is a multiline \
 copy/paste test"
-----
---
+****
 +
 [NOTE]
 ====

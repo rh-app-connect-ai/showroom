@@ -1,0 +1,3 @@
+include::./copypaste.adoc[]
+include::./verification.adoc[]
+include::./tiles.adoc[]

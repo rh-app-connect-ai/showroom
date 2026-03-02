@@ -1,5 +1,7 @@
 :imagesdir: ../../assets/images
 include::../style.adoc[]
+include::partial$tools/copypaste.adoc[]
+include::partial$tools/verification.adoc[]
 
 [time=2]
 [id="rocketchat-chat"]
@@ -35,22 +37,23 @@ image::m1/rchat-login-credentials.png[width=60%]
 +
 * **Email or username**
 +
---
-{copypaste}
-[subs=attributes]
-----
+[.copypaste]
+****
 {user-username}
-----
---
+****
 +
 * **Password**
 +
---
-{copypaste}/credentials/im/{user-username}
-----
+[.copypaste]
+****
+[.path]
+/credentials/im/{user-username}
+
+[.default]
+password
+
 REPLACE
-----
---
+****
 +
 {empty} +
 +

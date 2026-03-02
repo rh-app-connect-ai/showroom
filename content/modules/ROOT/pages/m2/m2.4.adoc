@@ -1,5 +1,7 @@
 :imagesdir: ../../assets/images
 include::../style.adoc[]
+include::partial$tools/copypaste.adoc[]
+include::partial$tools/verification.adoc[]
 
 [time=8]
 [id="deploy-test"]
@@ -15,12 +17,10 @@ It's possible you made mistakes in decoupling the data flows.
 * If you feel confident with your flows, ignore this note, and carry on with the deployment process.
 * If you prefer to take the safe route, run the following command to reset your flows to a ready-to-deploy state:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 step 6
-----
---
+****
 +
 pass:[<details>
   <summary>
@@ -52,12 +52,10 @@ If you're running short on time, you can let the lab deploy everything automatic
 . First make sure you run the above **step 6** command (this prepares the environment).
 . Then run this single command to deploy all flows from this chapter automatically:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 labdeploy
-----
---
+****
 ====
 === Deploy Matrix to Kafka
 
@@ -72,13 +70,11 @@ If it is still running, press kbd:[Ctrl+C] to stop it.
 +
 Use the command below to deploy on _OpenShift_:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 labdeploy m2k \
 matrix.properties
-----
---
+****
 +
 [pass]
 <details>
@@ -109,12 +105,10 @@ NOTE: Be patient, this action may take some time to complete (could take up to 1
 +
 You can monitor the state of the resource with the following command:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 oc get deployment/m2k
-----
---
+****
 +
 When the deployment is ready, the command outputs something similar to:
 +
@@ -136,13 +130,11 @@ m2k    1/1     1            1           23s
 +
 Use the command below to deploy on _OpenShift_:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 labdeploy k2m \
 matrix.properties
-----
---
+****
 +
 [pass]
 <details>
@@ -173,12 +165,10 @@ NOTE: Be patient, this action may take some time to complete (could take up to 1
 +
 You can monitor the state of the resource with the following command:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 oc get deployment/k2m
-----
---
+****
 +
 When the deployment is ready, the command outputs something similar to:
 +
@@ -200,13 +190,11 @@ k2m    1/1     1            1           25s
 +
 Use the command below to deploy on _OpenShift_:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 labdeploy r2k \
 rocketchat.properties
-----
---
+****
 +
 [pass]
 <details>
@@ -237,12 +225,10 @@ NOTE: Be patient, this action may take some time to complete (could take up to 1
 +
 You can monitor the state of the resource with the following command:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 oc get deployment/r2k
-----
---
+****
 +
 When the deployment is ready, the command outputs something similar to:
 +
@@ -264,13 +250,11 @@ r2k    1/1     1            1           20s
 +
 Use the command below to deploy on _OpenShift_:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 labdeploy k2r \
 rocketchat.properties
-----
---
+****
 +
 [pass]
 <details>
@@ -301,12 +285,10 @@ NOTE: Be patient, this action may take some time to complete (could take up to 1
 +
 You can monitor the state of the resource with the following command:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 oc get deployment/k2r
-----
---
+****
 +
 When the deployment is ready, the command outputs something similar to:
 +

@@ -1,5 +1,6 @@
 :imagesdir: ../../assets/images
 include::../style.adoc[]
+include::partial$tools/copypaste.adoc[]
 
 [time=5]
 [id="kafka-to-matrix-rocketchat"]
@@ -76,12 +77,10 @@ NOTE: You might find this exercice repetitive. You can fast-foward to accelerate
 
 [.underline]#*Only*# if you want to skip (fast-forward) this section, execute in your terminal the commands below:
 
---
-{copypaste}
-----
+[.copypaste]
+****
 ff
-----
---
+****
 ====
 
 For a manual creation process, continue with the instructions below. +
@@ -111,21 +110,17 @@ NOTE: Your _OpenShift_ namespace already contains an _Streams for Apache Kafka_ 
 +
 `Topic`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 myroom
-----
---
+****
 +
 `Brokers`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 my-cluster-kafka-bootstrap:9092
-----
---
+****
 +
 {empty} +
 
@@ -149,12 +144,10 @@ You should the `JQ` expression language is selected by default.
 +
 1. copy and paste the following expression:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 .source | test("rocketchat")
-----
---
+****
 +
 NOTE: The expression above picks the `source` JSON field from the Kafka event and checks if it originates in the Rocket.Chat system.
 +
@@ -209,23 +202,25 @@ Copy and Paste (in the *Target*) the values below to define the given field entr
 +
 ... `string[@key = channel]`:
 +
---
-{copypaste}/roomid/{user-username}
-----
+[.copypaste]
+****
+[.path]
+/roomid/{user-username}
+
+[.default]
+room-id
+
 "REPLACE"
-----
---
+****
 +
 {blank}
 +
 ... `string[@key = text]`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 concat("*",$common-x/fn:map/fn:string[@key='user'], "@", $common-x/fn:map/fn:string[@key='source'],":* ", $common-x/fn:map/fn:string[@key='text'])
-----
---
+****
 +
 The mapping rendering should be similar to:
 +
@@ -262,12 +257,10 @@ NOTE: You might find the remaining task repetitive. You can skip it to accelerat
 
 [.underline]#*Only*# if you want to skip this section, execute in your terminal the commands below:
 
---
-{copypaste}
-----
+[.copypaste]
+****
 step 6
-----
---
+****
 
 pass:[<details>
   <summary>
@@ -317,21 +310,17 @@ NOTE: Your _OpenShift_ namespace already contains an _Streams for Apache Kafka_ 
 +
 `Topic`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 myroom
-----
---
+****
 +
 `Brokers`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 my-cluster-kafka-bootstrap:9092
-----
---
+****
 +
 {empty} +
 
@@ -345,12 +334,10 @@ You should see the `JQ` expression language selected by default.
 +
 1. copy and paste the following expression:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 .source | test("matrix")
-----
---
+****
 +
 NOTE: The expression above picks the `source` JSON field from the _Kafka_ event and checks if it originates in the _Matrix_ system.
 +
@@ -405,12 +392,10 @@ Copy and Paste (in the *Target*) the values below to define the given field entr
 +
 ... `string[@key = text]`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 concat("<b>",$common-x/fn:map/fn:string[@key='user'], "@", $common-x/fn:map/fn:string[@key='source'],":</b> ", $common-x/fn:map/fn:string[@key='text'])
-----
---
+****
 +
 The mapping rendering should be similar to:
 +

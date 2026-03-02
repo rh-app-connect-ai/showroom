@@ -1,5 +1,6 @@
 :imagesdir: ../../assets/images
 include::../style.adoc[]
+include::partial$tools/copypaste.adoc[]
 
 [time=5]
 [id="matrix-rocketchat-to-kafka"]
@@ -126,45 +127,37 @@ Copy and Paste (in the *Target*) the values below to define the given field entr
 +
 ... `string[@key = timestamp]`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 $matrix-x/fn:map/fn:string[@key='sent']
-----
---
+****
 +
 {blank}
 +
 ... `string[@key = source]`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 "matrix"
-----
---
+****
 +
 {blank}
 +
 ... `string[@key = user]`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 $matrix-x/fn:map/fn:map[@key='fromUser']/fn:string[@key='displayName']
-----
---
+****
 +
 {blank}
 +
 ... `string[@key = text]`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 $matrix-x/fn:map/fn:string[@key='text']
-----
---
+****
 +
 {blank}
 +
@@ -188,21 +181,17 @@ NOTE: Your _OpenShift_ namespace already contains an _Streams for Apache Kafka_ 
 +
 `Topic`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 myroom
-----
---
+****
 +
 `Brokers`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 my-cluster-kafka-bootstrap:9092
-----
---
+****
 +
 {empty} +
 
@@ -279,45 +268,37 @@ Copy and Paste (in the *Target*) the values below to define the given field entr
 +
 ... `string[@key = timestamp]`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 $rocketchat-x/fn:map/fn:string[@key='timestamp']
-----
---
+****
 +
 {blank}
 +
 ... `string[@key = source]`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 "rocketchat"
-----
---
+****
 +
 {blank}
 +
 ... `string[@key = user]`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 $rocketchat-x/fn:map/fn:string[@key='user_name']
-----
---
+****
 +
 {blank}
 +
 ... `string[@key = text]`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 $rocketchat-x/fn:map/fn:string[@key='text']
-----
---
+****
 +
 The mapping rendering should be similar to:
 +
@@ -339,21 +320,17 @@ NOTE: Your _OpenShift_ namespace already contains an _Streams for Apache Kafka_ 
 +
 `Topic`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 myroom
-----
---
+****
 +
 `Brokers`:
 +
---
-{copypaste}
-----
+[.copypaste]
+****
 my-cluster-kafka-bootstrap:9092
-----
---
+****
 +
 {empty} +
 

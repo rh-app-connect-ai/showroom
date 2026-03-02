@@ -1,7 +1,258 @@
 :imagesdir: ../../assets/images
 include::../style.adoc[]
+include::partial$tools/copypaste.adoc[]
 
 [id='lab5-protect-llm-consumption-with-connectivity-link']
 == Lab 5 - Protect LLM consumption with Connectivity Link
 
+Test DocServer
+
+==== Static (no fetch)
+
+[.copypaste]
+****
+echo "hello world"
+multiline 1
+
+multiline 2
+****
+
 {empty} +
+
+==== Dynamic (docserver fetch, with custom default)
+
+[.copypaste]
+****
+[.path]
+/credentials/im/{user-username}
+
+[.default]
+my-fallback-password
+
+REPLACE
+****
+
+{empty} +
+
+==== Dynamic (docserver fetch, built-in default)
+
+[.copypaste]
+****
+[.path]
+/nowhere
+
+REPLACE
+****
+
+{empty} +
+
+==== Dynamic with multiple tokens (docserver fetch)
+
+:test-token: 1234567890
+
+[.copypaste]
+****
+[.path]
+/nowhere
+
+[.default]
+fallback-token, fallback-room
+
+test.property={test-token}
+
+# Matrix credentials
+matrix.token=REPLACE
+matrix.room=REPLACE
+****
+
+==== Dynamic with multiple tokens (no default)
+
+[.copypaste]
+****
+[.path]
+/nowhere
+
+test.property={test-token}
+
+# Matrix credentials
+matrix.token=REPLACE
+matrix.room=REPLACE
+****
+
+{empty} +
+
+=== Context tests
+
+==== Inside an admonition
+
+[NOTE]
+======
+Copy the following command to check your installation:
+
+[.copypaste]
+****
+oc get pods -n demo
+****
+======
+
+[TIP]
+======
+Use the following credentials:
+
+[.copypaste]
+****
+[.path]
+/credentials/im/{user-username}
+
+[.default]
+fallback-password
+
+REPLACE
+****
+======
+
+==== Inside an example block
+
+====
+. First, run this command:
++
+[.copypaste]
+****
+curl -s http://localhost:8080/health
+****
+
+. Then verify the output matches.
+====
+
+==== Inside an open block
+
+--
+Configure the following properties:
+
+[.copypaste]
+****
+camel.component.kafka.brokers=localhost:9092
+camel.component.kafka.group-id=my-group
+****
+--
+
+==== Inside an ordered list (continuation)
+
+. Copy the login command:
++
+[.copypaste]
+****
+oc login -u {user-username} -p REPLACE
+****
+
+. Paste it in your terminal and press kbd:[Enter].
+
+. Verify you are logged in:
++
+[.copypaste]
+****
+oc whoami
+****
+
+==== Inside an unordered list
+
+* **API endpoint**
++
+[.copypaste]
+****
+https://api.cluster.example.com:6443
+****
+
+* **Token**
++
+[.copypaste]
+****
+[.path]
+/credentials/im/{user-username}
+
+[.default]
+my-token-fallback
+
+REPLACE
+****
+
+==== Inside a collapsible block
+
+[%collapsible]
+======
+====
+Here is the connection string you need:
+
+
+[.copypaste]
+****
+postgresql://user:REPLACE@db.example.com:5432/workshop
+****
+====
+======
+
+==== Inside a table
+
+[cols="1,2"]
+|===
+| Property | Value
+
+| Username
+a|
+[.copypaste]
+****
+developer
+****
+
+| Password
+a|
+[.copypaste]
+****
+[.path]
+/credentials/im/{user-username}
+
+[.default]
+changeme
+
+REPLACE
+****
+
+|===
+
+==== Nested: admonition inside example block
+
+======
+. Deploy the application:
++
+[.copypaste]
+****
+oc apply -f deployment.yaml
+****
+
+[NOTE]
+====
+If the deployment fails, check the logs:
+
+[.copypaste]
+****
+oc logs -f dc/my-app
+****
+====
+======
+
+==== Multiple copypaste blocks in sequence
+
+[.copypaste]
+****
+export NAMESPACE=workshop
+****
+
+[.copypaste]
+****
+export APP_NAME=camel-demo
+****
+
+[.copypaste]
+****
+envsubst < template.yaml | oc apply -f -
+****
