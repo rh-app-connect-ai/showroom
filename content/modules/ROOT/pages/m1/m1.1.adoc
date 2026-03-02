@@ -1,39 +1,26 @@
 :imagesdir: ../../assets/images
 include::../style.adoc[]
 
-[time=1]
-[id="kaoto-overview"]
-== Quick overview of Kaoto
+[time=2]
+[id="scenario-intro"]
+== Data flow overview
 {style-all}
 
-Most of the processing flows you'll construct during the workshop will be built using Kaoto, the integration designer for Apache Camel.
-
-Kaoto is integrated in VS Code as an extension easy to find in the marketplace and install.
-
-NOTE: The Kaoto extension is already pre-installed for you in Dev Spaces.
-
-image::m1/vs-code-kaoto.jpg[width=45%]
-
-{empty} +
-
-With Kaoto, you will define and configure many of the well known Camel constructs using its graphical user interface. Among other tasks, Kaoto will help you to:
-
- - Define Camel routes
- - Define Kamelets
- - Define data transformations
- - Apply EIPs (Enterprise Integration Patterns)
-
-{empty} +
-
-This is how Kaoto will load on your Dev Spaces IDE:
+The picture below illustrates the data flow traversing our Camel instance:
 
 [.text-center]
-image::m1/kaoto-overview.jpg[width=100%]
+image::m1/data-flow.png[width=80%]
+
+The above process bridges chat messages from _Matrix_ to _Rocket.Chat_.
+
+* _Matrix_ is an open standard and communication protocol for real-time decentralised communication. It works seamlessly between different service providers.
+
+* _Rocket.Chat_ is also an open-source communications platform with high data protection standards. It enables real-time conversations between colleagues, other companies, or your customers across web, desktop, or mobile devices.
 
 {empty} +
 
-When you click, in the project explorer, one of the files with Camel definitions, Kaoto will open it as a tab and render it visually so that you can interact to work on the Camel constructs.
+They are both deployed in _OpenShift_ with convenient web access, making them ideal for students to use in this workshop.
 
-You will start using Kaoto in the next lab section to work on the Camel routes. Each Camel route defines a data flow you need to construct the solution.
+The tasks to complete in this lab will guide you on how to onboard to both messaging systems.
 
 {empty} +

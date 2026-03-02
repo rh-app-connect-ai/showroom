@@ -16,7 +16,7 @@ The following set of instructions prepare the set of files you will be working w
 +
 Before you start this second lab, make sure you close in your editor all the tabs (source files) from the previous exercise.
 +
-image::m3/dev-close-tabs.png[width=100%]
+image::m2/dev-close-tabs.png[width=100%]
 +
 {blank}
 +
@@ -26,7 +26,7 @@ image::m3/dev-close-tabs.png[width=100%]
 +
 {empty} +
 
-. Setup your Lab 3 folder
+. Setup your Lab 2 folder
 +
 --
 {copypaste}

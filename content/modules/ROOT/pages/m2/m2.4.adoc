@@ -328,7 +328,7 @@ k2r    1/1     1            1           31s
 +
 Looking from your console's topology view, you should see something similar to:
 +
-image::m3/topology-view.jpg[width=80%]
+image::m2/topology-view.jpg[width=80%]
 +
 {empty} +
 
@@ -341,7 +341,7 @@ image::m3/topology-view.jpg[width=80%]
 +
 If all goes well you should see something similar to the picture below:
 +
-//image::m3/stage3-msg-chat-test.png[width=90%]
+//image::m2/stage3-msg-chat-test.png[width=90%]
 +
 [subs=attributes]
 ++++

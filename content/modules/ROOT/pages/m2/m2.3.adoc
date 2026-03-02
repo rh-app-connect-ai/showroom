@@ -24,7 +24,7 @@ The main differences are that we are consuming events from _Kafka_ (step 1) and 
 The diagram below applies to the data flows (2 of them) from _Kafka_ to Matrix/Rocket.Chat respectively:
 
 [.text-center]
-image::m3/processing-flow-kafka2chat.jpg[width=90%]
+image::m2/processing-flow-kafka2chat.jpg[width=90%]
 
 {empty} +
 
@@ -50,7 +50,7 @@ Produces events to _Matrix/Rocket.Chat_.
 
 Like we did earlier, it's handy to use one of the previous flows as a base to construct the new _Kafka to Rocket.Chat_ proces as some of the steps are identical. The picture below shows the original _Matrix to Rocket.Chat_ flow you originally constructed:
 
-image::m3/flow-m2r.jpg[width=70%]
+image::m2/flow-m2r.jpg[width=70%]
 
 {blank}
 
@@ -64,7 +64,7 @@ Again, the changes you need to apply on the flow above are minimal:
 
 To simplify the work you need to do, we've prepared the flow so that you just need to fill the blanks. The picture below illustrates the focus areas where you need to work on:
 
-image::m3/flow-k2r-todo.jpg[width=80%]
+image::m2/flow-k2r-todo.jpg[width=80%]
 
 {blank}
 
@@ -229,7 +229,7 @@ concat("*",$common-x/fn:map/fn:string[@key='user'], "@", $common-x/fn:map/fn:str
 +
 The mapping rendering should be similar to:
 +
-image::m3/mapping-kafka-rocketchat.png[width=80%]
+image::m2/mapping-kafka-rocketchat.png[width=80%]
 +
 {empty} +
 
@@ -250,7 +250,7 @@ Similarly, the changes you need to apply on this flow are minimal:
 
 {blank}
 
-image::m3/flow-k2m-todo.jpg[width=80%]
+image::m2/flow-k2m-todo.jpg[width=80%]
 
 {blank}
 
@@ -414,7 +414,7 @@ concat("<b>",$common-x/fn:map/fn:string[@key='user'], "@", $common-x/fn:map/fn:s
 +
 The mapping rendering should be similar to:
 +
-image::m3/mapping-kafka-matrix.png[width=80%]
+image::m2/mapping-kafka-matrix.png[width=80%]
 +
 {empty} +
 

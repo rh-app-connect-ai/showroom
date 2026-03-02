@@ -396,7 +396,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 :m1: pass:quotes[[.label.added]#Module 1#]
 :m2: pass:q[[.label.changed]#Module 2#]
-:m3: pass:q[[.label.updated]#Module 3#]
+:m3: pass:q[[.label.updated]#Module 2#]
 
 :experimental:
 

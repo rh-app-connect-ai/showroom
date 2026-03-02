@@ -24,7 +24,7 @@ For the processes from _Matrix_/_Rocket.Chat_ to _Kafka_, the steps remain the s
 The diagram below applies to the data flows (2 of them) from _Matrix_/_Rocket.Chat_ respectively to _Kafka_:
 
 [.text-center]
-image::m3/processing-flow-chat2kafka.jpg[width=90%]
+image::m2/processing-flow-chat2kafka.jpg[width=90%]
 
 {empty} +
 
@@ -48,7 +48,7 @@ Produces events to _Kafka_.
 
 The picture below shows the original _Matrix to Rocket.Chat_ flow you defined earlier:
 
-image::m3/flow-m2r.jpg[width=70%]
+image::m2/flow-m2r.jpg[width=70%]
 
 {blank}
 
@@ -61,7 +61,7 @@ The changes you need to apply on the flow above are minimal:
 
 To simplify the work you need to do, we've prepared the flow so that you just need to fill the blanks. The picture below illustrates the two focus areas where you need to work on:
 
-image::m3/flow-m2k-todo.jpg[width=80%]
+image::m2/flow-m2k-todo.jpg[width=80%]
 
 {blank}
 
@@ -170,7 +170,7 @@ $matrix-x/fn:map/fn:string[@key='text']
 +
 The mapping rendering should be similar to:
 +
-image::m3/mapping-matrix-kafka.png[width=80%]
+image::m2/mapping-matrix-kafka.png[width=80%]
 +
 {empty} +
 
@@ -321,7 +321,7 @@ $rocketchat-x/fn:map/fn:string[@key='text']
 +
 The mapping rendering should be similar to:
 +
-image::m3/mapping-rocketchat-kafka.png[width=90%]
+image::m2/mapping-rocketchat-kafka.png[width=90%]
 +
 {empty} +
 

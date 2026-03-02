@@ -1,319 +1,53 @@
 :imagesdir: ../../assets/images
-:imageshtml: ../_images/
 include::../style.adoc[]
 
-[time=5]
-[id="connect-backend"]
-== Connect the backend
+[time=2]
+[id="flow"]
+== Preview of the integration flow
 {style-all}
 
-You're almost there. +
+=== Process overview
 
-Your last task on this chapter will be to integrate _Rocket.Chat_ in the process so that messages can flow end-to-end, from _Matrix_ to _Rocket.Chat_.
+The diagram below illustrates the processing flow you're about to create:
 
-{empty} +
+[.text-center]
+image::m1/processing-flow.jpg[width=80%]
 
-. [[step-rocketchat-sink]]Include the Rocket.Chat Kamelet.
-+
-As last step in the flow, include the _Rocket.Chat Kamelet_ following the instructions.
-+
-Click the {cp-btn} button to copy the snippet to the clipboard, and continue below.
-+
---
-{copypaste}
-----
-{
-  "type": "Route",
-  "name": "to",
-  "definition": {
-    "uri": "kamelet",
-    "description": "RocketChat",
-    "parameters": {
-      "templateId": "rocketchat-sink",
-      "userid": "{{rocketchat.userid}}",
-      "token": "{{rocketchat.token}}"
-    }
-  },
-  "__kaoto_marker": "kaoto-node"
-}
-----
---
-+
-Then perform these actions:
-+
---
-1. Right-click the *_LOG_* activity (last step of the flow)
-1. Click the option: kbd:[{btn-paste} Paste as next step]
-+
-NOTE: In the next release of Kaoto, copy/paste actions into the canvas will be done in YAML. The current format is still JSON.
---
-+
-The image below shows you the complete Camel route:
-+
-image::m1/route-matrix-to-rc.png[width=45%]
-+
-{blank}
-+
-[pass,subs=attributes]
-<details>
-  <summary>
-    <span class="triangle"></span>
-    <span class="sumtext"><b>TIP:</b> You can customise the label under each step. Click for more information</span>
-  </summary>
-  <div style="border: 2px solid #d0d7de; border-radius: 6px; padding: 0 12px 12px; margin: 1.5em 0;">
-<p style="margin-top: 1em;">Follow the steps below to configure each step description.</br>
-<ol>
-  <li>Click on the step you want to rename.</li>
-  <li>Select <i>All</i> in the configuration panel:
-<span style="display: inline-flex; border: 1px solid #b3b3b3; border-radius: 5px; overflow: hidden; font-family: 'Segoe UI', sans-serif; font-weight: 550; font-size: 14px; cursor: pointer;margin-top: 5px;margin-left: 20px;">
-  <span style="padding: 8px 24px; background-color: #ffffff; color: #1a1a1a;">Required</span>
-  <span style="padding: 8px 48px; background-color: #0277D4; color: #ffffff;">All</span>
-  <span style="padding: 8px 24px; background-color: #ffffff; color: #1a1a1a;">Modified</span>
-</span>
-  </li>
-  <li>Find and edit the following parameter:
-    <span style="display: inline-flex; align-items: center; font-family: 'Segoe UI', sans-serif; font-size: 24px; color: #000;margin-left: 5px;">
-    Description
-    <svg style="width: 24px; height: 24px; fill: #757575; margin-left: 8px;" viewBox="0 0 24 24">
-        <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/>
-    </svg>
-</span>
-  </li><br/>
-  <li>Repeat these actions for each step you want to rename.</li>
-</ol><br/>
-This example shows the same process with more meaningful labels:
-<img src="{imageshtml}m1/route-matrix-to-rc-custom.png" style="width: 50%;margin-left: 10px;"/>
-</p></div>
-</details>
-+
-{empty} +
+There are 3 processing steps in use:
 
-. Configure the _Rocket.Chat_ credentials
-+
-Open in your editor your `rocketchat.properties` file and add the following entries:
-+
---
-{copypaste}/configuration/rocketchat/{user-username}
-----
-# Rocket.Chat credentials
-rocketchat.token=REPLACE
-rocketchat.userid=REPLACE
-----
---
-+
-NOTE: Both parameters have been automatically pre-configured for your use in this lab.
-+
-{empty} +
+====
+* *A source _Kamelet_* +
+Consumes events from _Matrix_.
 
-. Run the flow again as follows:
-+
---
-{copypaste}
-----
-labrun m2r \
---properties matrix.properties,rocketchat.properties
-----
---
-+
-[pass]
-<details>
-  <summary>
-    <span class="triangle"></span>
-    <span class="sumtext">Click for more information</span>
-  </summary>
-<p style="margin-top: 1em;">We provide the script <code>labrun</code> to help you read the commands more clearly.</br>
-Under the hood the script calls <i>Camel JBang</i> as per the snippet below:
-<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">
-camel run \
---source-dir m2r \
---properties matrix.properties,rocketchat.properties \
---local-kamelet-dir ../support/kamelets
-</pre></p>
-</details>
-+
-{empty} +
+* *A data mapping* +
+Transforms _Matrix_ events to _Rocket.Chat_ events (in JSON format).
 
-. One more time, from _Matrix_ send one last message. If all goes well you should see the message listed in your _Rocket.Chat_ chat window
-+
---
-{copypaste}
-----
-Hello from Matrix
-----
---
-+
-//image::images/stage1-msg-gitter-slack.png[align="left", width=80%]
-+
-[subs=attributes]
-++++
-<div class="matrix-flow-wrapper">
-  <!-- Scoped Styles for this component -->
-  <style>
-    .matrix-flow-wrapper {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      padding: 20px;
-      background-color: white;
-    }
-
-    .platform-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 5px;
-    }
-
-    /* Icons */
-    .icon-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 60px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-
-    .icon-box {
-      width: 60px;
-      height: 60px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 5px;
-      margin-left: 15px;
-      z-index: 2;
-    }
-
-    .icon-label {
-      font-size: 18px;
-      color: #000;
-      font-weight: 500;
-      margin-left: 15px;
-    }
-
-    .matrix-bg { background-color: #33C69D; }
-    .rocket-bg { background-color: #f5455c; padding: 5px; box-sizing: border-box; }
-
-    /* Message Bubbles (Light) */
-    .msg-bubble-light {
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      background: #fcfcfc;
-      width: 260px;
-      padding: 0;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-      position: relative;
-      z-index: 2;
-    }
-  </style>
-
-  <!-- Main Flex Container -->
-  <div style="display: flex; align-items: flex-end; margin-: -200px;">
-
-    <!-- Arrow Column -->
-    <div style="margin-right: -200px; margin-bottom: 35px;">
-
-
-    <!-- Content Column -->
-    <div style="display: flex; flex-direction: column; align-items: flex-start;">
-      <div class="platform-row">
-        <!-- Matrix Icon -->
-        <div class="icon-container">
-          <div class="icon-box matrix-bg" style="margin-top: 5px; transform: scale(1);">
-            <svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-              <g transform="translate(-11 -11) scale(0.09)">
-                <path stroke-width="30" d="m153.25 277.15c.47-46.35 37.79-81.6 81.6-81.6m0-42.3c46.35.47 81.6 37.79 81.6 81.6m42.3 0c-.47 46.35-37.79 81.6-81.6 81.6m0 42.3c-46.35 0-81.6-37.79-81.6-81.6"/>
-              </g>
-            </svg>
-          </div>
-          <span class="icon-label">Matrix</span>
-        </div>
-
-        <!-- Matrix Message Box -->
-        <div style="border: 1px solid #ddd; border-radius: 4px; background: #fff; width: 260px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 5px 5px; gap: 2px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-          <div style="display: flex; align-items: center;">
-            <div style="width: 30px; height: 30px; background-color: #4a90e2; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 16px; flex-shrink: 0;">
-              U
-            </div>
-            <div style="margin-left: 12px; font-weight: bold; font-size: 15px; color: #00d781; line-height: 1;">
-              {user-username}
-            </div>
-          </div>
-          <div style="background-color: #eee; display: flex; align-items: baseline; padding: 5px 0px;">
-            <div style="width: 30px; text-align: center; font-size: 10px; color: #6c757d; flex-shrink: 0;">
-              22:21
-            </div>
-            <div style="margin-left: 12px; font-size: 15px; color: #333; line-height: .5;">
-              Hello from Matrix
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-        <div style="margin-left: 100px; margin-top: -20px" class="platform-row">
-      <svg width="120" height="120" viewBox="0 0 130 180" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
-        <path d="M20 10H45V80C45 113.137 71.8629 140 105 140H120V120L150 150L120 180V160H105C58.0558 160 20 121.944 20 75V10Z" fill="#EDEDED" stroke="#777" stroke-width="2"/>
-      </svg>
-
-    <!-- Content Column -->
-    <div style="display: flex; flex-direction: column; align-items: flex-start;">
-      <div class="platform-row" style="margin-top: 75px; margin-left: -60px">
-        <div class="icon-container" >
-          <div class="icon-box rocket-bg" style="margin-top: -5px; margin-left: 750px" >
-            <svg width="45" height="45" viewBox="0 0 24 24" fill="white">
-              <g transform="translate(-2 -2) scale(.9)">
-              <path d="M 7.5488281 5 C 6.2638281 5 5.055 5.3086094 4 5.8496094 C 5.422467 6.9694938 6.4322525 8.5274703 6.8359375 10.300781 C 5.0652471 11.854193 4 13.838545 4 16 C 4 18.1 5.0028438 20.110797 6.8398438 21.716797 C 6.5498438 22.966797 5.9480312 24.134047 5.0820312 25.123047 L 4.0136719 26.345703 L 5.5859375 26.751953 C 6.2259375 26.917953 6.8868281 27 7.5488281 27 C 9.7768281 27 11.841828 26.197516 13.423828 24.728516 C 14.425828 24.908516 15.458 25 16.5 25 C 23.393 25 29 20.962 29 16 C 29 11.038 23.393 7 16.5 7 C 15.440923 7 14.418235 7.1058017 13.435547 7.2851562 C 11.913547 5.8774278 9.8442485 5 7.5488281 5 z M 16.5 9 C 22.29 9 27 12.14 27 16 C 27 19.86 22.29 23 16.5 23 C 15.412 23 14.338594 22.888969 13.308594 22.667969 L 12.757812 22.548828 L 12.371094 22.957031 C 11.147094 24.252031 9.469625 24.976 7.640625 25 C 8.290625 23.917 8.727875 22.724516 8.921875 21.478516 L 9.0136719 20.896484 L 8.5488281 20.535156 C 6.9058281 19.256156 6 17.646 6 16 C 6 12.14 10.71 9 16.5 9 z M 11.5 15 A 1.5 1.5 0 0 0 11.5 18 A 1.5 1.5 0 0 0 11.5 15 z M 16.5 15 A 1.5 1.5 0 0 0 16.5 18 A 1.5 1.5 0 0 0 16.5 15 z M 21.5 15 A 1.5 1.5 0 0 0 21.5 18 A 1.5 1.5 0 0 0 21.5 15 z"/>
-            </svg>
-          </div>
-          <span class="icon-label" style="margin-left: 750px">rocket.chat</span>
-        </div>
-        <div style="border: 1px solid #ddd; border-radius: 4px; background: #fff; width: 320px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: row; align-items: flex-start; padding: 8px 10px; gap: 10px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;background-color: #F2F3F5">
-          <div style="width: 32px; height: 32px; background-color: #6c757d; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; flex-shrink: 0;">
-            U
-          </div>
-          <div style="display: flex; flex-direction: column; justify-content: center; ">
-            <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
-              <span style="font-weight: bold; font-size: 14px; color: #333;">{user-username}</span>
-              <span style="font-size: 11px; color: #aaa;">10:21 PM</span>
-            </div>
-            <div style="font-size: 14px; color: #333; line-height: 1; margin: 0; padding: 0;">
-              <strong>{user-username}@matrix: </strong>Hello from Matrix
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-      </div>
-    </div>
-  </div>
-</div>
-++++
-+
-//{empty} +
-+
-Hopefully you'll see a successful interaction between both chat systems, similar to the image above.
-+
-Press kbd:[Ctrl+C] to stop your Camel instance.
-+
-'''
+* *A sink _Kamelet_* +
+Produces events to _Rocket.Chat_.
+====
 
 {empty} +
 
-If all went well, you can consider the local development for this first flow done.
+=== Prototyping workflow
 
-However, this flow only moves messages in one direction. Your next goal will be to enable a bi-directional data flow between the two systems, but it won't be as straightforward as you might think.
+NOTE: This workshop has been designed with the prototyping workflow in mind.
 
-To find out, finish this lab with the next documentation exercise and move to the next chapter.
+The prototyping phase is very important as it allows the developer to quickly iterate with fast trial and error runs. Fast iterations translate into fast learning, not only for those new to Camel, but also for experienced developers finding their way by trying out different approaches to solve a problem.
+
+The image below ilustrates the process:
+
+[.text-center]
+image::m1/workflow-camel-user.png[width=80%]
+
+First, developers use a local environment for rapid inner-loop development cycles. This approach accelerates prototyping and code validation. Once the foundational elements are in place, the application is deployed to an OpenShift environment to validate containerized execution. Any necessary adjustments can then revert to the fast inner-loop cycle.
 
 {empty} +
 
-[.verification]
-****
-Did you see the message in _Matrix_ showing up in _Rocket.Chat_?
+=== Get ready!
 
-[.success]
-Finish this chapter by completing the next task.
+You've reached the end of Part 1. Complete Lab 1 by choosing the next tile (part 2) on your main tutorial dashboard:
 
-[.fail]
-Review your steps in the exercise and try again.
-****
+[.text-center]
+image::m1/continue-part-2.png[width=80%]
+
+{empty} +

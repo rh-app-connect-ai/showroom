@@ -19,20 +19,50 @@ Get familiar with the workshop goals, the technologies at play, the scenario, an
 
 [.tile]
 ****
-xref:m1/m1.0.adoc[Lab 1 -- Be the Camel developer]
+xref:m1/m1.0.adoc[Lab 1 -- Scenario and Onboarding]
 
-Develop Camel routes with low-code visual tools, define JSON data transformations, and connect Matrix to Rocket.Chat using Camel JBang for fast prototyping.
+Introduces the first integration flow and helps you onboard onto the Matrix and Rocket.Chat chat platforms.
 
 [.meta]
-29 min | 5 tasks
+10 min | 4 tasks
 ****
 
 [.tile]
 ****
-xref:m3/m3.0.adoc[Lab 3 -- Decoupled Re-Architecture]
+xref:m2/m2.0.adoc[Lab 2 -- Kafka as the Backbone]
 
 Decouple the messaging architecture using Streams for Apache Kafka, define common data models, and deploy the full solution on OpenShift.
 
 [.meta]
 19 min | 4 tasks
+****
+
+[.tile]
+****
+xref:m3/m3.0.adoc[Lab 3 -- Ingest Service]
+
+TODO: Add description.
+
+[.meta]
+TODO
+****
+
+[.tile]
+****
+xref:m4/m4.0.adoc[Lab 4 -- AI assisted Customer support]
+
+TODO: Add description.
+
+[.meta]
+TODO
+****
+
+[.tile]
+****
+xref:m5/m5.0.adoc[Lab 5 -- Protect LLM consumption with Connectivity Link]
+
+TODO: Add description.
+
+[.meta]
+TODO
 ****
