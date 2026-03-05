@@ -1,0 +1,175 @@
+++++
+
+<style>
+.doc {
+    max-width: 70rem;
+}
+
+.underline {
+  cursor: pointer;
+}
+
+u {
+    cursor: pointer;
+}
+
+summary  {
+    cursor: pointer;
+}
+
+/* Push TOC down to make room for fixed overlays */
+.toc.sidebar .toc-menu {
+  top: 13rem !important;
+}
+
+.label {
+    color: #fff;
+    padding: .2em .6em .3em;
+    font-weight: 700;
+    border-radius: .25em;
+    font-size: 90%;
+}
+
+.added {background-color: #007700;}
+.changed {background-color: #088;}
+.updated {background-color: #3344bb;}
+
+.imageblock {
+    align-items: flex-start !important;
+}
+.imageblock.text-center .content {
+    width: 100%;
+    text-align: center;
+}
+.imageblock.text-center .content img {
+    display: inline-block;
+}
+
+/* Inline images: vertically center with surrounding text */
+.doc span.image img {
+    vertical-align: middle;
+}
+
+/* Inline code styling — :not([style]) excludes passthrough <code> with inline styles */
+.doc code:not([style]) {
+  background-color: #DDF4FF !important;
+  font-family: monospace !important;
+}
+
+/* kbd styling — override Antora theme */
+.doc kbd {
+  color: black;
+  background-color: white;
+  border: 1px solid black;
+  box-shadow: 0px 1px black;
+  font-size: .85em;
+  line-height: .85em;
+  display: inline-block;
+  font-weight: 600;
+  letter-spacing: .05em;
+  padding: 3px 5px;
+  white-space: nowrap;
+  border-radius: 5px;
+}
+
+/* Inline code inside admonitions: keep same color */
+.doc .admonitionblock code {
+  background-color: #DDF4FF !important;
+}
+
+/* Copypaste textarea inside admonitions: darker background for contrast */
+.admonitionblock textarea {
+  background-color: #ddd !important;
+}
+
+/* Terminal-style listing blocks — override Antora theme */
+.doc .listingblock pre {
+  background-color: #272822 !important;
+  color: white;
+  padding: 10px 15px;
+  line-height: 1.4;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+/* Right sidebar: .doc-sidebar — fixed status overlay at top-right */
+.doc-sidebar {
+  position: fixed !important;
+  top: 6.5rem;
+  right: 1rem;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  z-index: 1000;
+  border-radius: 4px !important;
+}
+.doc-sidebar .sidebarblock {
+  padding: 0.3rem 0.5rem !important;
+}
+.doc-sidebar .sidebarblock p {
+  margin: 0 !important;
+}
+
+/* Task sidebar: fixed overlay below doc-sidebar */
+.task-sidebar {
+  position: fixed !important;
+  top: 12rem;
+  right: 1rem;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0;
+  box-sizing: border-box;
+  z-index: 1000;
+  font-size: 0.85em;
+}
+.task-sidebar .sidebarblock {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.4rem;
+}
+.task-sidebar .sidebarblock .title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+.task-sidebar .sidebarblock ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+/* Indent helper for admonitions after file listings */
+.indent2 {
+  padding-left: 2rem;
+}
+
+/* Collapsible block styling */
+summary {
+  cursor: pointer;
+  list-style: none;
+}
+.triangle {
+  margin-right: .5em;
+}
+summary:hover .sumtext {
+  text-decoration: underline;
+}
+.triangle::before {
+  content: "\25B6";
+}
+details[open] .triangle::before {
+  content: "\25BC";
+}
+
+
+</style>
+
+++++
+
+
+:experimental:
+
+include::./vars/urls.adoc[]
+include::./vars/icons.adoc[]
+include::./vars/sidebar.adoc[]
+include::./patterns/docserver-status.adoc[]

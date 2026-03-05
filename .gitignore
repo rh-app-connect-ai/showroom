@@ -38,4 +38,4 @@ package-lock.json
 yarn.lock
 
 # Ignore Claude
-CLAUDE.md
+# CLAUDE.md

@@ -1,5 +1,5 @@
 :imagesdir: ../../assets/images
-include::../style.adoc[]
+include::partial$style.adoc[]
 
 [id='onboarding']
 == Lab 1 - (a) - Scenario and Onboarding

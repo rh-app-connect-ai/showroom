@@ -1,0 +1,17 @@
+[subs=attributes]
+++++
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const p = document.querySelector('.doc-sidebar p');
+  if (!p) return;
+
+  const dot = (color) =>
+    '<div style="width:15px;height:15px;border-radius:50%;background:' + color + ';display:inline-block;vertical-align:middle;margin-top:-2px"></div>';
+
+  fetch('{url-docserver}/status')
+    .then(r => r.text())
+    .then(() => { p.innerHTML = 'Status: ' + dot('#4caf50'); })
+    .catch(() => { p.innerHTML = 'Status: ' + dot('red'); });
+});
+</script>
+++++

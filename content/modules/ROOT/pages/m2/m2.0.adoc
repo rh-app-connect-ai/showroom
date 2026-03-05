@@ -1,5 +1,5 @@
 :imagesdir: ../../assets/images
-include::../style.adoc[]
+include::partial$style.adoc[]
 
 [id='lab2-matrix-kafka-rocketchat']
 == Lab 2 - Kafka as the Backbone

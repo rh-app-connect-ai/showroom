@@ -1,7 +1,7 @@
 
 == Lab Environment Details 
 
-include::style.adoc[]
+include::partial$style.adoc[]
 
 
 [cols="25%,30%,45%", options="header", width=100%]

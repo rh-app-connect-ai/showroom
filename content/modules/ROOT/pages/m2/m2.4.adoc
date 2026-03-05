@@ -1,12 +1,11 @@
 :imagesdir: ../../assets/images
-include::../style.adoc[]
-include::partial$tools/copypaste.adoc[]
-include::partial$tools/verification.adoc[]
+include::partial$style.adoc[]
+include::partial$patterns/copypaste.adoc[]
+include::partial$patterns/verification.adoc[]
 
 [time=8]
 [id="deploy-test"]
 == Deploy and test
-{style-all}
 
 You've covered a lot of ground. Now it is time to deploy the new data flows.
 

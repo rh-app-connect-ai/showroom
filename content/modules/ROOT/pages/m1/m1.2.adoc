@@ -1,12 +1,11 @@
 :imagesdir: ../../assets/images
-include::../style.adoc[]
-include::partial$tools/copypaste.adoc[]
-include::partial$tools/verification.adoc[]
+include::partial$style.adoc[]
+include::partial$patterns/copypaste.adoc[]
+include::partial$patterns/verification.adoc[]
 
 [time=2]
 [id="matrix-chat"]
 == Matrix platform onboarding
-{style-all}
 
 TIP: If you're unfamiliar with link:https://matrix.org/[_Matrix_,window="_blank"], it is an open standard and communication protocol for real-time decentralised communication. It works seamlessly between different service providers.
 

@@ -1,10 +1,9 @@
 :imagesdir: ../../assets/images
-include::../style.adoc[]
+include::partial$style.adoc[]
 
 [time=2]
 [id="scenario-intro"]
 == Data flow overview
-{style-all}
 
 The picture below illustrates the data flow traversing our Camel instance:
 

@@ -1,21 +1,21 @@
-# Tools
+# Patterns
 
-Interactive UI components for AsciiDoc pages. Each tool is a self-contained `.adoc` file with CSS and JS inside a passthrough block. Pages include only the tools they need.
+Interactive UI components for AsciiDoc pages. Each pattern is a self-contained `.adoc` file with CSS and JS inside a passthrough block. Pages include only the patterns they need.
 
-## Including tools
-
-```asciidoc
-include::partial$tools/copypaste.adoc[]
-include::partial$tools/verification.adoc[]
-```
-
-Or include all tools at once:
+## Including patterns
 
 ```asciidoc
-include::partial$tools/all.adoc[]
+include::partial$patterns/copypaste.adoc[]
+include::partial$patterns/verification.adoc[]
 ```
 
-> Every page must also include `style.adoc` (global CSS, attributes, overlays) before any tool includes.
+Or include all patterns at once:
+
+```asciidoc
+include::partial$patterns/all.adoc[]
+```
+
+> Every page must also include `style.adoc` (global CSS, attributes, overlays) before any pattern includes.
 
 ---
 
@@ -210,18 +210,18 @@ Description text for the tile card.
 
 ---
 
-## Creating a new tool
+## Creating a new pattern
 
-1. Create `partials/tools/newtool.adoc` with a `++++` passthrough block containing `<style>` and `<script>` sections
-2. Use `[subs=attributes]` on the passthrough block if the tool needs AsciiDoc attributes resolved (e.g. `{url-docserver}`)
-3. Hide raw sidebar blocks with CSS: `.sidebarblock.newtool { display: none; }`
-4. In JS, add a `DOMContentLoaded` handler that queries `.sidebarblock.newtool`, extracts content from `.paragraph` children, builds replacement HTML, and replaces the original block
-5. Use prefixed CSS classes (e.g. `nt-tooltip`) to avoid collisions with other tools
-6. Add `include::./newtool.adoc[]` to `all.adoc`
+1. Create `partials/patterns/newpattern.adoc` with a `++++` passthrough block containing `<style>` and `<script>` sections
+2. Use `[subs=attributes]` on the passthrough block if the pattern needs AsciiDoc attributes resolved (e.g. `{url-docserver}`)
+3. Hide raw sidebar blocks with CSS: `.sidebarblock.newpattern { display: none; }`
+4. In JS, add a `DOMContentLoaded` handler that queries `.sidebarblock.newpattern`, extracts content from `.paragraph` children, builds replacement HTML, and replaces the original block
+5. Use prefixed CSS classes (e.g. `np-tooltip`) to avoid collisions with other patterns
+6. Add `include::./newpattern.adoc[]` to `all.adoc`
 
 ### Architecture pattern
 
-All tools follow the same pattern:
+All patterns follow the same structure:
 
 ```
 AsciiDoc sidebar block    →    CSS hides it    →    JS transforms it on DOMContentLoaded

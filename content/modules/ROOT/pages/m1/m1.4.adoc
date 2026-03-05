@@ -1,10 +1,9 @@
 :imagesdir: ../../assets/images
-include::../style.adoc[]
+include::partial$style.adoc[]
 
 [time=2]
 [id="flow"]
 == Preview of the integration flow
-{style-all}
 
 === Process overview
 

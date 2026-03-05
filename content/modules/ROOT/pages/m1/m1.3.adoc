@@ -1,12 +1,11 @@
 :imagesdir: ../../assets/images
-include::../style.adoc[]
-include::partial$tools/copypaste.adoc[]
-include::partial$tools/verification.adoc[]
+include::partial$style.adoc[]
+include::partial$patterns/copypaste.adoc[]
+include::partial$patterns/verification.adoc[]
 
 [time=2]
 [id="rocketchat-chat"]
 == Rocket.Chat platform onboarding
-{style-all}
 
 TIP: If you're unfamiliar with link:https://www.rocket.chat/[_Rocket.Chat_,window="_blank"], it is an open-source communications platform with high data protection standards. It enables real-time conversations between colleagues, other companies, or your customers across web, desktop, or mobile devices.
 

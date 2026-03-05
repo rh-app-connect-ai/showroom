@@ -1,5 +1,5 @@
 :imagesdir: ../../assets/images
-include::../style.adoc[]
+include::partial$style.adoc[]
 
 [id='lab4-ai-assisted-customer-support']
 == Lab 4 - AI assisted Customer support

@@ -1,6 +1,6 @@
 :imagesdir: ../../assets/images
-include::../style.adoc[]
-include::partial$tools/copypaste.adoc[]
+include::partial$style.adoc[]
+include::partial$patterns/copypaste.adoc[]
 
 [id='lab5-protect-llm-consumption-with-connectivity-link']
 == Lab 5 - Protect LLM consumption with Connectivity Link
@@ -255,4 +255,29 @@ export APP_NAME=camel-demo
 [.copypaste]
 ****
 envsubst < template.yaml | oc apply -f -
+****
+
+
+our test:
+
+[.copypaste]
+****
+[.path]
+/credentials/imMMMM/{user-username}
+
+
+my.property=REPLACE
+my.other.property=dummy
+****
+
+==== Multiple copypaste blocks in sequence
+
+[.copypaste]
+****
+export NAMESPACE=workshop
+****
+
+[.copypaste]
+****
+export APP_NAME=camel-demo
 ****

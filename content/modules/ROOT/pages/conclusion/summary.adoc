@@ -1,5 +1,5 @@
 :imagesdir: ../../assets/images
-include::../style.adoc[]
+include::partial$style.adoc[]
 
 == Summary of this workshop
 

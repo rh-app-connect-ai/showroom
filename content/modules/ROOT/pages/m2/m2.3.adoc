@@ -1,11 +1,10 @@
 :imagesdir: ../../assets/images
-include::../style.adoc[]
-include::partial$tools/copypaste.adoc[]
+include::partial$style.adoc[]
+include::partial$patterns/copypaste.adoc[]
 
 [time=5]
 [id="kafka-to-matrix-rocketchat"]
 == Kafka to Rocket.Chat/Matrix
-{style-all}
 
 The processing steps still remain essentially the same:
 

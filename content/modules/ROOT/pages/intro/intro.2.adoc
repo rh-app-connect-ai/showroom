@@ -1,5 +1,5 @@
 :imagesdir: ../../assets/images
-include::../style.adoc[]
+include::partial$style.adoc[]
 
 [time=1]
 [id="scenario-intro"]
