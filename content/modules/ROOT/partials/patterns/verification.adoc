@@ -99,6 +99,13 @@ window.addEventListener('DOMContentLoaded', function() {
   var boxes = document.querySelectorAll('.verification-box');
   if (!boxes.length) return;
 
+  // Derive page key from URL path (e.g. "m1/m1.2")
+  var pathMatch = window.location.pathname.match(/\/([^\/]+\/[^\/]+?)(?:\.html)?$/);
+  var pageKey = pathMatch ? pathMatch[1] : window.location.pathname;
+
+  // Register total verification count for this page
+  localStorage.setItem('verify:' + pageKey + ':total', boxes.length);
+
   // Find Antora's Next page link
   var navNext = document.querySelector('.nav-next a')
     || document.querySelector('.pagination .next a')
@@ -119,9 +126,13 @@ window.addEventListener('DOMContentLoaded', function() {
 
   function checkAll() {
     var allYes = true;
-    boxes.forEach(function(box) {
+    boxes.forEach(function(box, i) {
       var selected = box.querySelector('input[type="radio"]:checked');
       if (!selected || selected.value !== 'yes') allYes = false;
+      // Persist each verification state
+      if (selected) {
+        localStorage.setItem('verify:' + pageKey + ':' + i, selected.value);
+      }
     });
     if (navNext) {
       navNext.style.pointerEvents = allYes ? '' : 'none';
@@ -129,7 +140,23 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  boxes.forEach(function(box) {
+  boxes.forEach(function(box, i) {
+    // Restore saved state
+    var saved = localStorage.getItem('verify:' + pageKey + ':' + i);
+    if (saved) {
+      var radio = box.querySelector('input[value="' + saved + '"]');
+      if (radio) {
+        radio.checked = true;
+        var ok = box.querySelector('.vb-feedback.success');
+        var fail = box.querySelector('.vb-feedback.fail');
+        if (saved === 'yes') {
+          ok.style.display = 'block'; fail.style.display = 'none';
+        } else {
+          ok.style.display = 'none'; fail.style.display = 'block';
+        }
+      }
+    }
+
     box.querySelectorAll('input[type="radio"]').forEach(function(r) {
       r.addEventListener('change', function() {
         var ok = box.querySelector('.vb-feedback.success');
@@ -143,6 +170,9 @@ window.addEventListener('DOMContentLoaded', function() {
       });
     });
   });
+
+  // Run initial check (handles restored state)
+  checkAll();
 
 });
 </script>

@@ -1,9 +1,7 @@
 :imagesdir: ../../assets/images
+:page-time: 1
 include::partial$style.adoc[]
-include::partial$patterns/copypaste.adoc[]
-include::partial$patterns/verification.adoc[]
 
-[time=1]
 [id="setup"]
 == Setup the Lab working folder
 

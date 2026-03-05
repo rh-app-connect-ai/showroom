@@ -231,17 +231,20 @@ The `partials/` directory is a self-contained portable package providing the loo
 content/modules/ROOT/
   partials/
     style.adoc              # portable CSS + style attributes + :experimental:
-                            # includes vars/* and docserver-status pattern internally
+                            # includes vars/* and patterns/all.adoc — single entry point
     vars/
       icons.adoc            # SVG icon attributes (portable as-is)
       urls.adoc             # URL attributes, module labels (customize per project)
       sidebar.adoc          # doc-sidebar block + task-sidebar HTML overlay (customize per project)
     patterns/
+      all.adoc              # master include: all patterns below (included via style.adoc)
+      docserver-status.adoc # hydrates .doc-sidebar with fetch status
+      progress.adoc         # tracks page visits, resume URLs, overrides cross-module prev links
       copypaste.adoc        # [.copypaste] sidebar blocks
       verification.adoc     # [.verification] sidebar blocks
-      tiles.adoc            # [.tile] sidebar blocks
-      docserver-status.adoc # hydrates .doc-sidebar with fetch status (included via style.adoc)
-      all.adoc              # convenience: includes copypaste + verification + tiles
+      tiles.adoc            # [.tile] sidebar blocks (dynamic time/tasks from nav + fetch)
+      steps.adoc            # steps overview overlay on first tile click
+      celebration.adoc      # module completion overlay
       README.md             # documentation
 ```
 
@@ -255,28 +258,20 @@ content/modules/ROOT/
 
 **Page boilerplate:**
 
-Every page must include `partial$style.adoc[]` at the top. Pattern includes are added only on pages that use them. Subdirectory pages also set `:imagesdir:`.
+Every page only needs `include::partial$style.adoc[]` — this includes all vars, patterns, and CSS automatically. Subdirectory pages also set `:imagesdir:`. Pages with `:page-time:` must define it before the include.
 
 ```asciidoc
 // Root-level page (e.g. pages/index.adoc)
 include::partial$style.adoc[]
-include::partial$patterns/tiles.adoc[]
 
 // Subdirectory page (e.g. pages/m1/m1.2.adoc)
 :imagesdir: ../../assets/images
 include::partial$style.adoc[]
-include::partial$patterns/copypaste.adoc[]
-include::partial$patterns/verification.adoc[]
 
-// Subdirectory page, style only (e.g. pages/m1/m1.0.adoc)
+// Subdirectory page with page-time (e.g. pages/m2/m2.4.adoc)
 :imagesdir: ../../assets/images
+:page-time: 8
 include::partial$style.adoc[]
-```
-
-Or include all patterns at once:
-```asciidoc
-include::partial$style.adoc[]
-include::partial$patterns/all.adoc[]
 ```
 
 **Creating a new pattern:**
@@ -315,6 +310,22 @@ Review your steps in the exercise and try again.
 
 Used in: `m1/m1.2`, `m1/m1.3`, `m2/m2.1`, `m2/m2.4` (x2), `intro/intro.3`.
 
+## Page Time Attribute
+
+Each page can declare an estimated completion time using the `:page-time:` document attribute. This value is rendered into the HTML as a hidden `<span>` by `partials/style.adoc`, and read by the tile and steps overlay JS to compute dynamic totals.
+
+```asciidoc
+:imagesdir: ../../assets/images
+:page-time: 5
+include::partial$style.adoc[]
+```
+
+**Critical: `:page-time:` must be defined BEFORE `include::partial$style.adoc[]`.** The style partial contains an `ifdef::page-time[]` block that renders the hidden span. If the attribute is defined after the include, the `ifdef` evaluates before the attribute exists, and the span is never rendered — all times silently default to 1 min.
+
+Pages without `:page-time:` default to 1 min in the JS calculations.
+
+**Passthrough and attribute substitution:** The hidden span uses a `[subs=attributes]` passthrough block, not `pass:[]`. The `pass:[]` inline macro suppresses all substitutions, so `{page-time}` would be output literally instead of resolved. Always use `[subs=attributes]` on `++++` blocks when attribute values need to be rendered into HTML.
+
 ## Tile Blocks (Index Page)
 
 Grid-based module cards for the index/landing page. Defined in `partials/patterns/tiles.adoc`.
@@ -325,17 +336,27 @@ Grid-based module cards for the index/landing page. Defined in `partials/pattern
 xref:m1/m1.0.adoc[Lab 1 -- Be the Camel developer]
 
 Description text for the tile card.
-
-[.meta]
-29 min | 5 tasks
 ****
 ```
 
 - First paragraph must contain an `xref:` link — the link href becomes the card's click target, the link text becomes the card header
 - Middle paragraphs = description text shown in the card body
-- `[.meta]` paragraph = footer with time and task count, separated by `|` (optional)
+- **Time and task count are fully dynamic** — computed at runtime from the nav sidebar (task count = number of nav links matching the module prefix) and by fetching each page to read its `.page-time` hidden span (total time = sum of per-page times)
+- `[.meta]` paragraphs are ignored — do not use them for time/tasks
 - JS collects all `.sidebarblock.tile` elements, wraps them in a `.tile-grid` CSS grid container, and replaces each with a `.tile-card`
 - Cards have a green header bar (`#3e8635`), hover shadow effect, and responsive grid layout (`repeat(auto-fill, minmax(280px, 1fr))`)
 - CSS class `.sidebarblock.tile { display: none }` prevents flash of unstyled content
 
 To add a new module tile, just add another `[.tile]` block in `index.adoc`.
+
+## Steps Overlay
+
+A fullscreen overlay that shows the list of pages in a module with per-page estimated times when a tile is first clicked. Defined in `partials/patterns/steps.adoc`.
+
+- Triggered by clicking a tile card that has no `resume:` entry in localStorage (first visit)
+- Tiles with a resume URL skip the overlay and navigate directly
+- Module name comes from the tile header; page titles come from nav links matching the module prefix; per-page times come from `data-times` JSON set by tiles.adoc's background fetch
+- "Get Started" button navigates to the module's first page (`data-first-link`)
+- Uses `[subs=attributes]` for the Red Hat background SVG (`{ico-redhat-dark}`)
+- CSS classes are prefixed `steps-*` to avoid collisions
+- Must be included after `tiles.adoc` (both use `window.addEventListener('DOMContentLoaded', ...)` and fire in registration order)

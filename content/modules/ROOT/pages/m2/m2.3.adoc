@@ -1,8 +1,7 @@
 :imagesdir: ../../assets/images
+:page-time: 5
 include::partial$style.adoc[]
-include::partial$patterns/copypaste.adoc[]
 
-[time=5]
 [id="kafka-to-matrix-rocketchat"]
 == Kafka to Rocket.Chat/Matrix
 

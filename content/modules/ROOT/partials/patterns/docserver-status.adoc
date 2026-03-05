@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   fetch('{url-docserver}/status')
     .then(r => r.text())
-    .then(() => { p.innerHTML = 'Status: ' + dot('#4caf50'); })
+    .then(() => { p.innerHTML = 'Status: ' + dot('#3e8635'); })
     .catch(() => { p.innerHTML = 'Status: ' + dot('red'); });
 });
 </script>

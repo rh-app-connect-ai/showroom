@@ -1,6 +1,9 @@
 :imagesdir: ../assets/images
 include::partial$style.adoc[]
-include::partial$patterns/tiles.adoc[]
+
+++++
+<style>.pagination, .nav-footer { display: none !important; }</style>
+++++
 
 == Apache Camel Workshop
 
@@ -13,9 +16,6 @@ Welcome to the Apache Camel workshop. Select a module below to get started.
 xref:intro/intro.0.adoc[Introduction]
 
 Get familiar with the workshop goals, the technologies at play, the scenario, and set up your development environment.
-
-[.meta]
-5 min | 4 tasks
 ****
 
 [.tile]
@@ -23,9 +23,6 @@ Get familiar with the workshop goals, the technologies at play, the scenario, an
 xref:m1/m1.0.adoc[Lab 1 -- Scenario and Onboarding]
 
 Introduces the first integration flow and helps you onboard onto the Matrix and Rocket.Chat chat platforms.
-
-[.meta]
-10 min | 4 tasks
 ****
 
 [.tile]
@@ -33,9 +30,6 @@ Introduces the first integration flow and helps you onboard onto the Matrix and 
 xref:m2/m2.0.adoc[Lab 2 -- Kafka as the Backbone]
 
 Decouple the messaging architecture using Streams for Apache Kafka, define common data models, and deploy the full solution on OpenShift.
-
-[.meta]
-19 min | 4 tasks
 ****
 
 [.tile]
@@ -43,9 +37,6 @@ Decouple the messaging architecture using Streams for Apache Kafka, define commo
 xref:m3/m3.0.adoc[Lab 3 -- Ingest Service]
 
 TODO: Add description.
-
-[.meta]
-TODO
 ****
 
 [.tile]
@@ -53,9 +44,6 @@ TODO
 xref:m4/m4.0.adoc[Lab 4 -- AI assisted Customer support]
 
 TODO: Add description.
-
-[.meta]
-TODO
 ****
 
 [.tile]
@@ -63,7 +51,4 @@ TODO
 xref:m5/m5.0.adoc[Lab 5 -- Protect LLM consumption with Connectivity Link]
 
 TODO: Add description.
-
-[.meta]
-TODO
 ****

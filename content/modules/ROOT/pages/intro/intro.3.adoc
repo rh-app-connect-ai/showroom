@@ -1,9 +1,7 @@
 :imagesdir: ../../assets/images
+:page-time: 2
 include::partial$style.adoc[]
-include::partial$patterns/copypaste.adoc[]
-include::partial$patterns/verification.adoc[]
 
-[time=2]
 [id='dev-environment']
 == Development environment
 

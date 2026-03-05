@@ -172,4 +172,11 @@ details[open] .triangle::before {
 include::./vars/urls.adoc[]
 include::./vars/icons.adoc[]
 include::./vars/sidebar.adoc[]
-include::./patterns/docserver-status.adoc[]
+include::./patterns/all.adoc[]
+
+ifdef::page-time[]
+[subs=attributes]
+++++
+<span class="page-time" data-time="{page-time}" hidden></span>
+++++
+endif::[]

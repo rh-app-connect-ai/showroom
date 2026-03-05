@@ -1,3 +1,7 @@
+include::./docserver-status.adoc[]
+include::./progress.adoc[]
 include::./copypaste.adoc[]
 include::./verification.adoc[]
 include::./tiles.adoc[]
+include::./steps.adoc[]
+include::./celebration.adoc[]

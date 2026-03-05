@@ -1,0 +1,189 @@
+[subs=attributes]
+++++
+
+<style>
+.celebration-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 9999;
+  background: #1a1a1a;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.celebration-bg {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  overflow: hidden;
+}
+.celebration-bg svg {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 100%;
+  min-height: 100%;
+}
+.celebration-content {
+  position: relative;
+  z-index: 1;
+}
+.celebration-icon {
+  margin-bottom: 1.5rem;
+}
+.celebration-overlay h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+  color: white;
+}
+.celebration-overlay .celebration-module {
+  font-size: 1.1rem;
+  margin: 0 0 1rem;
+  color: #ccc;
+}
+.celebration-overlay .celebration-subtitle {
+  font-size: 0.95rem;
+  color: #999;
+  margin: 0 0 2rem;
+}
+.celebration-btn {
+  display: inline-block;
+  padding: 12px 32px;
+  background: #3e8635;
+  color: white !important;
+  text-decoration: none !important;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.celebration-btn:hover {
+  background: #4a9e40;
+}
+</style>
+
+<div class="celebration-overlay" id="celebration-overlay">
+  <div class="celebration-bg">{ico-redhat-dark}</div>
+  <div class="celebration-content">
+    <div class="celebration-icon">{ico-congratulations}</div>
+    <h1>Congratulations!</h1>
+    <p class="celebration-module" id="celebration-module"></p>
+    <p class="celebration-subtitle">Return to the dashboard to continue your journey.</p>
+    <a href="./" class="celebration-btn" id="celebration-home">Go to home</a>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Find Antora's Next page link
+  var navNext = document.querySelector('.nav-next a')
+    || document.querySelector('.pagination .next a')
+    || document.querySelector('a.page-next');
+  if (!navNext) {
+    document.querySelectorAll('a').forEach(function(a) {
+      if (a.closest('.toolbar') || a.closest('.nav-container')) {
+        if (a.textContent.trim().toLowerCase().indexOf('next') !== -1) navNext = a;
+      }
+    });
+  }
+  if (!navNext) return;
+
+  // Replace Next link text with "Finish"
+  navNext.textContent = 'Finish';
+
+  // Find module name from nav sidebar
+  var moduleName = '';
+  var currentItem = document.querySelector('.nav-item.is-current-page');
+  if (currentItem) {
+    var el = currentItem;
+    while (el) {
+      var parent = el.parentElement ? el.parentElement.closest('.nav-item') : null;
+      if (!parent) break;
+      el = parent;
+    }
+    var link = el.querySelector(':scope > a.nav-link');
+    if (link) moduleName = link.textContent.trim();
+  }
+
+  // Find home URL from nav
+  var homeUrl = './';
+  var homeLink = document.querySelector('.nav-list > .nav-item:first-child > a.nav-link');
+  if (homeLink) homeUrl = homeLink.getAttribute('href');
+
+  // Determine module prefix from current URL
+  var pathMatch = window.location.pathname.match(/\/([^\/]+\/)[^\/]+?(?:\.html)?$/);
+  var modulePrefix = pathMatch ? pathMatch[1] : '';
+
+  // Module progress check — same algorithm as tiles.js
+  function getModuleProgress() {
+    var totalTasks = parseInt(localStorage.getItem('module:' + modulePrefix + 'tasks'), 10);
+    if (!totalTasks) return -1;
+
+    var pagesWithChecks = {};
+    var visitedPages = {};
+    for (var i = 0; i < localStorage.length; i++) {
+      var key = localStorage.key(i);
+      if (key.indexOf('verify:' + modulePrefix) === 0 && key.endsWith(':total')) {
+        var pageKey = key.slice(7, -6);
+        var pageTotal = parseInt(localStorage.getItem(key), 10) || 0;
+        var pageCompleted = 0;
+        for (var j = 0; j < pageTotal; j++) {
+          if (localStorage.getItem('verify:' + pageKey + ':' + j) === 'yes') pageCompleted++;
+        }
+        pagesWithChecks[pageKey] = { total: pageTotal, completed: pageCompleted };
+      }
+      if (key.indexOf('visited:' + modulePrefix) === 0) {
+        visitedPages[key.slice(8)] = true;
+      }
+    }
+    var earned = 0;
+    for (var pk in pagesWithChecks) {
+      earned += pagesWithChecks[pk].completed / pagesWithChecks[pk].total;
+    }
+    for (var vk in visitedPages) {
+      if (!pagesWithChecks[vk]) earned += 1;
+    }
+    return Math.min(100, Math.round((earned / totalTasks) * 100));
+  }
+
+  // Keep Next link disabled until module progress is 100%
+  function updateNextState() {
+    var progress = getModuleProgress();
+    if (progress >= 0 && progress < 100) {
+      navNext.style.pointerEvents = 'none';
+      navNext.style.opacity = '0.3';
+    } else {
+      navNext.style.pointerEvents = '';
+      navNext.style.opacity = '';
+    }
+  }
+
+  document.addEventListener('change', function(e) {
+    if (e.target.type === 'radio') setTimeout(updateNextState, 0);
+  });
+
+  updateNextState();
+
+  // Populate dynamic content
+  var overlay = document.getElementById('celebration-overlay');
+  var moduleEl = document.getElementById('celebration-module');
+  moduleEl.innerHTML = moduleName
+    ? 'You completed <strong>' + moduleName + '</strong>'
+    : 'You completed this module';
+  document.getElementById('celebration-home').href = homeUrl;
+
+  // Intercept Next link click → show celebration instead
+  navNext.addEventListener('click', function(e) {
+    e.preventDefault();
+    overlay.style.display = 'flex';
+  });
+
+});
+</script>
+
+++++
