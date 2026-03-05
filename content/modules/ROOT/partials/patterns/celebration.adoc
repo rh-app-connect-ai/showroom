@@ -93,6 +93,13 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   if (!navNext) return;
 
+  // Only activate on the last page of a module:
+  // if the Next link points to the same directory, this is a mid-module page
+  var currentDir = window.location.pathname.replace(/[^\/]*$/, '');
+  var nextUrl = new URL(navNext.getAttribute('href'), window.location.href);
+  var nextDir = nextUrl.pathname.replace(/[^\/]*$/, '');
+  if (currentDir === nextDir) return;
+
   // Replace Next link text with "Finish"
   navNext.textContent = 'Finish';
 
