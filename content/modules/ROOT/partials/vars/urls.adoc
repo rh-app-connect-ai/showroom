@@ -2,12 +2,6 @@
 :m2: pass:q[[.label.changed]#Module 2#]
 :m3: pass:q[[.label.updated]#Module 2#]
 
-// :url-docserver: https://docserver-webapp.{openshift-app-host}
-// :url-docserver: https://docserver-webapp.{openshift_cluster_ingress_domain}
-
-// :url-docserver: http://0.0.0.0:9090
-// :url-docserver: http://localhost:9090
-
 :url-element: https://element-matrix.{openshift-app-host}
 :url-rocketchat: https://rocketchat-rocketchat.{openshift-app-host}
 :url-codeready: http://devspaces.{openshift-app-host}/

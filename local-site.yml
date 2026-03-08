@@ -13,6 +13,8 @@ content:
 asciidoc:
   attributes:
     username: user11
+    url-docserver: http://localhost:9090
+
   extensions:
     - ./content/lib/room-macro.js
 
