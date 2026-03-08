@@ -170,6 +170,7 @@ details[open] .triangle::before {
 :experimental:
 
 include::./vars/urls.adoc[]
+include::./vars/uservars.adoc[]
 include::./vars/icons.adoc[]
 include::./vars/sidebar.adoc[]
 include::./patterns/all.adoc[]

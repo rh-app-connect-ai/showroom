@@ -1,7 +1,9 @@
 
-== Lab Environment Details 
+== Lab Environment Details
 
 include::partial$style.adoc[]
+
+Welcome, *{username}*!
 
 
 [cols="25%,30%,45%", options="header", width=100%]

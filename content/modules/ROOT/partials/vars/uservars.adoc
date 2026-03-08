@@ -1,0 +1,2 @@
+// User-specific variables — rendered as spans, replaced by JS at runtime
+:username: pass:[<span class="uservar">username</span>]

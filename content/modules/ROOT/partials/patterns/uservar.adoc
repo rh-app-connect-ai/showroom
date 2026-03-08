@@ -1,0 +1,36 @@
+++++
+
+<style>
+.uservar {
+  font-weight: 600;
+  color: #0066cc;
+}
+</style>
+
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+
+  var spans = document.querySelectorAll('.uservar');
+  if (spans.length === 0) return;
+
+  // Parse cookies into a key-value object
+  var cookies = {};
+  document.cookie.split(';').forEach(function(c) {
+    var parts = c.trim().split('=');
+    if (parts.length === 2) {
+      cookies[parts[0].trim()] = decodeURIComponent(parts[1].trim());
+    }
+  });
+
+  // Replace each span's text with its matching cookie value
+  spans.forEach(function(span) {
+    var key = span.textContent.trim();
+    if (cookies[key] !== undefined) {
+      span.textContent = cookies[key];
+    }
+  });
+
+});
+</script>
+
+++++
