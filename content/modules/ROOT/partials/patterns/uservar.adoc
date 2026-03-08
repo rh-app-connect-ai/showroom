@@ -1,12 +1,5 @@
 ++++
 
-<style>
-.uservar {
-  font-weight: 600;
-  color: #0066cc;
-}
-</style>
-
 <script>
 window.addEventListener('DOMContentLoaded', function() {
 

@@ -11,6 +11,8 @@ content:
       start_path: content
 
 asciidoc:
+  attributes:
+    username: student1
   extensions:
     - ./content/lib/room-macro.js
 

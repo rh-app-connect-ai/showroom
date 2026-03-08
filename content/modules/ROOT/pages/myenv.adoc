@@ -3,7 +3,10 @@
 
 include::partial$style.adoc[]
 
-Welcome, *{username}*!
+// :username: override
+
+Welcome, *{username}* (v2) +
+test: {username}
 
 
 [cols="25%,30%,45%", options="header", width=100%]
