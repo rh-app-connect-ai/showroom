@@ -23,7 +23,7 @@ multiline 2
 [.copypaste]
 ****
 [.path]
-/credentials/im/{user-username}
+/credentials/im/{username}
 
 [.default]
 my-fallback-password
