@@ -5,3 +5,16 @@ include::partial$style.adoc[]
 == Lab 4 - AI assisted Customer support
 
 {empty} +
+
+Test {username}
+
+[.copypaste]
+****
+[.path]
+/credentials/im/{username}
+
+[.default]
+my-fallback-password
+
+REPLACE
+****
