@@ -8,3 +8,11 @@ In this workshop, we'll guide you through the process of safeguarding and connec
 * Expose and consume services both within and outside your organization.
 
 Through hands-on exercises, you'll gain practical experience in using Red Hat Connectivity Link, Red Hat Service Interconnect, and Red Hat OpenShift Service Mesh to address these challenges and improve your hybrid cloud infrastructure's security and reliability.
+
+
+For local testing, run with:
+---- 
+podman run --rm --name antora -v $PWD:/antora -p 8080:8080 \
+-e ANTORA_CONFIG=local-site.yml \
+-i -t ghcr.io/juliaaano/antora-viewer
+----
