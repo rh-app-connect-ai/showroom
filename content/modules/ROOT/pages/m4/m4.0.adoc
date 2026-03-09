@@ -11,7 +11,7 @@ Test {username}
 [.copypaste]
 ****
 [.path]
-/credentials/im/{username}
+/credentials/im
 
 [.default]
 my-fallback-password

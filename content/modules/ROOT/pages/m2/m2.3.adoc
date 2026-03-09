@@ -203,7 +203,7 @@ Copy and Paste (in the *Target*) the values below to define the given field entr
 [.copypaste]
 ****
 [.path]
-/roomid/{user-username}
+/roomid
 
 [.default]
 room-id

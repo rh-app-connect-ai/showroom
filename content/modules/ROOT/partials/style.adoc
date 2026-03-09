@@ -173,6 +173,16 @@ include::./vars/urls.adoc[]
 include::./vars/uservars.adoc[]
 include::./vars/icons.adoc[]
 include::./vars/sidebar.adoc[]
+// Hidden element carrying the {username} value so the uservar JS can
+// detect local dev mode (plain text) vs production (uservar span),
+// and set the username cookie automatically for docserver requests.
+ifdef::username[]
+[subs=attributes]
+++++
+<span id="uv-source" hidden>{username}</span>
+++++
+endif::[]
+
 include::./patterns/all.adoc[]
 
 ifdef::page-time[]

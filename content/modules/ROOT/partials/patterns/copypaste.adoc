@@ -78,6 +78,15 @@ window.addEventListener('DOMContentLoaded', function() {
   var dsDiv = document.getElementById('cp-docserver-url');
   var dsUrl = dsDiv ? dsDiv.getAttribute('data-url') : '';
 
+  // Read username from cookie for docserver requests
+  var dsHeaders = {};
+  document.cookie.split(';').forEach(function(c) {
+    var parts = c.trim().split('=');
+    if (parts[0] === 'username') {
+      dsHeaders['user'] = decodeURIComponent(parts[1]);
+    }
+  });
+
   // Transform all .copypaste sidebar blocks
   var blocks = document.querySelectorAll('.sidebarblock.copypaste');
   blocks.forEach(function(sb) {
@@ -139,7 +148,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
     if (pathValue) {
       // Dynamic: fetch from docserver then replace tokens
-      fetch(dsUrl + pathValue)
+      fetch(dsUrl + pathValue, { headers: dsHeaders })
         .then(function(response) { return response.text(); })
         .then(function(data) {
           textarea.textContent = replaceTokens(rawTemplate, data);

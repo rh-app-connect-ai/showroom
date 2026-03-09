@@ -50,7 +50,7 @@ image::m1/matrix-login-credentials.jpg[width=70%]
 [.copypaste]
 ****
 [.path]
-/credentials/im/{user-username}
+/credentials/im
 
 [.default]
 password

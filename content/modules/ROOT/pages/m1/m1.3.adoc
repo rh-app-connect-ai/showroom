@@ -44,7 +44,7 @@ image::m1/rchat-login-credentials.png[width=60%]
 [.copypaste]
 ****
 [.path]
-/credentials/im/{user-username}
+/credentials/im
 
 [.default]
 password

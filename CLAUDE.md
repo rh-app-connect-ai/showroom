@@ -152,7 +152,7 @@ some command here
 [.copypaste]
 ****
 [.path]
-/credentials/im/{user-username}
+/credentials/im
 
 [.default]
 fallback-password
@@ -166,14 +166,14 @@ REPLACE
 [.copypaste]
 ****
 [.path]
-/credentials/im/{user-username}
+/credentials/im
 
 REPLACE
 ****
 ```
 
 Role paragraphs inside the block:
-- `[.path]` — URL path appended to `{url-docserver}` for fetching data. If present, the block is dynamic.
+- `[.path]` — URL path appended to `{url-docserver}` for fetching data. If present, the block is dynamic. The username is NOT included in the path — it is sent automatically as a `user` HTTP header read from the `username` cookie.
 - `[.default]` — comma-separated fallback values to replace `REPLACE` tokens when the server is unavailable (optional). If omitted, each `REPLACE` token shows `<unavailable>`.
 - Remaining paragraphs = the template content. Multiple paragraphs (separated by blank lines) are joined with `\n\n`. `REPLACE` tokens are substituted with fetched or default values.
 
@@ -236,8 +236,11 @@ content/modules/ROOT/
       icons.adoc            # SVG icon attributes (portable as-is)
       urls.adoc             # URL attributes, module labels (customize per project)
       sidebar.adoc          # doc-sidebar block + task-sidebar HTML overlay (customize per project)
+    vars/
+      uservars.adoc         # user-specific variable fallbacks (renders .uservar spans for runtime JS replacement)
     patterns/
       all.adoc              # master include: all patterns below (included via style.adoc)
+      uservar.adoc          # per-user variable resolution (cookie-based in production, auto-set in local dev) — MUST be first
       docserver-status.adoc # hydrates .doc-sidebar with fetch status
       progress.adoc         # tracks page visits, resume URLs, overrides cross-module prev links
       copypaste.adoc        # [.copypaste] sidebar blocks
@@ -280,9 +283,23 @@ include::partial$style.adoc[]
 3. Hide raw blocks: `.sidebarblock.newpattern { display: none; }`
 4. In JS: query `.sidebarblock.newpattern`, extract content from `.paragraph` children, build replacement HTML, replace original
 5. Use prefixed CSS classes (e.g. `np-tooltip`) to avoid collisions with other patterns
-6. Add `include::./newpattern.adoc[]` to `all.adoc`
+6. Add `include::./newpattern.adoc[]` to `all.adoc` (after `uservar.adoc` which must remain first)
 
 **`[subs=attributes]` gotcha:** When a passthrough block uses `[subs=attributes]`, AsciiDoc resolves `{name}` patterns — including inside JavaScript. This means JS template literals like `` `${color}` `` will have `{color}` treated as an AsciiDoc attribute reference. If the attribute is undefined, the line may be silently dropped, breaking the script. Use string concatenation (`'...' + color + '...'`) instead of template literals to avoid this.
+
+## User Variables (Uservar Pattern)
+
+Per-user runtime variables for shared showroom instances. Defined in `partials/patterns/uservar.adoc` with fallback attribute definitions in `partials/vars/uservars.adoc`.
+
+**Authoring:** Use standard AsciiDoc attribute syntax — `{username}` works like any other attribute.
+
+**Two resolution modes:**
+- **Local dev:** `local-site.yml` defines `username: user11`. Resolved at build time as plain text. The uservar JS detects this via the hidden `#uv-source` element and auto-sets the `username` cookie for docserver requests.
+- **Production (shared):** `default-site.yml` does NOT define `username`. The fallback in `uservars.adoc` renders `<span class="uservar">username</span>`. A docs-proxy service (OAuth + Nginx) sets the `username` cookie per student. The JS reads the cookie and replaces all `.uservar` spans.
+
+**Critical:** `uservar.adoc` MUST be included **first** in `all.adoc`. It runs before other patterns so that user variables are resolved before copypaste/verification blocks consume the DOM.
+
+**Docserver integration:** All fetch calls to the docserver send a `user` HTTP header with the username from the cookie. The username is NOT included in `[.path]` URLs — the docserver identifies users via the header.
 
 ## Verification Blocks
 

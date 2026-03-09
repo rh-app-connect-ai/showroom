@@ -1,0 +1,98 @@
+- route:
+    id: cors
+    from:
+      uri: direct:cors
+      steps:
+        - to: log:test?showAll=true
+        - setHeader:
+            name: Access-Control-Allow-Origin
+            simple:
+              expression: "*"
+        - setHeader:
+            name: Access-Control-Allow-Headers
+            simple:
+              expression: "user"
+
+- route:
+    id: status
+    description: status
+    from:
+      uri: platform-http
+      parameters:
+        path: /status
+      steps:
+        - to:
+            uri: direct:cors
+        - setBody:
+            simple:
+              expression: ok
+        - log:
+            message: ${body}
+
+- route:
+    from:
+      uri: platform-http
+      parameters:
+        path: /credentials/im
+      steps:
+        - to:
+            uri: direct:cors
+        # - to:
+        #     uri: language:constant:resource:file:/etc/camel/resources.d/_secrets/im-credentials/im_credentials.json
+        - setBody:
+            constant: |
+              [
+                {"name": "user1", "password": "ezG4jBA4"},
+                {"name": "user2", "password": "kwmiUhCN"},
+                {"name": "user3", "password": "eQvz8XaG"},
+                {"name": "user11", "password": "tKp7mNx2"}
+              ]
+        - setBody:
+            jq:
+              expression: '.[] | select(.name == header("user")) | .password'
+
+
+- route:
+    from:
+      uri: platform-http
+      parameters:
+        path: /configuration/matrix
+      steps:
+        - to:
+            uri: direct:cors
+        # - to:
+        #     uri: language:constant:resource:file:/etc/camel/resources.d/_secrets/im-credentials/matrix.json
+        - setBody:
+            constant: |
+              [
+                {"name": "user1", "token": "syt_dXNlcjE_mkuqtEXYcqBGMyiBARWE_08Qtge", "roomid": "!duFaachdXOzDYexqZN:rhintegration.demo"},
+                {"name": "user2", "token": "syt_dXNlcjI_rryCCbvDvZLfhaSUMmjr_10tueb", "roomid": "!fBOeMFLcHoGHFcYYgg:rhintegration.demo"},
+                {"name": "user3", "token": "syt_dXNlcjM_jqWoBhVoymCPmuxpzanf_1lS93m", "roomid": "!bywTksEWtjqzUUwJPO:rhintegration.demo"},
+                {"name": "user11", "token": "syt_dXNlcjEx_qRvWnHpLxYmTkDsFjBcN_3kZp7w", "roomid": "!gNxPcRtYhWqKvMdJaL:rhintegration.demo"}
+              ]
+        - setBody:
+            jq:
+              expression: '.[] | select(.name == header("user")) | .token + "," + .roomid'
+
+
+- route:
+    from:
+      uri: platform-http
+      parameters:
+        path: /configuration/rocketchat
+      steps:
+        - to:
+            uri: direct:cors
+        # - to:
+        #     uri: language:constant:resource:file:/etc/camel/resources.d/_secrets/im-credentials/rocketchat.json
+        - setBody:
+            constant: |
+              [
+                {"name": "user1", "userid": "XvZKAakqL6SGnGNwc", "token": "r-lXNogJbFupHwmwiEtmzXblRm-kaBO1IJLs-3XmMMc"},
+                {"name": "user2", "userid": "krNXmPw49edoYee76", "token": "v4Pksn2ACCUzP0fno_hfMLJkjdzasjFLTk-Nb94qLBe"},
+                {"name": "user3", "userid": "vP2xLaDm3KdSzt565", "token": "HMCxThzDtZq5Jhvw60p-pYnYfeHAVF-1509R71fTrhm"},
+                {"name": "user11", "userid": "bMqRtNx83wYpKjLfh", "token": "Xn9pLwQrFv2mHtKsYcBjDa7gUeWzN0oR5i4xAlE8Tvb"}
+              ]
+        - setBody:
+            jq:
+              expression: '.[] | select(.name == header("user")) | .token + "," + .userid'

@@ -3,10 +3,23 @@
 <script>
 window.addEventListener('DOMContentLoaded', function() {
 
-  var spans = document.querySelectorAll('.uservar');
-  if (spans.length === 0) return;
+  var source = document.getElementById('uv-source');
+  if (!source) return;
 
-  // Parse cookies into a key-value object
+  // Check if uv-source contains a .uservar span (production mode)
+  // or plain text (local dev mode)
+  var innerSpan = source.querySelector('.uservar');
+
+  if (!innerSpan) {
+    // Local dev: attribute resolved at build time, set the cookie
+    var username = source.textContent.trim();
+    if (username) {
+      document.cookie = 'username=' + encodeURIComponent(username) + '; Path=/';
+    }
+    return;
+  }
+
+  // Production: read cookies and replace .uservar spans
   var cookies = {};
   document.cookie.split(';').forEach(function(c) {
     var parts = c.trim().split('=');
@@ -15,7 +28,7 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Replace each span's text with its matching cookie value
+  var spans = document.querySelectorAll('.uservar');
   spans.forEach(function(span) {
     var key = span.textContent.trim();
     if (cookies[key] !== undefined) {

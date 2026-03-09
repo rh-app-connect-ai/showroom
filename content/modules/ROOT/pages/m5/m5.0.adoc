@@ -23,7 +23,7 @@ multiline 2
 [.copypaste]
 ****
 [.path]
-/credentials/im/{username}
+/credentials/im
 
 [.default]
 my-fallback-password
@@ -101,7 +101,7 @@ Use the following credentials:
 [.copypaste]
 ****
 [.path]
-/credentials/im/{user-username}
+/credentials/im
 
 [.default]
 fallback-password
@@ -167,7 +167,7 @@ https://api.cluster.example.com:6443
 [.copypaste]
 ****
 [.path]
-/credentials/im/{user-username}
+/credentials/im
 
 [.default]
 my-token-fallback
@@ -208,7 +208,7 @@ a|
 [.copypaste]
 ****
 [.path]
-/credentials/im/{user-username}
+/credentials/im
 
 [.default]
 changeme
@@ -262,7 +262,7 @@ our test:
 [.copypaste]
 ****
 [.path]
-/credentials/imMMMM/{user-username}
+/credentials/imMMMM
 
 
 my.property=REPLACE

@@ -37,6 +37,9 @@ package-lock.json
 # Ignore yarn.lock for Yarn
 yarn.lock
 
+# Ignore Camel JBang runtime files
+.camel-jbang/
+
 # Ignore prototype files
 _prototype_uservar/
 

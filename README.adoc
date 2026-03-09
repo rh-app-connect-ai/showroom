@@ -1,18 +1,77 @@
-Hybrid cloud environments offer flexibility and scalability, but they also introduce significant security and connectivity challenges. 
+= Local Testing
 
-In this workshop, we'll guide you through the process of safeguarding and connecting your hybrid cloud environments with Red Hat. You'll learn how to:
+== Showroom (documentation)
 
-* Implement and manage consistent security policies across multiple clusters.
-* Empower developers to independently manage their application connectivity with self-service guardrails.
-* Connect services running on different platforms and clouds, as well as infrastructure that's inaccessible over the network.
-* Expose and consume services both within and outside your organization.
+Runs the Antora documentation site with live reload on http://localhost:8080.
 
-Through hands-on exercises, you'll gain practical experience in using Red Hat Connectivity Link, Red Hat Service Interconnect, and Red Hat OpenShift Service Mesh to address these challenges and improve your hybrid cloud infrastructure's security and reliability.
+Uses `local-site.yml` which sets `username: user11` for local testing. To change the test username, edit the `username` attribute in `local-site.yml`.
 
-
-For local testing, run with:
----- 
-podman run --rm --name antora -v $PWD:/antora -p 8080:8080 \
--e ANTORA_CONFIG=local-site.yml \
--i -t ghcr.io/juliaaano/antora-viewer
+[source,bash]
 ----
+podman run --rm --name antora -v $PWD:/antora -p 8080:8080 \
+  -e ANTORA_CONFIG=local-site.yml \
+  -i -t ghcr.io/juliaaano/antora-viewer
+----
+
+== DocServer (credentials API)
+
+The DocServer provides user credentials to copypaste blocks at runtime. A local Camel-based mock is included with hardcoded test data.
+
+Requires https://www.jbang.dev[JBang] with the Camel CLI (`camel`) installed:
+
+[source,bash]
+----
+jbang app install camel@apache/camel
+----
+
+Start the DocServer:
+
+[source,bash]
+----
+./camel/docserver/local/run.sh
+----
+
+The DocServer runs on port 9090, matching the `:url-docserver:` attribute defined in `content/modules/ROOT/partials/vars/urls.adoc`.
+
+Stop the DocServer:
+
+[source,bash]
+----
+camel stop docs
+----
+
+Or stop all running Camel integrations:
+
+[source,bash]
+----
+camel stop
+----
+
+== Running both together
+
+Start the DocServer in the background, then run Showroom:
+
+[source,bash]
+----
+./camel/docserver/local/run.sh
+
+podman run --rm --name antora -v $PWD:/antora -p 8080:8080 \
+  -e ANTORA_CONFIG=local-site.yml \
+  -i -t ghcr.io/juliaaano/antora-viewer
+----
+
+The documentation will show a green status dot when the DocServer is reachable, and copypaste blocks with `[.path]` will fetch live data.
+
+== How it works
+
+....
+┌──────────────────────┐       ┌──────────────────────┐
+│  Showroom (Antora)   │       │  DocServer (Camel)   │
+│  localhost:8080      │       │  localhost:9090       │
+│                      │       │                      │
+│  Renders docs with   │ fetch │  Returns per-user    │
+│  copypaste blocks   ─│──────>│  credentials using   │
+│  JS sends "user"     │       │  the "user" header   │
+│  header from cookie  │<──────│                      │
+└──────────────────────┘       └──────────────────────┘
+....
