@@ -36,26 +36,19 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Logout: clear cookies and redirect to docs-proxy to trigger
-  // a fresh OAuth login flow as a different user.
+  // Logout: redirect to docs-proxy /logout endpoint, which clears
+  // the httponly _oauth_proxy and username cookies server-side,
+  // then redirects back to docs-proxy to trigger a fresh OAuth flow.
   var host = window.location.hostname;
   var appsIndex = host.indexOf('.apps.');
   if (appsIndex !== -1) {
     var domain = host.substring(appsIndex + 1);
+    var logoutUrl = 'https://docs-showroom.' + domain + '/logout';
     var logoutLinks = document.querySelectorAll('.navbar-item-right-content');
     logoutLinks.forEach(function(link) {
       if (link.textContent.trim() === 'Log out') {
-        link.href = '#';
+        link.href = logoutUrl;
         link.target = '_self';
-        link.onclick = function(e) {
-          e.preventDefault();
-          document.cookie = 'username=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
-          document.cookie = 'username=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Domain=.' + domain;
-          document.cookie = '_oauth_proxy=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
-          document.cookie = '_oauth_proxy=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Domain=.' + domain;
-          window.location.href = 'https://docs-showroom.' + domain;
-          return false;
-        };
       }
     });
   }
