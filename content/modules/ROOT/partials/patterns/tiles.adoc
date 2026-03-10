@@ -84,11 +84,20 @@
   border-radius: 3px;
   transition: width 0.3s;
 }
+.tile-card .tile-progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3px;
+}
 .tile-card .tile-progress-label {
   font-size: 11px;
   color: #777;
-  margin-top: 3px;
-  text-align: right;
+}
+.tile-card .tile-completed-label {
+  font-size: 13px;
+  color: #3e8635;
+  font-weight: 600;
 }
 </style>
 
@@ -243,7 +252,10 @@ window.addEventListener('DOMContentLoaded', function() {
       '<div class="tile-progress-track">' +
         '<div class="tile-progress-fill" style="width:' + pct + '%"></div>' +
       '</div>' +
-      '<div class="tile-progress-label">' + pct + '%</div>';
+      '<div class="tile-progress-info">' +
+        (pct === 100 ? '<span class="tile-completed-label">\u2705 Completed</span>' : '<span></span>') +
+        '<span class="tile-progress-label">' + pct + '%</span>' +
+      '</div>';
   });
 
   // Reset progress button
