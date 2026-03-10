@@ -130,7 +130,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
     var textarea = document.createElement('textarea');
     textarea.readOnly = true;
-    textarea.style.cssText = 'field-sizing: content; border: none; background-color: #f0f0f0; width: 100%; resize: none; font-size: 14px; font-family: monospace; padding: 10px 15px;';
+    textarea.style.cssText = 'border: none; background-color: #f0f0f0; width: 100%; resize: none; font-size: 14px; font-family: monospace; padding: 10px 15px; overflow: hidden;';
     textarea.rows = 1;
     textarea.textContent = displayText;
 
@@ -146,21 +146,24 @@ window.addEventListener('DOMContentLoaded', function() {
     // Replace sidebar block with the new UI
     sb.parentNode.replaceChild(wrapper, sb);
 
+    // Auto-size textarea height after render
+    function autoSize() {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
     if (pathValue) {
       // Dynamic: fetch from docserver then replace tokens
       fetch(dsUrl + pathValue, { headers: dsHeaders })
         .then(function(response) { return response.text(); })
         .then(function(data) {
           textarea.textContent = replaceTokens(rawTemplate, data);
-          textarea.style.height = 'auto';
-          textarea.style.height = textarea.scrollHeight + 'px';
+          requestAnimationFrame(autoSize);
         })
         .catch(function(err) { console.error('Copypaste fetch error:', err); });
-    } else {
-      // Static: auto-size textarea
-      textarea.style.height = 'auto';
-      textarea.style.height = textarea.scrollHeight + 'px';
     }
+
+    requestAnimationFrame(autoSize);
   });
 
 });

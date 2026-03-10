@@ -13,6 +13,8 @@ asciidoc:
     ssh_password: devops
     ssh_command: ssh someone@example.com
     page-links:
+    - url: '#logout'
+      text: Log out
     - url: https://redhat.com
       text: Red Hat
     rhcl: Red Hat Connectivity Link

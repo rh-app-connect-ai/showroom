@@ -92,6 +92,11 @@ summary  {
   font-size: 14px;
 }
 
+/* Ensure topbar dropdown appears above fixed overlays */
+.navbar {
+  z-index: 1001 !important;
+}
+
 /* Right sidebar: .doc-sidebar — fixed status overlay at top-right */
 .doc-sidebar {
   position: fixed !important;

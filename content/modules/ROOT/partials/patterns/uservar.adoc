@@ -36,6 +36,20 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   });
 
+  // Set the logout link href based on current domain
+  var host = window.location.hostname;
+  var appsIndex = host.indexOf('.apps.');
+  if (appsIndex !== -1) {
+    var clusterDomain = host.substring(appsIndex + 1);
+    var logoutUrl = 'https://oauth-openshift.' + clusterDomain + '/logout';
+    var logoutLinks = document.querySelectorAll('.navbar-item-right-content');
+    logoutLinks.forEach(function(link) {
+      if (link.textContent.trim() === 'Log out') {
+        link.href = logoutUrl;
+      }
+    });
+  }
+
 });
 </script>
 
