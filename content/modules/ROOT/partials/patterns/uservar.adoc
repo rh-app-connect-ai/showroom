@@ -48,7 +48,7 @@ window.addEventListener('DOMContentLoaded', function() {
     logoutLinks.forEach(function(link) {
       if (link.textContent.trim() === 'Log out') {
         link.href = logoutUrl;
-        link.target = '_self';
+        link.target = '_top';
       }
     });
   }
