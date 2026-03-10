@@ -43,7 +43,7 @@ window.addEventListener('DOMContentLoaded', function() {
   var appsIndex = host.indexOf('.apps.');
   if (appsIndex !== -1) {
     var domain = host.substring(appsIndex + 1);
-    var logoutUrl = 'https://docs-showroom.' + domain + '/logout';
+    var logoutUrl = 'https://docs.' + domain + '/logout';
     var logoutLinks = document.querySelectorAll('.navbar-item-right-content');
     logoutLinks.forEach(function(link) {
       if (link.textContent.trim() === 'Log out') {
