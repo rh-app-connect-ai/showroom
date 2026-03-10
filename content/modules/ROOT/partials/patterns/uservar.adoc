@@ -41,7 +41,7 @@ window.addEventListener('DOMContentLoaded', function() {
   var appsIndex = host.indexOf('.apps.');
   if (appsIndex !== -1) {
     var clusterDomain = host.substring(appsIndex + 1);
-    var logoutUrl = 'https://oauth-openshift.' + clusterDomain + '/logout';
+    var logoutUrl = 'https://console-openshift-console.' + clusterDomain + '/logout';
     var logoutLinks = document.querySelectorAll('.navbar-item-right-content');
     logoutLinks.forEach(function(link) {
       if (link.textContent.trim() === 'Log out') {
