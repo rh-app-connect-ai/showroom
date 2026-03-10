@@ -36,27 +36,23 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Logout link: clear cookies and redirect to docs-proxy to force re-authentication
-  var logoutLinks = document.querySelectorAll('.navbar-item-right-content');
-  logoutLinks.forEach(function(link) {
-    if (link.textContent.trim() === 'Log out') {
-      link.href = '#logout';
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        // Clear username cookie
-        document.cookie = 'username=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        // Clear OAuth proxy cookie (domain-scoped)
-        var host = window.location.hostname;
-        var appsIndex = host.indexOf('.apps.');
-        if (appsIndex !== -1) {
-          var domain = host.substring(appsIndex + 1);
+  // Logout: clear cookies and redirect to docs-proxy to trigger re-authentication
+  var host = window.location.hostname;
+  var appsIndex = host.indexOf('.apps.');
+  if (appsIndex !== -1) {
+    var domain = host.substring(appsIndex + 1);
+    var logoutLinks = document.querySelectorAll('.navbar-item-right-content');
+    logoutLinks.forEach(function(link) {
+      if (link.textContent.trim() === 'Log out') {
+        link.href = 'javascript:void(0)';
+        link.onclick = function() {
+          document.cookie = 'username=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
           document.cookie = '_oauth_proxy=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Domain=.' + domain;
-        }
-        // Reload to trigger OAuth flow again
-        window.location.reload();
-      });
-    }
-  });
+          window.location.href = 'https://docs-showroom.' + domain;
+        };
+      }
+    });
+  }
 
 });
 </script>
