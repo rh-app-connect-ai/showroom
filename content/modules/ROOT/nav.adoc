@@ -6,14 +6,14 @@
 ** xref:intro/intro.2.adoc[Scenario introduction]
 ** xref:intro/intro.3.adoc[Development environment]
 
-* xref:m1/m1.0.adoc[Lab 1 - Scenario and Onboarding]
+* xref:m1/m1.0.adoc[Lab 1 - Messaging Access]
 ** xref:m1/m1.0.adoc[Introduction]
 ** xref:m1/m1.1.adoc[Data flow overview]
 ** xref:m1/m1.2.adoc[Matrix platform onboarding]
 ** xref:m1/m1.3.adoc[Rocket.Chat platform onboarding]
 ** xref:m1/m1.4.adoc[Preview of the integration flow]
 
-* xref:m2/m2.0.adoc[Lab 2 - Kafka as the Backbone]
+* xref:m2/m2.0.adoc[Lab 2 - Multi-channel Hub]
 ** xref:m2/m2.0.adoc[Introduction]
 ** xref:m2/m2.1.adoc[Setup the Lab working folder]
 ** xref:m2/m2.2.adoc[Matrix/Rocket.Chat to Kafka]
@@ -23,10 +23,10 @@
 * xref:m3/m3.0.adoc[Lab 3 - Ingest Service]
 ** xref:m3/m3.0.adoc[Introduction]
 
-* xref:m4/m4.0.adoc[Lab 4 - AI assisted Customer support]
+* xref:m4/m4.0.adoc[Lab 4 - AI Customer Support]
 ** xref:m4/m4.0.adoc[Introduction]
 
-* xref:m5/m5.0.adoc[Lab 5 - Protect LLM consumption with Connectivity Link]
+* xref:m5/m5.0.adoc[Lab 5 - LLM Governance]
 ** xref:m5/m5.0.adoc[Introduction]
 
 * xref:conclusion/summary.adoc[Workshop Summary]
