@@ -1,320 +1,49 @@
 :imagesdir: ../../assets/images
+:page-time: 10
 include::partial$style.adoc[]
 
 [id='lab5-protect-llm-consumption-with-connectivity-link']
 == Lab 5 - Protect LLM consumption with Connectivity Link
 
-Test DocServer
-
-==== Static (no fetch)
-
-[.copypaste]
-****
-echo "hello world"
-multiline 1
-
-multiline 2
-****
-
-{empty} +
-
-==== Dynamic (docserver fetch, with custom default)
-
-[.copypaste]
-****
-[.path]
-/credentials/im
-
-[.default]
-my-fallback-password
-
-REPLACE
-****
-
-{empty} +
-
-==== Dynamic (docserver fetch, built-in default)
-
-[.copypaste]
-****
-[.path]
-/nowhere
-
-REPLACE
-****
-
-{empty} +
-
-==== Dynamic with multiple tokens (docserver fetch)
-
-:test-token: 1234567890
-
-[.copypaste]
-****
-[.path]
-/nowhere
-
-[.default]
-fallback-token, fallback-room
-
-test.property={test-token}
-
-# Matrix credentials
-matrix.token=REPLACE
-matrix.room=REPLACE
-****
-
-==== Dynamic with multiple tokens (no default)
-
-[.copypaste]
-****
-[.path]
-/nowhere
-
-test.property={test-token}
-
-# Matrix credentials
-matrix.token=REPLACE
-matrix.room=REPLACE
-****
-
-{empty} +
-
-=== Context tests
-
-==== Inside an admonition
-
-[NOTE]
-======
-Copy the following command to check your installation:
-
-[.copypaste]
-****
-oc get pods -n demo
-****
-======
-
-[TIP]
-======
-Use the following credentials:
-
-[.copypaste]
-****
-[.path]
-/credentials/im
-
-[.default]
-fallback-password
-
-REPLACE
-****
-======
-
-==== Inside an example block
-
-====
-. First, run this command:
-+
-[.copypaste]
-****
-curl -s http://localhost:8080/health
-****
-
-. Then verify the output matches.
-====
-
-==== Inside an open block
-
---
-Configure the following properties:
-
-[.copypaste]
-****
-camel.component.kafka.brokers=localhost:9092
-camel.component.kafka.group-id=my-group
-****
---
-
-==== Inside an ordered list (continuation)
-
-. Copy the login command:
-+
-[.copypaste]
-****
-oc login -u {user-username} -p REPLACE
-****
-
-. Paste it in your terminal and press kbd:[Enter].
-
-. Verify you are logged in:
-+
-[.copypaste]
-****
-oc whoami
-****
-
-==== Inside an unordered list
-
-* **API endpoint**
-+
-[.copypaste]
-****
-https://api.cluster.example.com:6443
-****
-
-* **Token**
-+
-[.copypaste]
-****
-[.path]
-/credentials/im
-
-[.default]
-my-token-fallback
-
-REPLACE
-****
-
-==== Inside a collapsible block
-
-[%collapsible]
-======
-====
-Here is the connection string you need:
-
-
-[.copypaste]
-****
-postgresql://user:REPLACE@db.example.com:5432/workshop
-****
-====
-======
-
-==== Inside a table
-
-[cols="1,2"]
-|===
-| Property | Value
-
-| Username
-a|
-[.copypaste]
-****
-developer
-****
-
-| Password
-a|
-[.copypaste]
-****
-[.path]
-/credentials/im
-
-[.default]
-changeme
-
-REPLACE
-****
-
-|===
-
-==== Nested: admonition inside example block
-
-======
-. Deploy the application:
-+
-[.copypaste]
-****
-oc apply -f deployment.yaml
-****
-
-[NOTE]
-====
-If the deployment fails, check the logs:
-
-[.copypaste]
-****
-oc logs -f dc/my-app
-****
-====
-======
-
-==== Multiple copypaste blocks in sequence
-
-[.copypaste]
-****
-export NAMESPACE=workshop
-****
-
-[.copypaste]
-****
-export APP_NAME=camel-demo
-****
-
-[.copypaste]
-****
-envsubst < template.yaml | oc apply -f -
-****
-
-
-our test:
-
-[.copypaste]
-****
-[.path]
-/credentials/imMMMM
-
-
-my.property=REPLACE
-my.other.property=dummy
-****
-
-==== Multiple copypaste blocks in sequence
-
-[.copypaste]
-****
-export NAMESPACE=workshop
-****
-
-[.copypaste]
-****
-export APP_NAME=camel-demo
-****
-
-
 == Introduction
 
-In the previous phases of this workshop, you connected disparate chat platforms into a unified communication hub, securely ingested and transformed client data, and introduced an AI agent that helps support agents resolve invoice issues through natural language -- all powered by Apache Camel, Kafka, and Model-as-a-Service (MaaS).
+In the previous phases of this workshop, you connected disparate chat platforms into a unified communication hub, securely ingested and transformed client data, and introduced an AI agent that helps support agents resolve invoice issues through natural language -- all powered by _Apache Camel_, _Kafka_, and Model-as-a-Service (MaaS).
 
 But providing internal teams with access to Large Language Models introduces new challenges. AI resource costs are tied to **token consumption** rather than simple API hits. Without proper governance, there is no way to prevent system abuse or control runaway expenses. Traditional rate limiting -- which simply counts requests -- is not enough.
 
-In this final phase, you will place a **governance layer** in front of the LLM using **Red Hat Connectivity Link**. You will:
+In this final phase, you will place a **governance layer** in front of the LLM using _Red Hat Connectivity Link_. You will:
 
 * **AuthPolicy** -- Control _who_ can access the LLM API using API key-based authentication and group-based authorization.
 * **TokenRateLimitPolicy** -- Control _how much_ each user can consume by enforcing rate limits based on actual LLM token usage.
 
 By the end of this module, the AI agent will be fully secured with tiered access control -- _free_ users get a limited token budget, while _gold_ users enjoy a higher allowance.
 
+{empty} +
+
 === Your Environment
 
-Each participant has a dedicated namespace: `{username}-ns`. All commands in this module should be run against your assigned namespace.
+Each participant has a dedicated namespace: `{user-username}-ns`. All commands in this module should be run against your assigned namespace.
 
 [NOTE]
 ====
-Replace `{username}` with your assigned username throughout this module. For example, if your username is `user1`, your namespace is `user1-ns`.
+Replace `{user-username}` with your assigned username throughout this module. For example, if your username is `user1`, your namespace is `user1-ns`.
 ====
 
 You will continue using the same chat interface from Phase 3 to interact with the LLM and test the policies you create.
+
+{empty} +
 
 == Introducing Red Hat Connectivity Link
 
 === What is Connectivity Link?
 
-Red Hat Connectivity Link is a Kubernetes-native solution for managing, securing, and controlling API traffic. Built on the **Kuadrant** project, it integrates directly with the **Gateway API** to enforce policies at the gateway level and HTTP Route Level -- before requests ever reach the LLM backend.
+_Red Hat Connectivity Link_ is a _Kubernetes_-native solution for managing, securing, and controlling API traffic. Built on the _Kuadrant_ project, it integrates directly with the _Gateway API_ to enforce policies at the gateway level and HTTP Route Level -- before requests ever reach the LLM backend.
+
+{empty} +
 
 === Gateway API Architecture
 
-Red Hat Connectivity Link operates at the **Gateway API** layer -- a Kubernetes standard for managing ingress traffic. It uses a layered model:
+_Connectivity Link_ operates at the _Gateway API_ layer -- a _Kubernetes_ standard for managing ingress traffic. It uses a layered model:
 
 [source]
 ----
@@ -327,7 +56,9 @@ Gateway               <-- The actual listener (port, protocol, namespace scope)
 HTTPRoute             <-- Routing rules (path matching, header modification, backend targets)
 ----
 
-Connectivity Link attaches its policies (AuthPolicy, TokenRateLimitPolicy) directly to these Gateway API resources. This means security and governance are enforced **at the infrastructure level**, without modifying application code or the AI agent itself.
+_Connectivity Link_ attaches its policies (AuthPolicy, TokenRateLimitPolicy) directly to these _Gateway API_ resources. This means security and governance are enforced **at the infrastructure level**, without modifying application code or the AI agent itself.
+
+{empty} +
 
 === End-to-End Request Flow
 
@@ -371,7 +102,9 @@ The following diagram shows how a request flows from the chat interface through 
 ----
 
 // TODO: Replace ASCII diagram with a proper architecture diagram screenshot
-image::images/phase4_architecture_diagram.png[Phase 4 Architecture Diagram - placeholder]
+image::m5/phase4_architecture_diagram.png[Phase 4 Architecture Diagram - placeholder,width=80%]
+
+{empty} +
 
 == Infrastructure Provisioned for This Phase
 
@@ -382,29 +115,56 @@ The following resources have been set up for you so you can focus on the policy 
 | Resource | Purpose
 
 | **GatewayClass, Gateway, HTTPRoute**
-| The Gateway API stack that routes traffic from the chat interface to the external LLM backend.
+| The _Gateway API_ stack that routes traffic from the chat interface to the external LLM backend.
 
 | **Kuadrant Operator & System**
-| The Connectivity Link operator, installed in the `kuadrant-system` namespace.
+| The _Connectivity Link_ operator, installed in the `kuadrant-system` namespace.
 
 | **User Secrets**
 | API key secrets for `free` and `gold` tier users (details below).
 |===
 
+{empty} +
+
 === Verify Your Environment
 
 Confirm everything is ready before starting the labs:
 
-. Log in to the **OpenShift Console**.
-. Verify your namespace `{username}-ns` exists by selecting it from the **Project** dropdown.
-. Navigate to the **Connectivity Link** plugin and confirm the following resources are present:
+{blank}
+
+. Log in to the _OpenShift Console_.
++
+{empty} +
+
+. Verify your namespace `{user-username}-ns` exists by selecting it from the **Project** dropdown.
++
+{empty} +
+
+. Navigate to the _Connectivity Link_ plugin and confirm the following resources are present:
 ** **Gateway** (`internal-gateway`) in the `ai-gateway` namespace -- status should show as ready.
-** **HTTPRoute** (`ai-proxy-route`) in your `{username}-ns` namespace.
+** **HTTPRoute** (`ai-proxy-route`) in your `{user-username}-ns` namespace.
++
+{empty} +
 
 If any resource is missing, contact the workshop facilitator before proceeding.
 
 // TODO: Add screenshot of the OpenShift Console showing the namespace and resources
-image::images/verify_environment.png[Expected verification output in OpenShift Console - placeholder]
+image::m5/verify_environment.png[Expected verification output in OpenShift Console - placeholder,width=80%]
+
+{empty} +
+
+[.verification]
+****
+Can you see the `internal-gateway` Gateway and `ai-proxy-route` HTTPRoute in the _Connectivity Link_ plugin?
+
+[.success]
+Your environment is ready. Proceed to Lab 1.
+
+[.fail]
+Contact the workshop facilitator to ensure your namespace is properly provisioned.
+****
+
+{empty} +
 
 === Understanding the User Secrets
 
@@ -423,17 +183,19 @@ metadata:
     app: my-llm                                   # <2>
   annotations:
     kuadrant.io/groups: free                       # <3>
-    secret.kuadrant.io/user-id: {username}             # <4>
+    secret.kuadrant.io/user-id: {user-username}             # <4>
 stringData:
   api_key: iamafreeuser
 type: Opaque
 ----
-<1> Marks this secret as managed by Authorino (the auth engine behind Connectivity Link).
+<1> Marks this secret as managed by _Authorino_ (the auth engine behind _Connectivity Link_).
 <2> Label selector -- the AuthPolicy uses `app: my-llm` to discover valid API keys.
 <3> Group membership -- determines which rate limit tier applies.
 <4> Unique user ID -- used as a counter key for per-user rate limiting.
 
 The **gold-tier** secret follows the same structure but with `kuadrant.io/groups: gold`,`api_key: iamagolduser`.
+
+{empty} +
 
 == Lab 1: Securing the API with Authentication
 
@@ -442,6 +204,8 @@ Now that you understand the architecture, it's time to lock down the LLM endpoin
 1. **API Key Authentication** -- Only requests with a valid Bearer token (matching a known secret) are allowed.
 2. **Group-based Authorization** -- Only users belonging to the `free` or `gold` groups can access the API.
 3. **Identity Extraction** -- The user's group and user ID are extracted from the secret's annotations and passed downstream for use by the TokenRateLimitPolicy.
+
+{empty} +
 
 === Step 1: Review the AuthPolicy
 
@@ -453,7 +217,7 @@ apiVersion: kuadrant.io/v1
 kind: AuthPolicy
 metadata:
   name: ai-proxy-auth
-  namespace: {username}-ns                         # <1>
+  namespace: {user-username}-ns                         # <1>
 spec:
   targetRef:
     group: gateway.networking.k8s.io
@@ -487,37 +251,75 @@ spec:
             allow { groups[_] == "free" }
             allow { groups[_] == "gold" }
 ----
-<1> The policy is created in your namespace (`{username}-ns`).
+<1> The policy is created in your namespace (`{user-username}-ns`).
 <2> Targets the `ai-proxy-route` HTTPRoute -- any request matching this route must pass authentication.
-<3> Looks for Kubernetes Secrets labeled `app: my-llm` to find valid API keys.
+<3> Looks for _Kubernetes_ Secrets labeled `app: my-llm` to find valid API keys.
 <4> Expects the API key in the `Authorization` header with the `Bearer` prefix (e.g., `Authorization: Bearer iamafreeuser`).
 <5> Extracts the `kuadrant.io/groups` annotation from the matched secret and exposes it as `groups` in the response filter.
 <6> Extracts the `secret.kuadrant.io/user-id` annotation and exposes it as `userid`.
 <7> OPA (Open Policy Agent) Rego rule that only allows users whose group is `free` or `gold`.
 
+{empty} +
+
 === Step 2: Apply the AuthPolicy via the OpenShift Console
 
-. In the OpenShift Console, navigate to your namespace `{username}-ns`.
+{blank}
+
+. In the _OpenShift Console_, navigate to your namespace `{user-username}-ns`.
++
+{empty} +
+
 . Click the **+** (Import YAML) button in the top navigation bar.
++
+{empty} +
+
 . Paste the AuthPolicy YAML from Step 1 above into the editor.
 +
 [NOTE]
 ====
-Make sure the `namespace` field is set to `{username}-ns` before importing.
+Make sure the `namespace` field is set to `{user-username}-ns` before importing.
 ====
++
+{empty} +
+
 . Click **Create**.
 
 // TODO: Add screenshot of the OpenShift Console Import YAML screen with the AuthPolicy
-image::images/authpolicy_import_yaml.png[Import AuthPolicy via OpenShift Console - placeholder]
+image::m5/authpolicy_import_yaml.png[Import AuthPolicy via OpenShift Console - placeholder,width=80%]
+
+{empty} +
 
 === Step 3: Verify the AuthPolicy
 
-. In the OpenShift Console, navigate to the **Connectivity Link** plugin.
-. Select your namespace `{username}-ns`.
+{blank}
+
+. In the _OpenShift Console_, navigate to the _Connectivity Link_ plugin.
++
+{empty} +
+
+. Select your namespace `{user-username}-ns`.
++
+{empty} +
+
 . Locate the `ai-proxy-auth` AuthPolicy and confirm its status shows **Enforced**.
 
 // TODO: Add screenshot of the Connectivity Link plugin showing AuthPolicy status as Enforced
-image::images/authpolicy_status_plugin.png[AuthPolicy status in Connectivity Link plugin - placeholder]
+image::m5/authpolicy_status_plugin.png[AuthPolicy status in Connectivity Link plugin - placeholder,width=80%]
+
+{empty} +
+
+[.verification]
+****
+Does the `ai-proxy-auth` AuthPolicy show status **Enforced** in the _Connectivity Link_ plugin?
+
+[.success]
+The AuthPolicy is active. Proceed to test authentication.
+
+[.fail]
+Check that you pasted the correct YAML and that the namespace is set to `{user-username}-ns`.
+****
+
+{empty} +
 
 === Step 4: Test Authentication via the Chat Interface
 
@@ -527,47 +329,86 @@ Now test that the AuthPolicy is working using the same chat interface from Phase
 
 To authenticate with the LLM, set your API key in the agent configuration file you are already familiar with:
 
+{blank}
+
 . Open the `forage-agent-factory.properties` file.
++
+{empty} +
+
 . Locate the `forage.myagent.agent.api.key` property.
++
+{empty} +
+
 . Set the value to the API key you want to test with.
 
 Example:
-[source,properties]
-----
-forage.myagent.agent.api.key=iamafree{username}
-----
+
+[.copypaste]
+****
+forage.myagent.agent.api.key=iamafree{user-username}
+****
 
 // TODO: Add screenshot showing the properties file with the API key field
-image::images/chat_interface_apikey_config.png[Chat interface API key configuration - placeholder]
+image::m5/chat_interface_apikey_config.png[Chat interface API key configuration - placeholder,width=80%]
+
+{empty} +
 
 ==== Test Scenarios
 
-Test the following scenarios by updating the `forage.myagent.agent.api.key` value and sending a message through the chat interface:
+Test the following scenarios by updating the API key value and sending a message through the chat interface:
 
-[cols="1,2,1", options="header"]
-|===
-| Test | Action | Expected Result
+{blank}
 
-| **Invalid credentials**
-| Set `forage.myagent.agent.api.key=invalidkey`.
-| Request is **denied** (401 Unauthorized).
+. **Invalid credentials** -- Set an invalid API key:
++
+[.copypaste]
+****
+forage.myagent.agent.api.key=invalidkey
+****
++
+Send a message. The request should be **denied** (401 Unauthorized).
++
+{empty} +
 
-| **Valid free-tier key**
-| Set `forage.myagent.agent.api.key=iamafreeuser`.
-| Request is **allowed** -- you receive a response from the LLM.
-|===
+. **Valid free-tier key** -- Set the free-tier API key:
++
+[.copypaste]
+****
+forage.myagent.agent.api.key=iamafreeuser
+****
++
+Send a message. The request should be **allowed** -- you receive a response from the LLM.
 
 // TODO: Add screenshot showing a successful LLM response in the chat interface
-image::images/auth_test_success.png[Successful authentication test - placeholder]
+image::m5/auth_test_success.png[Successful authentication test - placeholder,width=80%]
 
 // TODO: Add screenshot showing a denied request (401) in the chat interface
-image::images/auth_test_denied.png[Failed authentication test - placeholder]
+image::m5/auth_test_denied.png[Failed authentication test - placeholder,width=80%]
+
+{empty} +
 
 At this point, authentication and authorization are enforced. Only users with valid API keys belonging to the `free` or `gold` groups can access the LLM.
+
+{empty} +
+
+[.verification]
+****
+Did the invalid key return a 401 error, and the valid free-tier key return a successful LLM response?
+
+[.success]
+Authentication and authorization are working correctly.
+
+[.fail]
+Review the AuthPolicy YAML and ensure the API key secrets exist in `kuadrant-system`.
+****
+
+{empty} +
 
 == Lab 2: Enforcing Token Budgets with Rate Limiting
 
 Now that access is secured, you will add a **TokenRateLimitPolicy** to control how many LLM tokens each user can consume. This is the key differentiator for AI workloads -- unlike traditional rate limiting (which counts requests), token rate limiting counts the actual **tokens used** in LLM responses, giving you fine-grained cost control over AI consumption.
+
+{empty} +
 
 === Step 1: Review the TokenRateLimitPolicy
 
@@ -579,7 +420,7 @@ apiVersion: kuadrant.io/v1alpha1
 kind: TokenRateLimitPolicy
 metadata:
   name: openai-token-limits
-  namespace: {username}-ns                         # <1>
+  namespace: {user-username}-ns                         # <1>
 spec:
   targetRef:
     group: gateway.networking.k8s.io
@@ -607,7 +448,7 @@ spec:
       counters:
         - expression: auth.identity.userid
 ----
-<1> Created in your namespace (`{username}-ns`).
+<1> Created in your namespace (`{user-username}-ns`).
 <2> Targets the same `ai-proxy-route` HTTPRoute as the AuthPolicy.
 <3> **Free tier** -- limited to **50 tokens per minute**.
 <4> Only applies to requests hitting the `/v1/chat/completions` path.
@@ -622,74 +463,155 @@ Notice how the TokenRateLimitPolicy depends on the AuthPolicy:
 * The `auth.identity.groups` and `auth.identity.userid` fields referenced here are populated by the AuthPolicy's `response.success.filters` section.
 * Without the AuthPolicy, the TokenRateLimitPolicy would have no identity context to evaluate.
 
-This is a key pattern in Connectivity Link -- **policies compose together** through the Gateway API.
+This is a key pattern in _Connectivity Link_ -- **policies compose together** through the _Gateway API_.
 ====
+
+{empty} +
 
 === Step 2: Apply the TokenRateLimitPolicy via the OpenShift Console
 
-. In the OpenShift Console, navigate to your namespace `{username}-ns`.
+{blank}
+
+. In the _OpenShift Console_, navigate to your namespace `{user-username}-ns`.
++
+{empty} +
+
 . Click the **+** (Import YAML) button in the top navigation bar.
++
+{empty} +
+
 . Paste the TokenRateLimitPolicy YAML from Step 1 above into the editor.
 +
 [NOTE]
 ====
-Make sure the `namespace` field is set to `{username}-ns` before importing.
+Make sure the `namespace` field is set to `{user-username}-ns` before importing.
 ====
++
+{empty} +
+
 . Click **Create**.
 
 // TODO: Add screenshot of the OpenShift Console Import YAML screen with the TokenRateLimitPolicy
-image::images/trlp_import_yaml.png[Import TokenRateLimitPolicy via OpenShift Console - placeholder]
+image::m5/trlp_import_yaml.png[Import TokenRateLimitPolicy via OpenShift Console - placeholder,width=80%]
+
+{empty} +
 
 === Step 3: Verify the TokenRateLimitPolicy
 
-. In the OpenShift Console, navigate to the **Connectivity Link** plugin.
-. Select your namespace `{username}-ns`.
+{blank}
+
+. In the _OpenShift Console_, navigate to the _Connectivity Link_ plugin.
++
+{empty} +
+
+. Select your namespace `{user-username}-ns`.
++
+{empty} +
+
 . Locate the `openai-token-limits` TokenRateLimitPolicy and confirm its status shows **Enforced**.
 
 // TODO: Add screenshot of the Connectivity Link plugin showing TokenRateLimitPolicy status as Enforced
-image::images/trlp_status_plugin.png[TokenRateLimitPolicy status in Connectivity Link plugin - placeholder]
+image::m5/trlp_status_plugin.png[TokenRateLimitPolicy status in Connectivity Link plugin - placeholder,width=80%]
+
+{empty} +
+
+[.verification]
+****
+Does the `openai-token-limits` TokenRateLimitPolicy show status **Enforced** in the _Connectivity Link_ plugin?
+
+[.success]
+The rate limit policy is active. Proceed to test token limits.
+
+[.fail]
+Check that you pasted the correct YAML and that the namespace is set to `{user-username}-ns`.
+****
+
+{empty} +
 
 === Step 4: Test Token Rate Limiting via the Chat Interface
 
 Use the chat interface to test the rate limiting behavior.
 
+{empty} +
+
 ==== Test 1: Free-tier token limits
+
+{blank}
 
 . Open `forage-agent-factory.properties` and set:
 +
-[source,properties]
-----
+[.copypaste]
+****
 forage.myagent.agent.api.key=iamafreeuser
-----
+****
++
+{empty} +
+
 . Send a message that asks the LLM to generate a longer response (e.g., _"Explain Kubernetes in 500 words"_).
++
+{empty} +
+
 . Continue sending messages in quick succession.
++
+{empty} +
+
 . After consuming **50 tokens within a minute**, your next request should be **rate limited** (429 Too Many Requests).
++
+{empty} +
+
 . Wait for the 1-minute window to reset, then try again -- the request should succeed.
 
 // TODO: Add screenshot showing a successful response before rate limit is hit
-image::images/trlp_free_before_limit.png[Free-tier response before rate limit - placeholder]
+image::m5/trlp_free_before_limit.png[Free-tier response before rate limit - placeholder,width=80%]
 
 // TODO: Add screenshot showing the 429 rate limit response for a free-tier user
-image::images/trlp_free_rate_limited.png[Free-tier rate limited response - placeholder]
+image::m5/trlp_free_rate_limited.png[Free-tier rate limited response - placeholder,width=80%]
+
+{empty} +
 
 ==== Test 2: Gold-tier token limits
 
+{blank}
+
 . Update `forage-agent-factory.properties`:
 +
-[source,properties]
-----
+[.copypaste]
+****
 forage.myagent.agent.api.key=iamagolduser
-----
+****
++
+{empty} +
+
 . Send similar messages to the LLM.
++
+{empty} +
+
 . Notice that you can consume up to **200 tokens per minute** before being rate limited -- 4x the free-tier allowance.
 
 // TODO: Add screenshot showing gold-tier user with higher token allowance
-image::images/trlp_gold_higher_limit.png[Gold-tier higher token allowance - placeholder]
+image::m5/trlp_gold_higher_limit.png[Gold-tier higher token allowance - placeholder,width=80%]
+
+{empty} +
 
 [NOTE]
 ====
 Rate limits are tracked **per user** using the `userid` counter from the AuthPolicy. Each user gets their own independent token budget -- one user hitting their limit does not affect another user's quota.
 ====
+
+{empty} +
+
+[.verification]
+****
+Did the free-tier user hit a 429 rate limit after ~50 tokens, while the gold-tier user could consume up to ~200 tokens per minute?
+
+[.success]
+Congratulations! You have successfully implemented tiered token-based rate limiting.
+
+[.fail]
+Ensure both the AuthPolicy and TokenRateLimitPolicy show Enforced status, and try again with a fresh 1-minute window.
+****
+
+{empty} +
 
 == Summary
 
@@ -697,8 +619,8 @@ Congratulations! You have completed the final phase of the workshop, adding a go
 
 === Key Takeaways
 
-* **Connectivity Link policies attach to Gateway API resources** (HTTPRoutes, Gateways) -- no changes to the AI agent or application code required.
+* **_Connectivity Link_ policies attach to _Gateway API_ resources** (HTTPRoutes, Gateways) -- no changes to the AI agent or application code required.
 * **Policies compose together** -- the AuthPolicy extracts identity information that the TokenRateLimitPolicy uses for per-user, per-tier rate limiting.
 * **Token-based rate limiting** is purpose-built for AI/LLM workloads, giving you cost control based on actual token consumption rather than simple request counts.
-* **Everything is declarative and Kubernetes-native** -- policies are YAML resources managed with `kubectl`, making them easy to version, review, and automate.
-* **Integration tools provide the foundation for AI** -- As you've seen across all four phases, robust connectivity tools like Apache Camel, Kafka, Service Interconnect, and Connectivity Link provide the essential, secure foundation needed to successfully weave AI into everyday business workflows.
+* **Everything is declarative and _Kubernetes_-native** -- policies are YAML resources managed with `kubectl`, making them easy to version, review, and automate.
+* **Integration tools provide the foundation for AI** -- As you've seen across all four phases, robust connectivity tools like _Apache Camel_, _Kafka_, Service Interconnect, and _Connectivity Link_ provide the essential, secure foundation needed to successfully weave AI into everyday business workflows.
