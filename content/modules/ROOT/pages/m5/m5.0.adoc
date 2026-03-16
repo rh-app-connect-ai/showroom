@@ -26,7 +26,7 @@ Each participant has a dedicated namespace: `{user-username}-ns`. All commands i
 
 [NOTE]
 ====
-Replace `{user-username}` with your assigned username throughout this module. For example, if your username is `user1`, your namespace is `user1-ns`.
+Your username `{user-username}` and namespace `{user-username}-ns` are automatically populated throughout this module.
 ====
 
 You will continue using the same chat interface from Phase 3 to interact with the LLM and test the policies you create.
@@ -171,27 +171,31 @@ Contact the workshop facilitator to ensure your namespace is properly provisione
 Two API key secrets have been pre-created. Understanding their structure is important because both policies reference the labels and annotations on these secrets.
 
 **Free-tier user:**
-[source,yaml]
-----
+
+[.copypaste]
+****
 apiVersion: v1
 kind: Secret
 metadata:
-  name: trlp-tutorial-api-key-free-user-1
+  name: trlp-tutorial-api-key-free-{user-username}
   namespace: kuadrant-system
   labels:
-    authorino.kuadrant.io/managed-by: authorino  # <1>
-    app: my-llm                                   # <2>
+    authorino.kuadrant.io/managed-by: authorino
+    app: my-llm
   annotations:
-    kuadrant.io/groups: free                       # <3>
-    secret.kuadrant.io/user-id: {user-username}             # <4>
+    kuadrant.io/groups: free
+    secret.kuadrant.io/user-id: {user-username}
 stringData:
   api_key: iamafreeuser
 type: Opaque
-----
-<1> Marks this secret as managed by _Authorino_ (the auth engine behind _Connectivity Link_).
-<2> Label selector -- the AuthPolicy uses `app: my-llm` to discover valid API keys.
-<3> Group membership -- determines which rate limit tier applies.
-<4> Unique user ID -- used as a counter key for per-user rate limiting.
+****
+
+Key fields in this secret:
+
+* `authorino.kuadrant.io/managed-by: authorino` -- Marks this secret as managed by _Authorino_ (the auth engine behind _Connectivity Link_).
+* `app: my-llm` -- Label selector -- the AuthPolicy uses this to discover valid API keys.
+* `kuadrant.io/groups: free` -- Group membership -- determines which rate limit tier applies.
+* `secret.kuadrant.io/user-id: {user-username}` -- Unique user ID -- used as a counter key for per-user rate limiting.
 
 The **gold-tier** secret follows the same structure but with `kuadrant.io/groups: gold`,`api_key: iamagolduser`.
 
@@ -209,30 +213,30 @@ Now that you understand the architecture, it's time to lock down the LLM endpoin
 
 === Step 1: Review the AuthPolicy
 
-Examine the AuthPolicy you are about to apply:
+Examine the AuthPolicy you are about to apply. Copy the YAML below -- you will paste it in Step 2:
 
-[source,yaml]
-----
+[.copypaste]
+****
 apiVersion: kuadrant.io/v1
 kind: AuthPolicy
 metadata:
   name: ai-proxy-auth
-  namespace: {user-username}-ns                         # <1>
+  namespace: {user-username}-devspaces
 spec:
   targetRef:
     group: gateway.networking.k8s.io
     kind: HTTPRoute
-    name: ai-proxy-route                           # <2>
+    name: ai-proxy-route
   rules:
     authentication:
       api-key-users:
         apiKey:
           selector:
             matchLabels:
-              app: my-llm                          # <3>
+              app: my-llm
         credentials:
           authorizationHeader:
-            prefix: Bearer                         # <4>
+            prefix: Bearer
     response:
       success:
         filters:
@@ -240,24 +244,27 @@ spec:
             json:
               properties:
                 groups:
-                  selector: auth.identity.metadata.annotations.kuadrant\.io/groups    # <5>
+                  selector: auth.identity.metadata.annotations.kuadrant\.io/groups
                 userid:
-                  selector: auth.identity.metadata.annotations.secret\.kuadrant\.io/user-id  # <6>
+                  selector: auth.identity.metadata.annotations.secret\.kuadrant\.io/user-id
     authorization:
       allow-groups:
         opa:
-          rego: |                                  # <7>
+          rego: |
             groups := split(object.get(input.auth.identity.metadata.annotations, "kuadrant.io/groups", ""), ",")
             allow { groups[_] == "free" }
             allow { groups[_] == "gold" }
-----
-<1> The policy is created in your namespace (`{user-username}-ns`).
-<2> Targets the `ai-proxy-route` HTTPRoute -- any request matching this route must pass authentication.
-<3> Looks for _Kubernetes_ Secrets labeled `app: my-llm` to find valid API keys.
-<4> Expects the API key in the `Authorization` header with the `Bearer` prefix (e.g., `Authorization: Bearer iamafreeuser`).
-<5> Extracts the `kuadrant.io/groups` annotation from the matched secret and exposes it as `groups` in the response filter.
-<6> Extracts the `secret.kuadrant.io/user-id` annotation and exposes it as `userid`.
-<7> OPA (Open Policy Agent) Rego rule that only allows users whose group is `free` or `gold`.
+****
+
+Key fields in this policy:
+
+* `namespace: {user-username}-ns` -- The policy is created in your namespace.
+* `name: ai-proxy-route` -- Targets the `ai-proxy-route` HTTPRoute -- any request matching this route must pass authentication.
+* `app: my-llm` -- Looks for _Kubernetes_ Secrets with this label to find valid API keys.
+* `prefix: Bearer` -- Expects the API key in the `Authorization` header (e.g., `Authorization: Bearer iamafreeuser`).
+* `kuadrant\.io/groups` -- Extracts the group annotation from the matched secret and exposes it as `groups` in the response filter.
+* `secret\.kuadrant\.io/user-id` -- Extracts the user ID annotation and exposes it as `userid`.
+* `rego` -- OPA (Open Policy Agent) rule that only allows users whose group is `free` or `gold`.
 
 {empty} +
 
@@ -412,32 +419,32 @@ Now that access is secured, you will add a **TokenRateLimitPolicy** to control h
 
 === Step 1: Review the TokenRateLimitPolicy
 
-Examine the policy you are about to apply:
+Examine the policy you are about to apply. Copy the YAML below -- you will paste it in Step 2:
 
-[source,yaml]
-----
+[.copypaste]
+****
 apiVersion: kuadrant.io/v1alpha1
 kind: TokenRateLimitPolicy
 metadata:
   name: openai-token-limits
-  namespace: {user-username}-ns                         # <1>
+  namespace: {user-username}-devspaces
 spec:
   targetRef:
     group: gateway.networking.k8s.io
     kind: HTTPRoute
-    name: ai-proxy-route                           # <2>
+    name: ai-proxy-route
   limits:
-    free:                                          # <3>
+    free:
       rates:
         - limit: 50
           window: 1m
       when:
-        - predicate: request.path == "/v1/chat/completions"        # <4>
+        - predicate: request.path == "/v1/chat/completions"
         - predicate: |
-            auth.identity.groups.split(",").exists(g, g == "free") # <5>
+            auth.identity.groups.split(",").exists(g, g == "free")
       counters:
-        - expression: auth.identity.userid                         # <6>
-    gold:                                          # <7>
+        - expression: auth.identity.userid
+    gold:
       rates:
         - limit: 200
           window: 1m
@@ -447,14 +454,17 @@ spec:
             auth.identity.groups.split(",").exists(g, g == "gold")
       counters:
         - expression: auth.identity.userid
-----
-<1> Created in your namespace (`{user-username}-ns`).
-<2> Targets the same `ai-proxy-route` HTTPRoute as the AuthPolicy.
-<3> **Free tier** -- limited to **50 tokens per minute**.
-<4> Only applies to requests hitting the `/v1/chat/completions` path.
-<5> Matches users whose `groups` identity property (set by the AuthPolicy response filter) contains `free`.
-<6> Rate limit counter is **per user** -- each user gets their own token budget based on their `userid`.
-<7> **Gold tier** -- limited to **200 tokens per minute**, same structure as free but with a higher allowance.
+****
+
+Key fields in this policy:
+
+* `namespace: {user-username}-ns` -- Created in your namespace.
+* `name: ai-proxy-route` -- Targets the same HTTPRoute as the AuthPolicy.
+* `free` -- **Free tier** -- limited to **50 tokens per minute**.
+* `request.path == "/v1/chat/completions"` -- Only applies to requests hitting the chat completions path.
+* `auth.identity.groups` -- Matches users whose `groups` identity property (set by the AuthPolicy response filter) contains `free` or `gold`.
+* `auth.identity.userid` -- Rate limit counter is **per user** -- each user gets their own token budget.
+* `gold` -- **Gold tier** -- limited to **200 tokens per minute**, same structure as free but with a higher allowance.
 
 [IMPORTANT]
 ====
