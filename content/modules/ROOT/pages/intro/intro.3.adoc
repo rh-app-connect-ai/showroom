@@ -56,7 +56,7 @@ The development environment you use throughout the workshop is a web-hosted IDE 
 
 To access your development environment:
 
-. Click this link:{codeready-url}[Console, window="_blank"] link. +
+. Click this link:{url-codeready}[Console, window="_blank"] link. +
 (Also accessible from the *Resources* panel on the right, under *Red Hat OpenShift Dev Spaces*).
 +
 {empty} +
