@@ -22,16 +22,18 @@ By the end of this module, the AI agent will be fully secured with tiered access
 
 === Your Environment
 
-Each participant has a dedicated namespace: `{user-username}-ns`. All commands in this module should be run against your assigned namespace.
+* Login to the link:https://developers.redhat.com/products/codeready-workspaces/overview[Red Hat OpenShift Dev Spaces, window="_blank"]environment you have been using throughout the workshop using the same credentials as before. {user-username}.
 
-[NOTE]
-====
-Your username `{user-username}` and namespace `{user-username}-ns` are automatically populated throughout this module.
-====
+* Start a new terminal session in your Dev Spaces IDE if you already donot have one open.
++
+image::intro/toggle-terminal.png[width=40%]
 
-You will continue using the same chat interface from Phase 3 to interact with the LLM and test the policies you create.
-
-{empty} +
+* Verify you are in the correct namespace `{user-username}-devspaces` by running:
++
+[.copypaste]
+----
+oc project{user-username}-devspaces
+----
 
 == Introducing Red Hat Connectivity Link
 
@@ -131,33 +133,55 @@ Confirm everything is ready before starting the labs:
 
 {blank}
 
-. Log in to the _OpenShift Console_.
+. From the terminal in your Dev Spaces IDE, run the following command to check that gateway is up and running:
++
+[.copypaste]
+----
+oc get gateway internal-gateway -n ai-gateway
+----
 +
 {empty} +
 
-. Verify your namespace `{user-username}-ns` exists by selecting it from the **Project** dropdown.
+. You should see output confirming the gateway exists and is in a ready state, similar to:
 +
-{empty} +
+----
+NAME               CLASS               ADDRESS                                                           PROGRAMMED   AGE
+internal-gateway   openshift-default   internal-gateway-openshift-default.ai-gateway.svc.cluster.local   True         14h
+----
 
-. Navigate to the _Connectivity Link_ plugin and confirm the following resources are present:
-** **Gateway** (`internal-gateway`) in the `ai-gateway` namespace -- status should show as ready.
-** **HTTPRoute** (`ai-proxy-route`) in your `{user-username}-ns` namespace.
+. Each user has http route `ai-proxy-route` in their namespace `{user-username}-ns` that targets the LLM API. Run the following command to verify it is present
 +
-{empty} +
+[.copypaste]
+----
+oc describe httproute -n user1-devspaces | grep -E "Name:|Backend|Hostnames"
+----
++
+This command list the HTTPRoute details including the backend reference to the LLM API and the gateway it is attached to (which is the `internal-gateway` that you verified earlier). 
 
-If any resource is missing, contact the workshop facilitator before proceeding.
+. Look for output confirming the HTTPRoute exists and is correctly configured, similar to:
++
+----
+Name:         ai-proxy-route
+    Name:       internal-gateway
+    Backend Refs:
+      Name:       ai-api-external
+          Name:   Host
+          Name:   Authorization
+    Controller Name:         openshift.io/gateway-controller/v1
+      Name:       internal-gateway
+----
 
-// TODO: Add screenshot of the OpenShift Console showing the namespace and resources
-image::m5/verify_environment.png[Expected verification output in OpenShift Console - placeholder,width=80%]
 
-{empty} +
+
+
+
 
 [.verification]
 ****
-Can you see the `internal-gateway` Gateway and `ai-proxy-route` HTTPRoute in the _Connectivity Link_ plugin?
+Were you able to list the `internal-gateway` Gateway and `ai-proxy-route` HTTPRoute ?
 
 [.success]
-Your environment is ready. Proceed to Lab 1.
+Your environment is ready. Proceed to Next step.
 
 [.fail]
 Contact the workshop facilitator to ensure your namespace is properly provisioned.
@@ -171,7 +195,6 @@ Two API key secrets have been pre-created. Understanding their structure is impo
 
 **Free-tier user:**
 
-[.copypaste]
 ****
 apiVersion: v1
 kind: Secret
@@ -200,9 +223,9 @@ The **gold-tier** secret follows the same structure but with `kuadrant.io/groups
 
 {empty} +
 
-== Lab 1: Securing the API with Authentication
+== Securing the API with Authentication
 
-Now that you understand the architecture, it's time to lock down the LLM endpoint. You will create an **AuthPolicy** that enforces:
+Now that you understand the architecture, it's time to lock down the LLM endpoint. You will create an **AuthPolicy** that is applied to the `ai-proxy-route` HTTPRoute and enforces:
 
 1. **API Key Authentication** -- Only requests with a valid Bearer token (matching a known secret) are allowed.
 2. **Group-based Authorization** -- Only users belonging to the `free` or `gold` groups can access the API.
@@ -212,10 +235,11 @@ Now that you understand the architecture, it's time to lock down the LLM endpoin
 
 === Step 1: Review the AuthPolicy
 
-Examine the AuthPolicy you are about to apply. Copy the YAML below -- you will paste it in Step 2:
+Examine the AuthPolicy and apply it by pasting the following command in your terminal:
 
 [.copypaste]
 ****
+oc apply -f - <<EOF
 apiVersion: kuadrant.io/v1
 kind: AuthPolicy
 metadata:
@@ -253,6 +277,7 @@ spec:
             groups := split(object.get(input.auth.identity.metadata.annotations, "kuadrant.io/groups", ""), ",")
             allow { groups[_] == "free" }
             allow { groups[_] == "gold" }
+EOF
 ****
 
 Key fields in this policy:
@@ -418,10 +443,11 @@ Now that access is secured, you will add a **TokenRateLimitPolicy** to control h
 
 === Step 1: Review the TokenRateLimitPolicy
 
-Examine the policy you are about to apply. Copy the YAML below -- you will paste it in Step 2:
+Examine the TokenRateLimitPolicy and apply it by pasting the following command in your terminal:
 
 [.copypaste]
 ****
+oc apply -f - <<EOF
 apiVersion: kuadrant.io/v1alpha1
 kind: TokenRateLimitPolicy
 metadata:
@@ -453,6 +479,7 @@ spec:
             auth.identity.groups.split(",").exists(g, g == "gold")
       counters:
         - expression: auth.identity.userid
+EOF
 ****
 
 Key fields in this policy:
