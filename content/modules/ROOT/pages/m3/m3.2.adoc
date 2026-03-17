@@ -1,0 +1,65 @@
+:imagesdir: ../../assets/images
+:page-time: 7
+include::partial$style.adoc[]
+
+[id='lab3-flow-implementation']
+== Flow Implementation
+
+With database connectivity in place via {rhsi}, you can now implement the complete ingestion flow. The Camel integration will handle the full lifecycle of an incoming Purchase Order — from reception to archival.
+
+{empty} +
+
+*Data Flow Overview*
+
+[.mermaid]
+----
+flowchart LR
+    subgraph ext [External]
+        EO([External Organization])
+    end
+
+    subgraph ocp [OpenShift]
+        API[API Endpoint]
+        Camel[Apache Camel]
+        S3[(S3 / ODF)]
+    end
+
+    subgraph backend [Remote Backend]
+        DB[(Database)]
+    end
+
+    EO -->|EDI Purchase Orders| API
+    API --> Camel
+    Camel -->|XML data| SI
+    SI{{Service Interconnect}} -.->|Secure Link| DB
+    DB -.-> SI
+    SI --> Camel
+    Camel -->|PDF Invoices| S3
+----
+
+{empty} +
+
+*Sequence of Operations*
+
+The sequence diagram below details each step the Camel integration performs when processing a Purchase Order:
+
+[.mermaid]
+----
+sequenceDiagram
+    actor ExternalOrg as External Organization
+    participant Camel
+    participant ServiceInterconnect as Service Interconnect
+    participant DB@{ "type": "database", "alias": "Database" }
+    participant S3Bucket@{ "type": "collections", "alias": "S3 Bucket" }
+    ExternalOrg->>Camel: Send PO (EDI)
+    Camel->>Camel: Transform EDI → XML
+    Camel->>ServiceInterconnect: Push XML data
+    ServiceInterconnect->>DB: Store data
+    DB-->>ServiceInterconnect: Confirmation
+    ServiceInterconnect-->>Camel: Data saved
+    Camel->>Camel: Render PDF from XML
+    Camel->>S3Bucket: Upload PDF
+    S3Bucket-->>Camel: Upload complete
+----
+
+{empty} +

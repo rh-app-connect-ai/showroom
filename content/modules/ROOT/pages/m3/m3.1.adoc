@@ -1,0 +1,43 @@
+:imagesdir: ../../assets/images
+:page-time: 5
+include::partial$style.adoc[]
+
+[id='lab3-service-interconnect']
+== Enabling Database Connectivity
+
+The backend database is hosted on a separate infrastructure and is not directly reachable from the OpenShift cluster. Before implementing the data flow, you need to establish a secure connection using {rhsi}.
+
+{empty} +
+
+*What is {rhsi}?*
+
+{rhsi} creates secure application-level connections between services running in different locations — without requiring VPNs, firewall rules, or exposing services to the public network.
+
+{empty} +
+
+The diagram below shows the connectivity you will establish:
+
+[.mermaid]
+----
+flowchart LR
+    subgraph ocp [OpenShift Cluster]
+        Camel[Apache Camel]
+        SVC[Local Service]
+    end
+
+    SI{{Service Interconnect}} -.->|Secure Link| SI2{{Service Interconnect}}
+
+    subgraph backend [Remote Backend]
+        DB[(Database)]
+    end
+
+    Camel --> SVC
+    SVC --- SI
+    SI2 --- DB
+----
+
+{empty} +
+
+With {rhsi}, Camel connects to a local service endpoint as if the database were running locally. Behind the scenes, {rhsi} routes the traffic securely to the remote database.
+
+{empty} +

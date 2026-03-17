@@ -19,3 +19,150 @@ my-fallback-password
 REPLACE
 ****
 
+Example raw diagram:
+
+[source]
+----
+                      +---------------------+
+                      |   Chat Interface    |
+                      | (Bearer API Key)    |
+                      +---------+-----------+
+                                |
+                                v
+                      +---------------------+
+                      |      Gateway        |
+                      | (internal-gateway)  |
+                      +---------+-----------+
+                                |
+                                v
+                  +---------------------------+
+                  |        HTTPRoute          |
+                  |    (ai-proxy-route)       |
+                  |                           |
+                  |  +---------------------+  |
+                  |  |     AuthPolicy      |  |
+                  |  | (API key + groups)  |  |
+                  |  +---------------------+  |
+                  |                           |
+                  |  +---------------------+  |
+                  |  | TokenRateLimitPolicy|  |
+                  |  | (per-user token     |  |
+                  |  |  budget)            |  |
+                  |  +---------------------+  |
+                  +------------+--------------+
+                               |
+                               v
+                      +---------------------+
+                      |       LLM API       |                
+                      +---------------------+
+----
+
+Mermaid version:
+
+[.mermaid]
+----
+flowchart TD
+    Chat[Chat Interface\nBearer API Key]
+    GW[Gateway\ninternal-gateway]
+
+    subgraph route [HTTPRoute — ai-proxy-route]
+        Auth[AuthPolicy\nAPI key + groups]
+        Token[TokenRateLimitPolicy\nper-user token budget]
+    end
+
+    LLM[LLM API]
+
+    Chat --> GW
+    GW --> route
+    Auth ~~~ Token
+    route --> LLM
+----
+
+Dark theme:
+
+[.mermaid]
+----
+%%{init: {'theme': 'dark'}}%%
+flowchart TD
+    Chat[Chat Interface\nBearer API Key]
+    GW[Gateway\ninternal-gateway]
+
+    subgraph route [HTTPRoute — ai-proxy-route]
+        Auth[AuthPolicy\nAPI key + groups]
+        Token[TokenRateLimitPolicy\nper-user token budget]
+    end
+
+    LLM[LLM API]
+
+    Chat --> GW
+    GW --> route
+    Auth ~~~ Token
+    route --> LLM
+----
+
+Forest theme:
+
+[.mermaid]
+----
+%%{init: {'theme': 'forest'}}%%
+flowchart TD
+    Chat[Chat Interface\nBearer API Key]
+    GW[Gateway\ninternal-gateway]
+
+    subgraph route [HTTPRoute — ai-proxy-route]
+        Auth[AuthPolicy\nAPI key + groups]
+        Token[TokenRateLimitPolicy\nper-user token budget]
+    end
+
+    LLM[LLM API]
+
+    Chat --> GW
+    GW --> route
+    Auth ~~~ Token
+    route --> LLM
+----
+
+Neutral theme:
+
+[.mermaid]
+----
+%%{init: {'theme': 'neutral'}}%%
+flowchart TD
+    Chat[Chat Interface\nBearer API Key]
+    GW[Gateway\ninternal-gateway]
+
+    subgraph route [HTTPRoute — ai-proxy-route]
+        Auth[AuthPolicy\nAPI key + groups]
+        Token[TokenRateLimitPolicy\nper-user token budget]
+    end
+
+    LLM[LLM API]
+
+    Chat --> GW
+    GW --> route
+    Auth ~~~ Token
+    route --> LLM
+----
+
+Custom Red Hat-inspired:
+
+[.mermaid]
+----
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e00', 'primaryTextColor': '#fff', 'primaryBorderColor': '#b00', 'lineColor': '#333', 'secondaryColor': '#f5f5f5', 'tertiaryColor': '#fff0f0'}}}%%
+flowchart TD
+    Chat[Chat Interface\nBearer API Key]
+    GW[Gateway\ninternal-gateway]
+
+    subgraph route [HTTPRoute — ai-proxy-route]
+        Auth[AuthPolicy\nAPI key + groups]
+        Token[TokenRateLimitPolicy\nper-user token budget]
+    end
+
+    LLM[LLM API]
+
+    Chat --> GW
+    GW --> route
+    Auth ~~~ Token
+    route --> LLM
+----
+

@@ -22,6 +22,9 @@
 
 * xref:m3/m3.0.adoc[Lab 3 - Ingest Service]
 ** xref:m3/m3.0.adoc[Introduction]
+** xref:m3/m3.1.adoc[Enabling Database Connectivity]
+** xref:m3/m3.2.adoc[Flow Implementation]
+** xref:m3/m3.3.adoc[Test and Deploy]
 
 * xref:m4/m4.0.adoc[Lab 4 - AI Customer Support]
 ** xref:m4/m4.0.adoc[Introduction]

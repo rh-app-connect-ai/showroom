@@ -57,7 +57,7 @@ Fetches data from the docserver and replaces `REPLACE` tokens with the response.
 [.copypaste]
 ****
 [.path]
-/credentials/im/{user-username}
+/credentials/im
 
 REPLACE
 ****
@@ -71,7 +71,7 @@ If the server is unavailable, `[.default]` values are shown instead of the built
 [.copypaste]
 ****
 [.path]
-/credentials/im/{user-username}
+/credentials/im
 
 [.default]
 fallback-password
@@ -88,7 +88,7 @@ Multiple `REPLACE` tokens are substituted in order. Defaults are comma-separated
 [.copypaste]
 ****
 [.path]
-/configuration/matrix/{user-username}
+/configuration/matrix
 
 [.default]
 fallback-token, fallback-room
@@ -207,6 +207,64 @@ Description text for the tile card.
 ### Used in
 
 `index.adoc`
+
+---
+
+## Mermaid Diagrams
+
+Client-side rendering of Mermaid diagrams (flowcharts, sequence diagrams, etc.).
+
+**File:** `mermaid.adoc`
+
+### Usage
+
+Use a listing block with the `[.mermaid]` role:
+
+```asciidoc
+[.mermaid]
+----
+sequenceDiagram
+    actor User
+    participant API
+    participant DB@{ "type": "database", "alias": "Database" }
+    User->>API: Request
+    API->>DB: Query
+    DB-->>API: Result
+    API-->>User: Response
+----
+```
+
+### Flowchart example
+
+```asciidoc
+[.mermaid]
+----
+flowchart LR
+    A[Service A] --> B[Service B]
+    B --> C[(Database)]
+----
+```
+
+### Behavior
+
+- Mermaid JS is loaded from CDN only when `[.mermaid]` blocks are present on the page
+- Raw listing blocks are hidden by CSS until JS transforms them
+- Configuration is defined in `mermaid.adoc` (e.g. `mirrorActors: false` hides duplicated actor boxes at the bottom of sequence diagrams)
+- Supports all Mermaid diagram types: sequence, flowchart, class, state, etc.
+- Participant shapes in sequence diagrams use `@{ "type": "database" }` JSON syntax
+
+### Participant shape types (sequence diagrams)
+
+| Type | Syntax | Shape |
+|------|--------|-------|
+| Default | `participant Name` | Rectangle |
+| Actor | `actor Name` | Stick figure |
+| Database | `participant DB@{ "type": "database", "alias": "Label" }` | Cylinder |
+| Collections | `participant S3@{ "type": "collections", "alias": "Label" }` | Stacked boxes |
+| Queue | `participant Q@{ "type": "queue", "alias": "Label" }` | Queue |
+| Boundary | `participant B@{ "type": "boundary", "alias": "Label" }` | Boundary |
+| Entity | `participant E@{ "type": "entity", "alias": "Label" }` | Entity |
+| Control | `participant C@{ "type": "control", "alias": "Label" }` | Control |
 
 ---
 

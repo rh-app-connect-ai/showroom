@@ -1,0 +1,10 @@
+:imagesdir: ../../assets/images
+:page-time: 5
+include::partial$style.adoc[]
+
+[id='lab3-test-deploy']
+== Test and Deploy
+
+With the ingestion flow implemented, you will now run it locally to validate, then deploy it to OpenShift.
+
+{empty} +
