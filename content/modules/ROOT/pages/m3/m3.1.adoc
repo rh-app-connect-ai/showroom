@@ -1,17 +1,13 @@
 :imagesdir: ../../assets/images
-:page-time: 5
+:page-time: 10
 include::partial$style.adoc[]
 
 [id='lab3-service-interconnect']
 == Enabling Database Connectivity
 
-The backend database is hosted on a separate infrastructure and is not directly reachable from the OpenShift cluster. Before implementing the data flow, you need to establish a secure connection using {rhsi}.
+The backend database is hosted in an isolated namespace (`shared-database`) with strict network policies — no direct access is allowed from other namespaces. Before implementing the data flow, you need to establish a secure connection using {rhsi}.
 
-{empty} +
-
-*What is {rhsi}?*
-
-{rhsi} creates secure application-level connections between services running in different locations — without requiring VPNs, firewall rules, or exposing services to the public network.
+{rhsi} creates encrypted application-level connections between services running in different locations using the Skupper protocol — without requiring VPNs, firewall rules, or exposing services to the public network. Once linked, a local service is created in your namespace that transparently forwards traffic to the remote database.
 
 {empty} +
 
@@ -20,15 +16,15 @@ The diagram below shows the connectivity you will establish:
 [.mermaid]
 ----
 flowchart LR
-    subgraph ocp [OpenShift Cluster]
+    subgraph ocp [Your Namespace]
         Camel[Apache Camel]
         SVC[Local Service]
     end
 
     SI{{Service Interconnect}} -.->|Secure Link| SI2{{Service Interconnect}}
 
-    subgraph backend [Remote Backend]
-        DB[(Database)]
+    subgraph backend [shared-database Namespace]
+        DB[(PostgreSQL)]
     end
 
     Camel --> SVC
@@ -38,6 +34,253 @@ flowchart LR
 
 {empty} +
 
-With {rhsi}, Camel connects to a local service endpoint as if the database were running locally. Behind the scenes, {rhsi} routes the traffic securely to the remote database.
+=== Architecture Overview
+
+The server side has been partially configured by your platform team:
+
+* A *Site* in the `shared-database` namespace
+* A *Connector* that bridges the Skupper network to the PostgreSQL service on port `5432`
+
+Your job is to:
+
+. Prepare your namespace as a *listening site* that can accept incoming connections
+. Generate an *AccessGrant* so the database can connect to you
+. Create an *AccessToken* in the database namespace to establish the link
+. Create a *Listener* to expose the remote database as a local service
 
 {empty} +
+
+=== Before You Begin
+
+Your database credentials:
+
+[cols="1,1"]
+|===
+| Database | `labdb`
+| Username | `{username}`
+| Password | _provided by your instructor_
+|===
+
+{empty} +
+
+=== Step 0: Explore the Server Side (Optional)
+
+You have read-only access to the `shared-database` namespace. Take a moment to inspect what the platform team has set up.
+
+View the Skupper resources:
+
+[.copypaste]
+****
+oc get site,connector -n shared-database
+****
+
+Inspect the Site:
+
+[.copypaste]
+****
+oc get site database-site -n shared-database -o yaml
+****
+
+Inspect the Connector (note how it targets the `postgres` service):
+
+[.copypaste]
+****
+oc get connector postgres -n shared-database -o yaml
+****
+
+{empty} +
+
+=== Step 1: Create a Site in Your Namespace
+
+Create a Site with `linkAccess` enabled. This makes your namespace a *listening site* that can accept incoming connections from the database.
+
+[.copypaste]
+****
+cat <<EOF | oc apply -f -
+apiVersion: skupper.io/v2alpha1
+kind: Site
+metadata:
+  name: {username}-site
+  namespace: {username}-devspaces
+spec:
+  linkAccess: default
+EOF
+****
+
+Verify the Site is ready:
+
+[.copypaste]
+****
+oc get site {username}-site -n {username}-devspaces
+****
+
+Wait until the `STATUS` column shows `Ready`.
+
+{empty} +
+
+=== Step 2: Create an AccessGrant
+
+The AccessGrant generates credentials that the database site will use to connect to your namespace.
+
+[.copypaste]
+****
+cat <<EOF | oc apply -f -
+apiVersion: skupper.io/v2alpha1
+kind: AccessGrant
+metadata:
+  name: grant-{username}
+  namespace: {username}-devspaces
+spec:
+  redemptionsAllowed: 1
+  expirationWindow: 168h
+EOF
+****
+
+Wait for the AccessGrant to be ready and retrieve its details:
+
+[.copypaste]
+****
+oc get accessgrant grant-{username} -n {username}-devspaces
+****
+
+Once ready, the grant's `.status` will contain the `url`, `code`, and `ca` fields needed for the next step.
+
+{empty} +
+
+=== Step 3: Create an AccessToken in the Database Namespace
+
+Now create an AccessToken in the `shared-database` namespace to establish the link from the database to your namespace. The token must be named `token-{username}`.
+
+Extract the grant details and create the AccessToken:
+
+[.copypaste]
+****
+URL=$(oc get accessgrant grant-{username} -n {username}-devspaces -o jsonpath='\{.status.url\}')
+CODE=$(oc get accessgrant grant-{username} -n {username}-devspaces -o jsonpath='\{.status.code\}')
+CA=$(oc get accessgrant grant-{username} -n {username}-devspaces -o jsonpath='\{.status.ca\}' | sed 's/^/    /')
+
+cat <<EOF | oc apply -f -
+apiVersion: skupper.io/v2alpha1
+kind: AccessToken
+metadata:
+  name: token-{username}
+  namespace: shared-database
+spec:
+  url: "$\{URL}"
+  code: "$\{CODE}"
+  ca: |
+$\{CA}
+EOF
+****
+
+IMPORTANT: The AccessToken name *must* follow the pattern `token-<your-username>`. Any other name will be rejected.
+
+After a few moments, a *Link* resource is automatically created in `shared-database`. Verify:
+
+[.copypaste]
+****
+oc get link -n shared-database
+****
+
+Wait until the link status shows `Ready`.
+
+{empty} +
+
+=== Step 4: Create a Listener to Expose the Database Locally
+
+The Listener creates a local service in your namespace that forwards traffic to the remote PostgreSQL database through the encrypted link.
+
+[.copypaste]
+****
+cat <<EOF | oc apply -f -
+apiVersion: skupper.io/v2alpha1
+kind: Listener
+metadata:
+  name: postgres-listener
+  namespace: {username}-devspaces
+spec:
+  routingKey: postgres
+  host: postgres
+  port: 5432
+EOF
+****
+
+IMPORTANT: The `routingKey` must match the one configured on the Connector in the `shared-database` namespace. The platform team set it to `postgres`.
+
+Verify the Listener is ready:
+
+[.copypaste]
+****
+oc get listener postgres-listener -n {username}-devspaces
+****
+
+You should also see a new `postgres` service in your namespace:
+
+[.copypaste]
+****
+oc get svc postgres -n {username}-devspaces
+****
+
+{empty} +
+
+=== Step 5: Connect to the Database
+
+You can now connect to PostgreSQL as if it were running locally in your namespace.
+
+From your DevSpaces terminal:
+
+[.copypaste]
+****
+psql -h postgres -U {username} -d labdb
+****
+
+Enter your password when prompted.
+
+Once connected, try the following queries.
+
+View your invoices:
+
+[.copypaste]
+****
+SELECT id, version FROM invoices;
+****
+
+View the full invoice XML:
+
+[.copypaste]
+****
+SELECT data FROM invoices WHERE id = '61356291';
+****
+
+NOTE: Your schema (`{username}`) is set as the default search path. You can only see your own data — other users' schemas are isolated from you.
+
+{empty} +
+
+=== Summary
+
+You have successfully:
+
+* Inspected the server-side Service Interconnect configuration
+* Created a listening Site in your namespace with `linkAccess` enabled
+* Generated an AccessGrant for the database to connect to you
+* Created an AccessToken in the database namespace to establish the link
+* Created a Listener that exposes the remote database as a local service
+* Connected to the database and queried your invoice data
+
+The database namespace is fully isolated — the connection was initiated *from* the database *to* your namespace through an encrypted Skupper link. No network policy changes, no VPNs, no elevated permissions required.
+
+{empty} +
+
+=== Cleanup
+
+To tear down the Service Interconnect resources you created, delete them in reverse order:
+
+[.copypaste]
+****
+oc delete accesstoken token-{username} -n shared-database
+oc delete listener postgres-listener -n {username}-devspaces
+oc delete accessgrant grant-{username} -n {username}-devspaces
+oc delete site {username}-site -n {username}-devspaces
+****
+
+This removes the link, listener, grant, and site. The server-side resources in `shared-database` (Site, Connector) are not affected.
