@@ -153,7 +153,7 @@ internal-gateway   openshift-default   internal-gateway-openshift-default.ai-gat
 +
 [.copypaste]
 ----
-oc describe httproute -n user1-devspaces | grep -E "Name:|Backend|Hostnames"
+oc describe httproute -n {user-username}-devspaces | grep -E "Name:|Backend|Hostnames"
 ----
 +
 This command list the HTTPRoute details including the backend reference to the LLM API and the gateway it is attached to (which is the `internal-gateway` that you verified earlier). 
@@ -194,8 +194,7 @@ Contact the workshop facilitator to ensure your namespace is properly provisione
 Two API key secrets have been pre-created. Understanding their structure is important because both policies reference the labels and annotations on these secrets.
 
 **Free-tier user:**
-
-****
+----
 apiVersion: v1
 kind: Secret
 metadata:
@@ -210,7 +209,7 @@ metadata:
 stringData:
   api_key: iamafreeuser
 type: Opaque
-****
+----
 
 Key fields in this secret:
 
@@ -233,7 +232,7 @@ Now that you understand the architecture, it's time to lock down the LLM endpoin
 
 {empty} +
 
-=== Step 1: Review the AuthPolicy
+=== Step 1: Review and Apply the AuthPolicy
 
 Examine the AuthPolicy and apply it by pasting the following command in your terminal:
 
@@ -275,8 +274,8 @@ spec:
         opa:
           rego: |
             groups := split(object.get(input.auth.identity.metadata.annotations, "kuadrant.io/groups", ""), ",")
-            allow { groups[_] == "free" }
-            allow { groups[_] == "gold" }
+            allow { groups[\_] == "free" }
+            allow { groups[\_] == "gold" }
 EOF
 ****
 
@@ -292,59 +291,41 @@ Key fields in this policy:
 
 {empty} +
 
-=== Step 2: Apply the AuthPolicy via the OpenShift Console
+
+{empty} +
+
+=== Step 2: Verify the AuthPolicy
 
 {blank}
 
-. In the _OpenShift Console_, navigate to your namespace `{user-username}-ns`.
+. From the devspaces terminal, run the following command to check that the AuthPolicy was created successfully:
 +
+[.copypaste]
+----
+oc describe authpolicy -n {user-username}-devspaces | grep -E "Name:|Target Ref:|Type:|Status:"
+----
+
+. You should see output confirming the AuthPolicy exists, is targeting the correct HTTPRoute, and is in an enforced state, similar to:
+----
+Name:         ai-proxy-auth
+  Target Ref:
+    Name:   ai-proxy-route
+Status:
+    Status:                True
+    Type:                  Accepted
+    Status:                True
+    Type:                  Enforced
+----
 {empty} +
-
-. Click the **+** (Import YAML) button in the top navigation bar.
-+
-{empty} +
-
-. Paste the AuthPolicy YAML from Step 1 above into the editor.
-+
-[NOTE]
-====
-Make sure the `namespace` field is set to `{user-username}-ns` before importing.
-====
-+
-{empty} +
-
-. Click **Create**.
-
-// TODO: Add screenshot of the OpenShift Console Import YAML screen with the AuthPolicy
-image::m5/authpolicy_import_yaml.png[Import AuthPolicy via OpenShift Console - placeholder,width=80%]
-
-{empty} +
-
-=== Step 3: Verify the AuthPolicy
-
-{blank}
-
-. In the _OpenShift Console_, navigate to the _Connectivity Link_ plugin.
-+
-{empty} +
-
-. Select your namespace `{user-username}-ns`.
-+
-{empty} +
-
-. Locate the `ai-proxy-auth` AuthPolicy and confirm its status shows **Enforced**.
-
-// TODO: Add screenshot of the Connectivity Link plugin showing AuthPolicy status as Enforced
-image::m5/authpolicy_status_plugin.png[AuthPolicy status in Connectivity Link plugin - placeholder,width=80%]
 
 {empty} +
 
 [.verification]
 ****
-Does the `ai-proxy-auth` AuthPolicy show status **Enforced** in the _Connectivity Link_ plugin?
+Does the `ai-proxy-auth` AuthPolicy show status **True** and Type **Enforced** ?
 
 [.success]
-The AuthPolicy is active. Proceed to test authentication.
+The AuthPolicy is enforced. Proceed to test authentication.
 
 [.fail]
 Check that you pasted the correct YAML and that the namespace is set to `{user-username}-ns`.
@@ -352,7 +333,7 @@ Check that you pasted the correct YAML and that the namespace is set to `{user-u
 
 {empty} +
 
-=== Step 4: Test Authentication via the Chat Interface
+=== Step 3: Test Authentication via the Chat Interface
 
 Now test that the AuthPolicy is working using the same chat interface from Phase 3.
 
@@ -376,7 +357,7 @@ Example:
 
 [.copypaste]
 ****
-forage.myagent.agent.api.key=iamafree{user-username}
+forage.myagent.agent.api.key=iamafreeuser
 ****
 
 // TODO: Add screenshot showing the properties file with the API key field
@@ -435,14 +416,13 @@ Review the AuthPolicy YAML and ensure the API key secrets exist in `kuadrant-sys
 
 {empty} +
 
-== Lab 2: Enforcing Token Budgets with Rate Limiting
+== Enforcing Token Budgets with Rate Limiting
 
 Now that access is secured, you will add a **TokenRateLimitPolicy** to control how many LLM tokens each user can consume. This is the key differentiator for AI workloads -- unlike traditional rate limiting (which counts requests), token rate limiting counts the actual **tokens used** in LLM responses, giving you fine-grained cost control over AI consumption.
 
 {empty} +
 
-=== Step 1: Review the TokenRateLimitPolicy
-
+=== Step 1: Review and Apply the AuthPolicy
 Examine the TokenRateLimitPolicy and apply it by pasting the following command in your terminal:
 
 [.copypaste]
@@ -498,65 +478,47 @@ Notice how the TokenRateLimitPolicy depends on the AuthPolicy:
 
 * The `auth.identity.groups` and `auth.identity.userid` fields referenced here are populated by the AuthPolicy's `response.success.filters` section.
 * Without the AuthPolicy, the TokenRateLimitPolicy would have no identity context to evaluate.
-
-This is a key pattern in _Connectivity Link_ -- **policies compose together** through the _Gateway API_.
 ====
 
 {empty} +
 
-=== Step 2: Apply the TokenRateLimitPolicy via the OpenShift Console
 
-{blank}
-
-. In the _OpenShift Console_, navigate to your namespace `{user-username}-ns`.
-+
-{empty} +
-
-. Click the **+** (Import YAML) button in the top navigation bar.
-+
-{empty} +
-
-. Paste the TokenRateLimitPolicy YAML from Step 1 above into the editor.
-+
-[NOTE]
-====
-Make sure the `namespace` field is set to `{user-username}-ns` before importing.
-====
-+
-{empty} +
-
-. Click **Create**.
-
-// TODO: Add screenshot of the OpenShift Console Import YAML screen with the TokenRateLimitPolicy
-image::m5/trlp_import_yaml.png[Import TokenRateLimitPolicy via OpenShift Console - placeholder,width=80%]
-
-{empty} +
 
 === Step 3: Verify the TokenRateLimitPolicy
 
-{blank}
-
-. In the _OpenShift Console_, navigate to the _Connectivity Link_ plugin.
+. From the devspaces terminal, run the following command to check that the AuthPolicy was created successfully:
 +
-{empty} +
+[.copypaste]
+----
+oc describe tokenratelimitpolicy -n {user-username}-devspaces | grep -iE "Name:|target|free:|gold:|limit:|window:|type:|status:"
+----
 
-. Select your namespace `{user-username}-ns`.
-+
-{empty} +
+. You should see output confirming the AuthPolicy exists, is targeting the correct HTTPRoute, and is in an enforced state, similar to:
+----
+Name:         openai-token-limits
+    Free:
+        Limit:   50
+        Window:  1m
+    Gold:
+        Limit:   200
+        Window:  1m
+  Target Ref:
+    Name:   ai-proxy-route
+Status:
+    Status:                True
+    Type:                  Accepted
+    Status:                True
+    Type:                  Enforced
+----
 
-. Locate the `openai-token-limits` TokenRateLimitPolicy and confirm its status shows **Enforced**.
 
-// TODO: Add screenshot of the Connectivity Link plugin showing TokenRateLimitPolicy status as Enforced
-image::m5/trlp_status_plugin.png[TokenRateLimitPolicy status in Connectivity Link plugin - placeholder,width=80%]
-
-{empty} +
 
 [.verification]
 ****
-Does the `openai-token-limits` TokenRateLimitPolicy show status **Enforced** in the _Connectivity Link_ plugin?
+Does the  TokenRateLimitPolicy show status **Enforced**?
 
 [.success]
-The rate limit policy is active. Proceed to test token limits.
+The token rate limit policy is active. Proceed to test token limits.
 
 [.fail]
 Check that you pasted the correct YAML and that the namespace is set to `{user-username}-ns`.
@@ -572,22 +534,12 @@ Use the chat interface to test the rate limiting behavior.
 
 ==== Test 1: Free-tier token limits
 
-{blank}
-
-. Open `forage-agent-factory.properties` and set:
-+
-[.copypaste]
-****
-forage.myagent.agent.api.key=iamafreeuser
-****
-+
-{empty} +
-
+{
 . Send a message that asks the LLM to generate a longer response (e.g., _"Explain Kubernetes in 500 words"_).
 +
 {empty} +
 
-. Continue sending messages in quick succession.
+. Continue sending the same messages in quick succession.
 +
 {empty} +
 
@@ -618,7 +570,7 @@ forage.myagent.agent.api.key=iamagolduser
 +
 {empty} +
 
-. Send similar messages to the LLM.
+. Send similar messages to the LLM using the chat interface in quick succession.
 +
 {empty} +
 
