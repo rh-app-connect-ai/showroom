@@ -62,7 +62,7 @@ After executing the commands above, have a look in your editor's tree view to co
 [.indent2]
 📁 workshop +
 &nbsp;&nbsp;📁 lab +
-&nbsp;&nbsp;&nbsp;&nbsp;📁 ingest +
+&nbsp;&nbsp;&nbsp;&nbsp;📁 query +
 pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>&nbsp;⚙&nbsp;&nbsp;</b></mark>] *application.properties* +
 pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *db.camel.yaml* +
 

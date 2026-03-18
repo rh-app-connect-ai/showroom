@@ -155,9 +155,9 @@ Extract the grant details and create the AccessToken:
 
 [.copypaste]
 ****
-URL=$(oc get accessgrant grant-{username} -n {username}-devspaces -o jsonpath='\{.status.url\}')
-CODE=$(oc get accessgrant grant-{username} -n {username}-devspaces -o jsonpath='\{.status.code\}')
-CA=$(oc get accessgrant grant-{username} -n {username}-devspaces -o jsonpath='\{.status.ca\}' | sed 's/^/    /')
+URL=$(oc get accessgrant grant-{username} -n {username}-devspaces -o jsonpath='{.status.url}')
+CODE=$(oc get accessgrant grant-{username} -n {username}-devspaces -o jsonpath='{.status.code}')
+CA=$(oc get accessgrant grant-{username} -n {username}-devspaces -o jsonpath='{.status.ca}' | sed 's/^/    /')
 
 cat <<EOF | oc apply -f -
 apiVersion: skupper.io/v2alpha1
@@ -166,10 +166,10 @@ metadata:
   name: token-{username}
   namespace: shared-database
 spec:
-  url: "$\{URL}"
-  code: "$\{CODE}"
+  url: "${URL}"
+  code: "${CODE}"
   ca: |
-$\{CA}
+${CA}
 EOF
 ****
 
