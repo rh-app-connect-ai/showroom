@@ -211,21 +211,6 @@ flowchart LR
 
 {empty} +
 
-=== Before You Begin
-
-Your database credentials:
-
-[cols="1,1"]
-|===
-| Database | `labdb`
-| Username | `{username}`
-| Password | _provided by your instructor_
-|===
-
-Now let's set up the connection step by step.
-
-{empty} +
-
 === Step 0: Explore the Server Side (Optional)
 
 You have read-only access to the `shared-database` namespace. Take a moment to inspect what the platform team has set up.
@@ -386,7 +371,16 @@ Wait for the AccessGrant to be ready and retrieve its details:
 oc get accessgrant grant-{username} -n {username}-devspaces
 ****
 
-Once ready, the grant's `.status` will contain the `url`, `code`, and `ca` fields needed for the next step.
+Wait until the `STATUS` column shows `Ready`:
+
+{blank}
+
+++++
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">NAME            REDEMPTIONS ALLOWED   REDEMPTIONS MADE   EXPIRATION             STATUS   MESSAGE
+grant-userN     1                                        2026-03-27T11:29:08Z   Ready    OK</pre>
+++++
+
+Your AccessGrant is ready. Here's your progress:
 
 {blank}
 
@@ -443,7 +437,14 @@ After a few moments, a *Link* resource is automatically created in `shared-datab
 oc get link -n shared-database
 ****
 
-Wait until the link status shows `Ready`.
+Wait until the link status shows `Ready`:
+
+{blank}
+
+++++
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">NAME            STATUS   REMOTE SITE    MESSAGE
+token-userN     Ready    userN-site     OK</pre>
+++++
 
 Almost there — one more resource to go:
 
@@ -495,6 +496,15 @@ Verify the Listener is ready:
 oc get listener postgres-listener -n {username}-devspaces
 ****
 
+You should see output similar to:
+
+{blank}
+
+++++
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">NAME                ROUTING KEY   PORT   HOST       STATUS   HAS MATCHING CONNECTOR   MESSAGE
+postgres-listener   postgres      5432   postgres   Ready    true                     OK</pre>
+++++
+
 You should also see a new `postgres` service in your namespace:
 
 {blank}
@@ -524,70 +534,127 @@ flowchart LR
 
 === Step 5: Connect to the Database
 
-You can now connect to PostgreSQL as if it were running locally in your namespace.
+You can now connect to PostgreSQL as if it were running locally. Let's use a Camel route to query the database:
 
-From your DevSpaces terminal:
+{blank}
+
+[cols="1a,1a"]
+|===
+| *Diagram* | *Camel Route (YAML)*
+
+|
+[.mermaid]
+----
+flowchart LR
+    T(timer) --> SQL(sql:SELECT) --> L(log)
+----
+
+|
+[source,yaml]
+....
+- route:
+    id: query-invoices
+    from:
+      uri: timer:queryInvoices
+      parameters:
+        repeatCount: 1
+      steps:
+        - to:
+            uri: sql:SELECT count(*) FROM invoices
+        - log:
+            message: "${body}"
+....
+
+|===
+
+Run the route:
 
 {blank}
 
 [.copypaste]
 ****
-psql -h postgres -U {username} -d labdb
+[.path]
+/credentials/im
+
+camel run query/* \
+--property=spring.datasource.username={username} \
+--property=spring.datasource.password=REPLACE
 ****
 
-Enter your password when prompted.
+The last line — `[{count=1}]` — confirms the Camel route successfully connected to the database and ran the query. The output should be similar to:
 
-Once connected, try the following queries.
-
-View your invoices:
-
-{blank}
-
-[.copypaste]
-****
-SELECT id, version FROM invoices;
-****
-
-View the full invoice XML:
-
-{blank}
-
-[.copypaste]
-****
-SELECT data FROM invoices WHERE id = '61356291';
-****
-
-NOTE: Your schema (`{username}`) is set as the default search path. You can only see your own data — other users' schemas are isolated from you.
+++++
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1; white-space: pre-wrap"><span style="color:grey;font-family: monospace;font-size: 12px;">2026-03-20 13:09:41.662 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [           main] <span style="color: cyan">.impl.engine.AbstractCamelContext</span><span style="color: white">  : Apache Camel 4.18.0 (db) started in 263ms (build:0ms ...)</span>
+2026-03-20 13:09:42.579 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">com.zaxxer.hikari.HikariDataSource</span><span style="color: white"> : HikariPool-1 - Starting...</span>
+2026-03-20 13:09:42.760 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">com.zaxxer.hikari.pool.HikariPool</span><span style="color: white">  : HikariPool-1 - Added connection [class name]</span>
+2026-03-20 13:09:42.762 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">com.zaxxer.hikari.HikariDataSource</span><span style="color: white"> : HikariPool-1 - Start completed.</span>
+2026-03-20 13:09:42.814 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">db.yaml:10</span><span style="color: white">                         : [{count=1}]</span>
+</span></pre>
+++++
 
 {empty} +
 
 === Summary
 
-You have successfully:
-
-* Inspected the server-side Service Interconnect configuration
-* Created a listening Site in your namespace with `linkAccess` enabled
-* Generated an AccessGrant for the database to connect to you
-* Created an AccessToken in the database namespace to establish the link
-* Created a Listener that exposes the remote database as a local service
-* Connected to the database and queried your invoice data
-
-The database namespace is fully isolated — the connection was initiated *from* the database *to* your namespace through an encrypted Skupper link. No network policy changes, no VPNs, no elevated permissions required.
-
-{empty} +
-
-=== Cleanup
-
-To tear down the Service Interconnect resources you created, delete them in reverse order:
+Here's the full picture of what you've built:
 
 {blank}
 
-[.copypaste]
-****
-oc delete accesstoken token-{username} -n shared-database
-oc delete listener postgres-listener -n {username}-devspaces
-oc delete accessgrant grant-{username} -n {username}-devspaces
-oc delete site {username}-site -n {username}-devspaces
-****
+[.mermaid]
+----
+flowchart LR
+    subgraph yours [" "]
+        Client[Camel Route]
+        subgraph S2 ["✅ Site(2)"]
+            Listener((Listener))
+            Grant[AccessGrant]
+        end
+    end
 
-This removes the link, listener, grant, and site. The server-side resources in `shared-database` (Site, Connector) are not affected.
+    Client --> Listener
+
+    S2 -.-|"🔒 secure link"| S1
+
+    subgraph shared [" "]
+        subgraph S1 ["✅ Site(1)"]
+            Connector((Connector))
+            Token[AccessToken]
+        end
+        SVC((postgres))
+        SVC --- DB[(PostgreSQL)]
+    end
+
+    Connector --> SVC
+    Grant ~~~ Token
+
+    style S2 fill:#c8e6c9,stroke:#66bb6a
+    style S1 fill:#c8e6c9,stroke:#66bb6a
+    style Grant fill:#e8f5e9,stroke:#66bb6a
+    style Listener fill:#e8f5e9,stroke:#66bb6a
+    style Token fill:#e8f5e9,stroke:#66bb6a
+    style Connector fill:#e8f5e9,stroke:#66bb6a
+    style DB fill:#336,color:#fff
+----
+
+You have successfully:
+
+* Created a Site, AccessGrant, and Listener in your environment
+* Created an AccessToken in the database environment to establish the link
+* Used a Camel route to query the database through the encrypted link
+
+The database lives in a secure, air-tight environment — the connection was initiated *from* the database side *to* yours through an encrypted Skupper link. No network policy changes, no VPNs, no elevated permissions required.
+
+The link you've established will stay active — you'll need it in the next exercise to implement the full data flow: ingesting Purchase Orders, storing them in the database, and rendering PDF invoices.
+
+{empty} +
+
+[.verification]
+****
+Did the Camel route output show `[{count=1}]` confirming a successful database query?
+
+[.success]
+Well done — your database connectivity is ready. Continue to the next exercise.
+
+[.fail]
+Review your Service Interconnect resources and ensure the link status is `Ready` before running the Camel route again.
+****

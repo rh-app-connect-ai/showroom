@@ -32,25 +32,20 @@ image::m2/dev-close-tabs.png[width=100%]
 step 19
 ****
 +
-TIP: pass:[Run the command above anytime to reset the exercise. <details>
-  <summary>
-    <span class="triangle"></span>
-    <span class="sumtext">Click for more information</span>
-  </summary>
-<div style="margin-top: 1em; margin-left: 2em">
-<p>
+[TIP]
+--
+.Run the command above anytime to reset the exercise.
+[%collapsible]
+====
 The workshop includes handy helper scripts that let you jump to any step or reset the lab to a known good state:
-<div class="ulist">
-  <ul>
-    <li><strong>step N</strong> – reset the lab to the beginning of step N</li>
-    <li><strong>steps</strong> – list all available steps in the lab</li>
-    <li><strong>start</strong> or <strong>restart</strong> – go to the very beginning (equivalent to <code>step 1</code>)</li>
-    <li><strong>ff</strong> – fast-forward to the <strong>next</strong> step</li>
-    <li><strong>rw</strong> – rewind to the <strong>previous</strong> step</li>
-  </ul>
-</div>
-</p></div>
-</details>]
+
+* `step N` — reset the lab to the beginning of step N
+* `steps` — list all available steps in the lab
+* `start` or `restart` — go to the very beginning (equivalent to `step 1`)
+* `ff` — fast-forward to the *next* step
+* `rw` — rewind to the *previous* step
+====
+--
 +
 {empty} +
 

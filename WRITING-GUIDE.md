@@ -67,6 +67,13 @@ Example:
 ++++
 ```
 
+## Chapter Endings
+
+- **Every chapter must end with a verification block** (`[.verification]`) that asks the student to confirm their work before moving on.
+- The question should reference a concrete, observable result (e.g. specific output, a visible resource, a status).
+- The `[.success]` message should acknowledge completion and lead into the next exercise.
+- The `[.fail]` message should guide the student on what to review.
+
 ## Spacing and Layout
 
 - Use `{empty} +` for vertical spacing between sections.
