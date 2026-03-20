@@ -1,3 +1,5 @@
+@WRITING-GUIDE.md
+
 # Project Notes
 
 ## Antora Image Alignment

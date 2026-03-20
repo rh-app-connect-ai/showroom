@@ -149,7 +149,7 @@ summary  {
   padding-left: 2rem;
 }
 
-/* Collapsible block styling */
+/* Collapsible block styling — HTML passthrough details/summary */
 summary {
   cursor: pointer;
   list-style: none;
@@ -165,6 +165,35 @@ summary:hover .sumtext {
 }
 details[open] .triangle::before {
   content: "\25BC";
+}
+
+/* Collapsible block styling — native AsciiDoc [%collapsible] */
+.doc details > summary {
+  cursor: pointer;
+  list-style: none;
+  font-weight: normal !important;
+  font-style: normal !important;
+  font-size: inherit;
+  color: inherit;
+}
+.doc details > summary::-webkit-details-marker {
+  display: none;
+}
+.doc details > summary::before {
+  content: "\25B6";
+  margin-right: 0.5em;
+  text-decoration: none;
+  display: inline-block;
+}
+.doc details[open] > summary::before {
+  content: "\25BC";
+}
+.doc details > summary:hover {
+  text-decoration: underline;
+  text-decoration-skip-ink: auto;
+}
+.doc details > summary:hover::before {
+  text-decoration: none;
 }
 
 
