@@ -67,6 +67,43 @@ NOTE: Make sure the files are visible in your file explorer in the left panel of
 +
 {empty} +
 
+. Understand the Camel route
++
+The `db.camel.yaml` file contains a simple Camel route designed to query the backend database. The database lives in a secure, air-tight environment and is not reachable yet — but once you enable connectivity in the next exercise, you'll run this route to confirm the connection works:
++
+[cols="1a,1a"]
+|===
+| *Diagram* | *Camel Route (YAML)*
+
+|
+[.mermaid]
+----
+flowchart LR
+    T(timer) --> SQL(sql:SELECT) --> L(log)
+----
+
+|
+[source,yaml]
+....
+- route:
+    id: query-invoices
+    from:
+      uri: timer:queryInvoices
+      parameters:
+        repeatCount: 1
+      steps:
+        - to:
+            uri: sql:SELECT count(*) FROM invoices
+        - log:
+            message: "${body}"
+....
+
+|===
++
+The route fires once (`repeatCount: 1`), runs a `SELECT count(*)` query against the `invoices` table, and logs the result.
++
+{empty} +
+
 [.verification]
 ****
 Do you see the same folder structure and files?

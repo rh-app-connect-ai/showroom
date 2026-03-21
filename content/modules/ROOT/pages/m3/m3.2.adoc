@@ -5,7 +5,7 @@ include::partial$style.adoc[]
 [id='lab3-service-interconnect']
 == Enabling Database Connectivity
 
-Before implementing the data flow, you need a connection to the backend database. Let's see what happens when you try to reach it.
+You have a Camel route ready to query the database — but the database isn't reachable yet. Let's find out why, and enable the connection.
 
 {empty} +
 
@@ -16,21 +16,25 @@ The backend database is hosted in an isolated namespace (`shared-database`) with
 [.mermaid]
 ----
 flowchart LR
-    subgraph yours ["{username}-devspaces"]
-        Client[DB Client]
+    subgraph yoursLabel ["{username}-devspaces"]
+        subgraph yours [" "]
+            Client[DB Client]
+        end
     end
 
     Client -.-x|"❌ unreachable"| SVC
 
-    subgraph shared [shared-database]
-        SVC((postgres))
-        SVC --- DB[(PostgreSQL)]
+    subgraph sharedLabel [shared-database]
+        subgraph shared [" "]
+            SVC((svc))
+            SVC --- DB[(PostgreSQL)]
+        end
     end
 
+    style yoursLabel fill:none,stroke:none
+    style sharedLabel fill:none,stroke:none
     style DB fill:#336,color:#fff
 ----
-
-{empty} +
 
 Try it yourself — use `curl` as a simple way to test connectivity with the database:
 
@@ -77,23 +81,29 @@ Once configured, a local service is created in your namespace that transparently
 [.mermaid]
 ----
 flowchart LR
-    subgraph yours ["{username}-devspaces"]
-        Client[DB Client]
-        SI1{{"Service\nInterconnect"}}
+    subgraph yoursLabel ["{username}-devspaces"]
+        subgraph yours [" "]
+            Client[DB Client]
+            SI1{{"Service\nInterconnect"}}
+        end
     end
 
     Client --> SI1
 
     SI1 -.-|"🔒 secure link"| SI2
 
-    subgraph shared [shared-database]
-        SI2{{"Service\nInterconnect"}}
-        SVC((postgres))
-        SVC --- DB[(PostgreSQL)]
+    subgraph sharedLabel [shared-database]
+        subgraph shared [" "]
+            SI2{{"Service\nInterconnect"}}
+            SVC((svc))
+            SVC --- DB[(PostgreSQL)]
+        end
     end
 
     SI2 --> SVC
 
+    style yoursLabel fill:none,stroke:none
+    style sharedLabel fill:none,stroke:none
     style DB fill:#336,color:#fff
 ----
 
@@ -112,30 +122,37 @@ Service Interconnect uses a set of resources to establish and manage the connect
 [.mermaid]
 ----
 flowchart LR
-    subgraph yours [" "]
-        Client[DB Client]
-        subgraph S2 ["Site(2)"]
-            Listener((Listener))
-            Grant[AccessGrant]
+    subgraph yoursLabel ["{username}-devspaces"]
+        subgraph yours [" "]
+            Client[DB Client]
+            SVC2((svc))
+            subgraph S2 ["Site(2)"]
+                Listener((Listener))
+                Grant[AccessGrant]
+            end
         end
     end
 
-    Client --> Listener
+    Client --> SVC2 --> Listener
 
     S2 -.-|"🔒 secure link"| S1
 
-    subgraph shared [" "]
-        subgraph S1 ["Site(1)"]
-            Connector((Connector))
-            Token[AccessToken]
+    subgraph sharedLabel [shared-database]
+        subgraph shared [" "]
+            subgraph S1 ["Site(1)"]
+                Connector((Connector))
+                Token[AccessToken]
+            end
+            SVC((svc))
+            SVC --- DB[(PostgreSQL)]
         end
-        SVC((postgres))
-        SVC --- DB[(PostgreSQL)]
     end
 
     Connector --> SVC
     Grant ~~~ Token
 
+    style yoursLabel fill:none,stroke:none
+    style sharedLabel fill:none,stroke:none
     style S2 fill:#e8eaf6,stroke:#7986cb
     style S1 fill:#e8eaf6,stroke:#7986cb
     style Grant fill:#fff,stroke:#7986cb
@@ -172,30 +189,37 @@ Your job is to complete the client side:
 [.mermaid]
 ----
 flowchart LR
-    subgraph yours [" "]
-        Client[DB Client]
-        subgraph S2 ["✏️ Site(2)"]
-            Listener(("✏️ Listener"))
-            Grant["✏️ AccessGrant"]
+    subgraph yoursLabel2 ["{username}-devspaces"]
+        subgraph yours2 [" "]
+            Client[DB Client]
+            SVC2((svc))
+            subgraph S2 ["✏️ Site(2)"]
+                Listener(("✏️ Listener"))
+                Grant["✏️ AccessGrant"]
+            end
         end
     end
 
-    Client --> Listener
+    Client --> SVC2 --> Listener
 
     S2 -.-|"🔒 secure link"| S1
 
-    subgraph shared [" "]
-        subgraph S1 ["✅ Site(1)"]
-            Connector(("✅ Connector"))
-            Token["✏️ AccessToken"]
+    subgraph sharedLabel2 [shared-database]
+        subgraph shared2 [" "]
+            subgraph S1 ["✅ Site(1)"]
+                Connector(("✅ Connector"))
+                Token["✏️ AccessToken"]
+            end
+            SVC((svc))
+            SVC --- DB[(PostgreSQL)]
         end
-        SVC((postgres))
-        SVC --- DB[(PostgreSQL)]
     end
 
     Connector --> SVC
     Grant ~~~ Token
 
+    style yoursLabel2 fill:none,stroke:none
+    style sharedLabel2 fill:none,stroke:none
     style S2 fill:#ffe0b2,stroke:#fb8c00
     style S1 fill:#c8e6c9,stroke:#66bb6a
     style Listener fill:#fff3e0,stroke:#fb8c00
@@ -333,8 +357,8 @@ sequenceDiagram
 
     Note over S1: AccessToken
 
-    S1->>S2: Redeem token
-    S2->>S1: Transfer link details
+    S1-->>S2: Redeem token
+    S2-->>S1: Transfer link details
     S1->>S2: Create link
 
     Note over S2,S1: 🔒 secure link established
@@ -505,7 +529,25 @@ You should see output similar to:
 postgres-listener   postgres      5432   postgres   Ready    true                     OK</pre>
 ++++
 
-You should also see a new `postgres` service in your namespace:
+When a Listener is created, Service Interconnect automatically exposes the backend service as a local service in your environment:
+
+{blank}
+
+[.mermaid]
+----
+flowchart RL
+
+    subgraph S2 [" "]
+        Listener((Listener))
+    end
+    Listener -.->|creates| SVC2((svc))
+
+    style S2 fill:#c8e6c9,stroke:#66bb6a
+    style SVC2 fill:#e8f5e9,stroke:#66bb6a
+    style Listener fill:#e8f5e9,stroke:#66bb6a
+----
+
+Verify the `postgres` service is available:
 
 {blank}
 
@@ -513,6 +555,15 @@ You should also see a new `postgres` service in your namespace:
 ****
 oc get svc postgres -n {username}-devspaces
 ****
+
+You should see the service available locally:
+
+{blank}
+
+++++
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">NAME       TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+postgres   ClusterIP   172.31.121.30   &lt;none&gt;        5432/TCP   21s</pre>
+++++
 
 All resources are in place:
 
@@ -588,7 +639,7 @@ The last line — `[{count=1}]` — confirms the Camel route successfully connec
 2026-03-20 13:09:42.579 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">com.zaxxer.hikari.HikariDataSource</span><span style="color: white"> : HikariPool-1 - Starting...</span>
 2026-03-20 13:09:42.760 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">com.zaxxer.hikari.pool.HikariPool</span><span style="color: white">  : HikariPool-1 - Added connection [class name]</span>
 2026-03-20 13:09:42.762 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">com.zaxxer.hikari.HikariDataSource</span><span style="color: white"> : HikariPool-1 - Start completed.</span>
-2026-03-20 13:09:42.814 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">db.yaml:10</span><span style="color: white">                         : [{count=1}]</span>
+2026-03-20 13:09:42.814 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">db.yaml:10</span><span style="color: white">                         : <span style="background-color: yellow; color: black">[{count=1}]</span></span>
 </span></pre>
 ++++
 
@@ -603,34 +654,42 @@ Here's the full picture of what you've built:
 [.mermaid]
 ----
 flowchart LR
-    subgraph yours [" "]
-        Client[Camel Route]
-        subgraph S2 ["✅ Site(2)"]
-            Listener((Listener))
-            Grant[AccessGrant]
+    subgraph yoursLabel3 ["{username}-devspaces"]
+        subgraph yours3 [" "]
+            Client[Camel Route]
+            SVC2((svc))
+            subgraph S2 ["✅ Site(2)"]
+                Listener((Listener))
+                Grant[AccessGrant]
+            end
         end
     end
 
-    Client --> Listener
+    Client --> SVC2 --> Listener
 
     S2 -.-|"🔒 secure link"| S1
 
-    subgraph shared [" "]
-        subgraph S1 ["✅ Site(1)"]
-            Connector((Connector))
-            Token[AccessToken]
+    subgraph sharedLabel3 [shared-database]
+        subgraph shared3 [" "]
+            subgraph S1 ["✅ Site(1)"]
+                Connector((Connector))
+                Token[AccessToken]
+            end
+            SVC((svc))
+            SVC --- DB[(PostgreSQL)]
         end
-        SVC((postgres))
-        SVC --- DB[(PostgreSQL)]
     end
 
     Connector --> SVC
     Grant ~~~ Token
 
+    style yoursLabel3 fill:none,stroke:none
+    style sharedLabel3 fill:none,stroke:none
     style S2 fill:#c8e6c9,stroke:#66bb6a
     style S1 fill:#c8e6c9,stroke:#66bb6a
     style Grant fill:#e8f5e9,stroke:#66bb6a
     style Listener fill:#e8f5e9,stroke:#66bb6a
+    style SVC2 fill:#e8f5e9,stroke:#66bb6a
     style Token fill:#e8f5e9,stroke:#66bb6a
     style Connector fill:#e8f5e9,stroke:#66bb6a
     style DB fill:#336,color:#fff

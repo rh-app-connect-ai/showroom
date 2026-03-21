@@ -11,8 +11,9 @@ This file captures the author's preferences for writing workshop documentation. 
 
 ## Chapter Flow and Section Structure
 
-- **Each section should be bounded** — it covers one concept, and its ending naturally leads into the next section.
+- **Each section should be bounded** — it covers one concept, and its ending naturally leads into the next section. This applies across pages too — the closing of one page should set up the opening of the next.
 - **Avoid formulaic headings** like "The Problem" / "The Solution". Use natural, varied headings that tell the student what they're about to learn (e.g. "Why can't you reach the database?", "Bridging namespaces with Service Interconnect").
+- **Revisit opening lines when the chapter evolves.** Intro sentences set the reader's expectations for everything that follows. When a chapter's structure, content, or flow changes, re-read the opening to make sure it still accurately frames what the student will do — stale intros mislead.
 - **Never place two headings back-to-back.** After a main chapter title (`==`), always add a short introductory sentence that sets context before the first subsection (`===`). Follow it with `{empty} +` for spacing.
 - **Diagrams across sections should be additive.** If a diagram introduces elements (e.g. a service node), subsequent diagrams should keep those elements and only add new ones. Don't remove pieces between diagrams — it confuses the student.
 
@@ -27,6 +28,7 @@ This file captures the author's preferences for writing workshop documentation. 
 - **Color-coded task diagrams**: when showing what the student needs to create vs what's pre-configured, use color coding with emoji labels (✅ done, ✏️ to do) and a legend below. Use orange (`fill:#fff3e0,stroke:#fb8c00`) for student tasks and green (`fill:#e8f5e9,stroke:#66bb6a`) for pre-configured items.
 - **Sequence diagrams** for process flows (e.g. grant/token exchange): use `actor` for the student, dashed lines (`-->>`) for user directives, and solid lines (`->>`) for system actions. Keep participant labels simple when surrounding text already provides context.
 - **Conceptual language over infrastructure jargon.** Prefer "secure, air-tight environment" over "namespace" or "isolated namespace" when describing where a service lives. The student should understand the *concept* without needing to know the platform detail.
+- **Namespace labels without overlap**: wrap the inner subgraph in a transparent parent subgraph that carries the label. The parent uses `fill:none,stroke:none` to stay invisible, while the child uses `[" "]` for no label. This avoids label collision with nested subgraphs (e.g. Site containers).
 
 ## Commands and Copypaste Blocks
 
@@ -59,6 +61,7 @@ Example:
 ## Expected Output
 
 - Show expected terminal output after commands so students know what to expect.
+- When output includes `{username}`, use a generic placeholder like `userN` to keep column alignment consistent across different username lengths.
 - Use `++++` passthrough blocks (not `pass:[]`) with dark `<pre>` styling for terminal output:
 
 ```asciidoc
