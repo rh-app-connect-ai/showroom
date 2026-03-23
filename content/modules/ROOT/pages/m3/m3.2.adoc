@@ -299,7 +299,7 @@ metadata:
   name: {username}-site
   namespace: {username}-devspaces
 spec:
-  linkAccess: default
+  linkAccess: route
 EOF
 ****
 
@@ -645,6 +645,64 @@ The last line — `[{count=1}]` — confirms the Camel route successfully connec
 2026-03-20 13:09:42.762 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">com.zaxxer.hikari.HikariDataSource</span><span style="color: white"> : HikariPool-1 - Start completed.</span>
 2026-03-20 13:09:42.814 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">db.yaml:10</span><span style="color: white">                         : <span style="background-color: yellow; color: black">[{count=1}]</span></span>
 </span></pre>
+++++
+
+{empty} +
+
+=== Alternative Step 5: Configure and query
+
+Instead of passing credentials as command-line properties, you can store them in `application.properties` so they're available to all Camel routes automatically.
+
+Open `application.properties` in your editor and add the following lines:
+
+{blank}
+
+[.copypaste]
+****
+[.path]
+/credentials/im
+
+# Datasource credentials
+spring.datasource.username={username}
+spring.datasource.password=REPLACE
+****
+
+Save the file. Now you can query the database using Camel's `cmd` tool without passing credentials on the command line:
+
+{blank}
+
+[.copypaste]
+****
+camel cmd send \
+--uri "sql:SELECT count(*) FROM invoices" \
+--properties application.properties \
+--reply
+****
+
+[TIP]
+--
+.What does this command do?
+[%collapsible]
+====
+* `camel cmd send` — sends a message to a Camel endpoint from the command line
+* `--uri "sql:SELECT count(*) FROM invoices"` — runs a SQL query against the configured database
+* `--properties application.properties` — loads database connection settings (including the credentials you just added)
+* `--reply` — waits for and displays the response
+====
+--
+
+You should see output similar to:
+
+{blank}
+
+++++
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #999"><span style="color:#999">2026-03-23 10:14:08.939</span>  <span style="color:#5fafff">11530</span> <span style="color:#999">---</span> <span style="color:#5fdfdf">sql://SELECT%20count(*)%20FROM%20invoice</span> : <span style="color:#fff">Reply received</span> <span style="color:#a6e22e">(success)</span> <span style="color:#999">(304ms)</span>
+ <span style="color:#fff">Endpoint</span>  sql://SELECT%20count(*)%20FROM%20invoices
+ <span style="color:#fff">Exchange</span>  <span style="color:#999">(DefaultExchange)</span>  <span style="color:#a6e22e">InOut</span>   <span style="color:#fff">E3D444D7E02ADCD-0000000000000000</span>
+ <span style="color:#fff">Message</span>   <span style="color:#999">(DefaultMessage)</span>
+ <span style="color:#fff">Header</span>    <span style="color:#999">(Integer)</span>             <span style="background-color: yellow; color: black">CamelSqlRowCount  1</span>
+ <span style="color:#fff">Body</span>      <span style="color:#999">(ArrayList) (size: 1 bytes: 11)</span>
+ <span style="background-color: yellow; color: black">[{count=1}]</span></pre>
 ++++
 
 {empty} +

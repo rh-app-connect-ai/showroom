@@ -1,0 +1,210 @@
+:imagesdir: ../../assets/images
+:page-time: 1
+include::partial$style.adoc[]
+
+[id="lab3-ingestion-flow"]
+== The Ingestion Flow
+
+With database connectivity in place via {rhsi}, you can now implement the complete ingestion flow. The Camel integration will handle the full lifecycle of an incoming Purchase Order — from reception to archival.
+
+{empty} +
+
+*Data Flow Overview*
+
+[.mermaid]
+----
+flowchart LR
+    subgraph ext [External]
+        EO([External Organization])
+    end
+
+    subgraph ocp [OpenShift]
+        API[API Endpoint]
+        Camel[Apache Camel]
+        S3[(S3 / ODF)]
+    end
+
+    subgraph backend [Remote Backend]
+        DB[(Database)]
+    end
+
+    EO -->|EDI Purchase Orders| API
+    API --> Camel
+    Camel -->|XML data| SI
+    SI{{Service Interconnect}} -.->|Secure Link| DB
+    DB -.-> SI
+    SI --> Camel
+    Camel -->|PDF Invoices| S3
+----
+
+{empty} +
+
+*Sequence of Operations*
+
+The sequence diagram below details each step the Camel integration performs when processing a Purchase Order:
+
+[.mermaid]
+----
+sequenceDiagram
+    actor ExternalOrg as External Organization
+    participant Camel
+    participant ServiceInterconnect as Service Interconnect
+    participant DB@{ "type": "database", "alias": "Database" }
+    participant S3Bucket@{ "type": "collections", "alias": "S3 Bucket" }
+    ExternalOrg->>Camel: Send PO (EDI)
+    Camel->>Camel: Transform EDI → XML
+    Camel->>ServiceInterconnect: Push XML data
+    ServiceInterconnect->>DB: Store data
+    DB-->>ServiceInterconnect: Confirmation
+    ServiceInterconnect-->>Camel: Data saved
+    Camel->>Camel: Render PDF from XML
+    Camel->>S3Bucket: Upload PDF
+    S3Bucket-->>Camel: Upload complete
+----
+
+{empty} +
+
+=== Prepare the working folder
+
+The following steps set up the files you'll need for the flow implementation exercise:
+
+{empty} +
+
+. Close tabs
++
+Before you start, make sure you close in your editor all the tabs (source files) from the previous exercise.
++
+image::m2/dev-close-tabs.png[width=100%]
++
+{blank}
++
+1. Click on the file explorer's `...` button +
+1. Ensure your `Open Editors` is ticked [√] +
+1. Click the `Close all Editors` button.
++
+{empty} +
+
+. Setup your working folder
++
+[.copypaste]
+****
+step 20
+****
++
+[TIP]
+--
+.Run the command above anytime to reset the exercise.
+[%collapsible]
+====
+The workshop includes handy helper scripts that let you jump to any step or reset the lab to a known good state:
+
+* `step N` — reset the lab to the beginning of step N
+* `steps` — list all available steps in the lab
+* `start` or `restart` — go to the very beginning (equivalent to `step 1`)
+* `ff` — fast-forward to the *next* step
+* `rw` — rewind to the *previous* step
+====
+--
++
+{empty} +
+
+. Check your lab folder
++
+After executing the commands above, have a look in your editor's tree view to confirm it looks healthy. It should be similar to:
++
+--
+[.indent2]
+📁 workshop +
+&nbsp;&nbsp;📁 lab +
+&nbsp;&nbsp;&nbsp;&nbsp;📁 ingest +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>&nbsp;≡&nbsp;&nbsp;</b></mark>] *edi* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>&nbsp;≡&nbsp;&nbsp;</b></mark>] *kaoto-datamapper-e6fb3e6b-4288.xsl* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *route-main.camel.yaml* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *route-s3.camel.yaml* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *route-transform.camel.yaml* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: #ce6a32"><b>&nbsp;J&nbsp;&nbsp;</b></mark>] *s3Presigner.java* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>&nbsp;≡&nbsp;&nbsp;</b></mark>] *template-pdf.xsl* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: orange"><b>&nbsp;≋&nbsp;&nbsp;</b></mark>] *X12-850.dfdl.xsd* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: #ce6a32"><b>&nbsp;J&nbsp;&nbsp;</b></mark>] *x12.java* +
+
+[.indent2]
+NOTE: Make sure the files are visible in your file explorer in the left panel of _VSCode_.
+--
++
+{empty} +
+
+. Configure S3 credentials
++
+In the previous exercise you configured database credentials in `application.properties`. The ingestion flow also needs access to S3 object storage — that's where it will upload the generated PDF invoices.
++
+{blank}
++
+[.mermaid]
+----
+flowchart LR
+    X[ ] -->|"✅ configured"| DB[(Database)] ~~~ Y[ ] -.->|"✏️ to configure"| S3[(S3 / ODF)]
+
+    style DB fill:#e8f5e9,stroke:#66bb6a
+    style S3 fill:#fff3e0,stroke:#fb8c00
+    style X fill:none,stroke:none
+    style Y fill:none,stroke:none
+----
++
+Open `application.properties` and add the S3 configuration:
++
+{blank}
++
+[.copypaste]
+****
+[.path]
+/configuration/s3/access/secret
+
+[.default]
+SOME_KEY,SOME_SECRET
+
+# S3 configuration
+camel.component.aws2-s3.accessKey=REPLACE
+camel.component.aws2-s3.secretKey=REPLACE
+camel.component.aws2-s3.uriEndpointOverride=https://s3-openshift-storage.{openshift_cluster_ingress_domain}
+****
++
+After saving, both backends should be configured and ready:
++
+{blank}
++
+[.mermaid]
+----
+flowchart LR
+    X[ ] -->|"✅ configured"| DB[(Database)] ~~~ Y[ ] -->|"✅ configured"| S3[(S3 / ODF)]
+
+    style DB fill:#e8f5e9,stroke:#66bb6a
+    style S3 fill:#e8f5e9,stroke:#66bb6a
+    style X fill:none,stroke:none
+    style Y fill:none,stroke:none
+----
++
+{empty} +
+
+[.verification]
+****
+Do you see the same folder structure and files?
+
+[.success]
+Great, continue below.
+
+[.fail]
+Make sure the syntax of the commands are compatible with your environment and try again.
+****
+
+[.verification]
+****
+Have you added the S3 configuration to `application.properties`?
+
+[.success]
+Both backends are configured — you're ready to implement the flow.
+
+[.fail]
+Make sure you've added the three S3 properties and saved the file.
+****
+
+{empty} +
