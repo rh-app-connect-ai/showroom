@@ -33,6 +33,10 @@
 
 * xref:m5/m5.0.adoc[Lab 5 - LLM Governance]
 ** xref:m5/m5.0.adoc[Introduction]
+** xref:m5/m5.1.adoc[Policy Configuration]
+** xref:m5/m5.2.adoc[Testing Authentication]
+** xref:m5/m5.3.adoc[Testing Token Rate Limiting]
+** xref:m5/m5.4.adoc[Summary]
 
 * xref:conclusion/summary.adoc[Workshop Summary]
 
