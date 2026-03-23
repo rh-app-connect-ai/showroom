@@ -119,9 +119,7 @@ After executing the commands above, have a look in your editor's tree view to co
 &nbsp;&nbsp;&nbsp;&nbsp;📁 ingest +
 pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>&nbsp;≡&nbsp;&nbsp;</b></mark>] *edi* +
 pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>&nbsp;≡&nbsp;&nbsp;</b></mark>] *kaoto-datamapper-e6fb3e6b-4288.xsl* +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *route-main.camel.yaml* +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *route-s3.camel.yaml* +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *route-transform.camel.yaml* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *routes.camel.yaml* +
 pass:[<mark style="padding-left: 2rem; background-color: white; color: #ce6a32"><b>&nbsp;J&nbsp;&nbsp;</b></mark>] *s3Presigner.java* +
 pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>&nbsp;≡&nbsp;&nbsp;</b></mark>] *template-pdf.xsl* +
 pass:[<mark style="padding-left: 2rem; background-color: white; color: orange"><b>&nbsp;≋&nbsp;&nbsp;</b></mark>] *X12-850.dfdl.xsd* +

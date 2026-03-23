@@ -365,11 +365,13 @@ You should see a row count confirming the insert:
 {blank}
 
 ++++
-<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #999"><span style="color:#999">2026-03-22 22:57:57.854</span>  <span style="color:#5fafff">20958</span> <span style="color:#999">---</span>   <span style="color:#5fdfdf">sql://select%20count(*)%20from%20invoice</span> : <span style="color:#fff">Reply received</span> <span style="color:#a6e22e">(success)</span> <span style="color:#999">(314ms)</span>
- <span style="color:#fff">Endpoint</span>  sql://select%20count(*)%20from%20invoices
- <span style="color:#fff">Exchange</span>  <span style="color:#999">(DefaultExchange)</span>  <span style="color:#a6e22e">InOut</span>   <span style="color:#fff">90029125EDE3FBE-0000000000000000</span>
- <span style="color:#fff">Message</span>   <span style="color:#999">(DefaultMessage)</span>
- <span style="color:#fff">Header</span>    <span style="color:#999">(Integer)</span>             <span style="background-color: yellow; color: black">CamelSqlRowCount  1</span></pre>
+<pre style="background-color: #181818; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #818181">2026-03-23 10:14:08.939  <span style="color:#A649A6">11530</span> ---   <span style="color:#10A9CD">sql://SELECT%20count(*)%20FROM%20invoice</span> : <span style="color:#0FBC7A">Reply received</span> <span style="color:#0FBC7A">(success)</span> <span style="color:#fff">(304ms)</span>
+ <span style="color:#fff">Endpoint</span>  <span style="color:#fff">sql://SELECT%20count(*)%20FROM%20invoices</span>
+ <span style="color:#fff">Exchange</span>  (DefaultExchange)  <span style="color:#6F416E">InOut</span>   <span style="color:#fff">E3D444D7E02ADCD-0000000000000000</span>
+ <span style="color:#fff">Message</span>   (DefaultMessage)
+ <span style="color:#fff">Header</span>    (Integer)             <span style="color:#fff">CamelSqlRowCount  1</span>
+ <span style="color:#fff">Body</span>      (ArrayList) (size: 1 bytes: 11)
+ <span style="background-color: yellow; color: black">[{count=1}]</span></pre>
 ++++
 
 {empty} +
@@ -415,7 +417,7 @@ Send another Purchase Order to trigger the complete flow — the response will i
 ****
 curl -s \
 -H "content-type: text" \
--d @edi \
+-d @ingest/edi \
 localhost:8080/ingest/x12; \
 echo
 ****

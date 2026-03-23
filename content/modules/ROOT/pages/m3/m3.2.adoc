@@ -587,73 +587,9 @@ flowchart LR
 
 {empty} +
 
-=== Step 5: Connect to the Database
+=== Step 5: Configure and query the database
 
-You can now connect to PostgreSQL as if it were running locally. Let's use a Camel route to query the database:
-
-{blank}
-
-[cols="1a,1a"]
-|===
-| *Diagram* | *Camel Route (YAML)*
-
-|
-[.mermaid]
-----
-flowchart LR
-    T(timer) --> SQL(sql:SELECT) --> L(log)
-----
-
-|
-[source,yaml]
-....
-- route:
-    id: query-invoices
-    from:
-      uri: timer:queryInvoices
-      parameters:
-        repeatCount: 1
-      steps:
-        - to:
-            uri: sql:SELECT count(*) FROM invoices
-        - log:
-            message: "${body}"
-....
-
-|===
-
-Run the route:
-
-{blank}
-
-[.copypaste]
-****
-[.path]
-/credentials/im
-
-camel run query/* \
---property=spring.datasource.username={username} \
---property=spring.datasource.password=REPLACE
-****
-
-The last line — `[{count=1}]` — confirms the Camel route successfully connected to the database and ran the query. The output should be similar to:
-
-++++
-<pre style="background-color: #272822; padding: 10px 15px; line-height: 1; white-space: pre-wrap"><span style="color:grey;font-family: monospace;font-size: 12px;">2026-03-20 13:09:41.662 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [           main] <span style="color: cyan">.impl.engine.AbstractCamelContext</span><span style="color: white">  : Apache Camel 4.18.0 (db) started in 263ms (build:0ms ...)</span>
-2026-03-20 13:09:42.579 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">com.zaxxer.hikari.HikariDataSource</span><span style="color: white"> : HikariPool-1 - Starting...</span>
-2026-03-20 13:09:42.760 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">com.zaxxer.hikari.pool.HikariPool</span><span style="color: white">  : HikariPool-1 - Added connection [class name]</span>
-2026-03-20 13:09:42.762 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">com.zaxxer.hikari.HikariDataSource</span><span style="color: white"> : HikariPool-1 - Start completed.</span>
-2026-03-20 13:09:42.814 <span style="color: limegreen">INFO</span> <span style="color: deeppink">4330</span> --- [//queryInvoices] <span style="color: cyan">db.yaml:10</span><span style="color: white">                         : <span style="background-color: yellow; color: black">[{count=1}]</span></span>
-</span></pre>
-++++
-
-{empty} +
-
-=== Alternative Step 5: Configure and query
-
-Instead of passing credentials as command-line properties, you can store them in `application.properties` so they're available to all Camel routes automatically.
-
-Open `application.properties` in your editor and add the following lines:
+Now let's verify the connection works. First, store the database credentials in `application.properties` so they're available to all Camel routes:
 
 {blank}
 
@@ -667,7 +603,7 @@ spring.datasource.username={username}
 spring.datasource.password=REPLACE
 ****
 
-Save the file. Now you can query the database using Camel's `cmd` tool without passing credentials on the command line:
+Save the file. Now query the database using Camel's `cmd` tool:
 
 {blank}
 
@@ -696,12 +632,12 @@ You should see output similar to:
 {blank}
 
 ++++
-<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #999"><span style="color:#999">2026-03-23 10:14:08.939</span>  <span style="color:#5fafff">11530</span> <span style="color:#999">---</span> <span style="color:#5fdfdf">sql://SELECT%20count(*)%20FROM%20invoice</span> : <span style="color:#fff">Reply received</span> <span style="color:#a6e22e">(success)</span> <span style="color:#999">(304ms)</span>
- <span style="color:#fff">Endpoint</span>  sql://SELECT%20count(*)%20FROM%20invoices
- <span style="color:#fff">Exchange</span>  <span style="color:#999">(DefaultExchange)</span>  <span style="color:#a6e22e">InOut</span>   <span style="color:#fff">E3D444D7E02ADCD-0000000000000000</span>
- <span style="color:#fff">Message</span>   <span style="color:#999">(DefaultMessage)</span>
- <span style="color:#fff">Header</span>    <span style="color:#999">(Integer)</span>             <span style="background-color: yellow; color: black">CamelSqlRowCount  1</span>
- <span style="color:#fff">Body</span>      <span style="color:#999">(ArrayList) (size: 1 bytes: 11)</span>
+<pre style="background-color: #181818; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #818181">2026-03-23 10:14:08.939  <span style="color:#A649A6">11530</span> ---   <span style="color:#10A9CD">sql://SELECT%20count(*)%20FROM%20invoice</span> : <span style="color:#0FBC7A">Reply received</span> <span style="color:#0FBC7A">(success)</span> <span style="color:#fff">(304ms)</span>
+ <span style="color:#fff">Endpoint</span>  <span style="color:#fff">sql://SELECT%20count(*)%20FROM%20invoices</span>
+ <span style="color:#fff">Exchange</span>  (DefaultExchange)  <span style="color:#6F416E">InOut</span>   <span style="color:#fff">E3D444D7E02ADCD-0000000000000000</span>
+ <span style="color:#fff">Message</span>   (DefaultMessage)
+ <span style="color:#fff">Header</span>    (Integer)             <span style="color:#fff">CamelSqlRowCount  1</span>
+ <span style="color:#fff">Body</span>      (ArrayList) (size: 1 bytes: 11)
  <span style="background-color: yellow; color: black">[{count=1}]</span></pre>
 ++++
 
