@@ -31,9 +31,9 @@ image::intro/toggle-terminal.png[width=40%]
 * Verify you are in the correct namespace `{user-username}-devspaces` by running:
 +
 [.copypaste]
-----
+****
 oc project{user-username}-devspaces
-----
+****
 
 == Introducing Red Hat Connectivity Link
 
@@ -152,9 +152,9 @@ internal-gateway   openshift-default   internal-gateway-openshift-default.ai-gat
 . Each user has http route `ai-proxy-route` in their namespace `{user-username}-ns` that targets the LLM API. Run the following command to verify it is present
 +
 [.copypaste]
-----
+****
 oc describe httproute -n {user-username}-devspaces | grep -E "Name:|Backend|Hostnames"
-----
+****
 +
 This command list the HTTPRoute details including the backend reference to the LLM API and the gateway it is attached to (which is the `internal-gateway` that you verified earlier). 
 
@@ -301,9 +301,9 @@ Key fields in this policy:
 . From the devspaces terminal, run the following command to check that the AuthPolicy was created successfully:
 +
 [.copypaste]
-----
+****
 oc describe authpolicy -n {user-username}-devspaces | grep -E "Name:|Target Ref:|Type:|Status:"
-----
+****
 
 . You should see output confirming the AuthPolicy exists, is targeting the correct HTTPRoute, and is in an enforced state, similar to:
 ----
@@ -489,9 +489,9 @@ Notice how the TokenRateLimitPolicy depends on the AuthPolicy:
 . From the devspaces terminal, run the following command to check that the AuthPolicy was created successfully:
 +
 [.copypaste]
-----
+****
 oc describe tokenratelimitpolicy -n {user-username}-devspaces | grep -iE "Name:|target|free:|gold:|limit:|window:|type:|status:"
-----
+****
 
 . You should see output confirming the AuthPolicy exists, is targeting the correct HTTPRoute, and is in an enforced state, similar to:
 ----
