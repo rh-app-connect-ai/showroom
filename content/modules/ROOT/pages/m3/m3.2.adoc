@@ -140,6 +140,7 @@ flowchart LR
 
     Client --> SVC2 --> Listener
 
+    S2 ~~~ S1
     S2 -.-|"🔒 secure link"| S1
 
     subgraph sharedLabel [shared-database]
@@ -253,7 +254,7 @@ flowchart LR
     end
 
     Client --> SVC2 --> Listener
-
+    S2 ~~~ S1
     S2 -.-|"🔒 secure link"| S1
 
     subgraph sharedLabel2 [shared-database]
@@ -321,13 +322,17 @@ These are the two pre-configured resources from the diagram. Here's what you nee
 [.mermaid]
 ----
 flowchart LR
-    S1["✅ Site(1)"] --> C["✅ Connector"] --> S2["✏️ Site(2)"] --> G["✏️ AccessGrant"] --> T["✏️ AccessToken"] --> L["✏️ Listener"]
-    style S1 fill:#e8f5e9,stroke:#66bb6a
-    style C fill:#e8f5e9,stroke:#66bb6a
-    style S2 fill:#fff3e0,stroke:#fb8c00
-    style G fill:#fff3e0,stroke:#fb8c00
-    style T fill:#fff3e0,stroke:#fb8c00
-    style L fill:#fff3e0,stroke:#fb8c00
+    Left["<div style='text-align:left'><b>✅ Completed</b><br/>• Site(1)<br/>• Connector</div>"]
+
+    Progress["33% Complete<br/>████████░░░░░░░░░░░░░░░░░░"]
+
+    Right["<div style='text-align:left'><b>✏️ Remaining</b><br/>• Site(2)<br/>• AccessGrant<br/>• AccessToken<br/>• Listener</div>"]
+
+    Left --- Progress --- Right
+
+    style Left fill:#e8f5e9,stroke:#66bb6a,stroke-width:3px,color:#1b5e20,rx:10,ry:10
+    style Progress fill:#f1f8e9,stroke:#66bb6a,stroke-width:10px,color:#2e7d32,font-size:17px,rx:10,ry:10
+    style Right fill:#fff3e0,stroke:#fb8c00,stroke-width:3px,color:#e65100,rx:10,ry:10
 ----
 
 {empty} +
@@ -383,13 +388,17 @@ Your Site is ready. Here's your progress:
 [.mermaid]
 ----
 flowchart LR
-    S1["✅ Site(1)"] --> C["✅ Connector"] --> S2["✅ Site(2)"] --> G["✏️ AccessGrant"] --> T["✏️ AccessToken"] --> L["✏️ Listener"]
-    style S1 fill:#e8f5e9,stroke:#66bb6a
-    style C fill:#e8f5e9,stroke:#66bb6a
-    style S2 fill:#e8f5e9,stroke:#66bb6a
-    style G fill:#fff3e0,stroke:#fb8c00
-    style T fill:#fff3e0,stroke:#fb8c00
-    style L fill:#fff3e0,stroke:#fb8c00
+    Left["<div style='text-align:left'><b>✅ Completed</b><br/>• Site(1)<br/>• Connector<br/>• Site(2)</div>"]
+
+    Progress["50% Complete<br/>█████████████░░░░░░░░░░░░░"]
+
+    Right["<div style='text-align:left'><b>✏️ Remaining</b><br/>• AccessGrant<br/>• AccessToken<br/>• Listener</div>"]
+
+    Left --- Progress --- Right
+
+    style Left fill:#e8f5e9,stroke:#66bb6a,stroke-width:3px,color:#1b5e20,rx:10,ry:10
+    style Progress fill:#f1f8e9,stroke:#66bb6a,stroke-width:10px,color:#2e7d32,font-size:17px,rx:10,ry:10
+    style Right fill:#fff3e0,stroke:#fb8c00,stroke-width:3px,color:#e65100,rx:10,ry:10
 ----
 
 {empty} +
@@ -466,16 +475,21 @@ Your AccessGrant is ready. Here's your progress:
 
 {blank}
 
+
 [.mermaid]
 ----
 flowchart LR
-    S1["✅ Site(1)"] --> C["✅ Connector"] --> S2["✅ Site(2)"] --> G["✅ AccessGrant"] --> T["✏️ AccessToken"] --> L["✏️ Listener"]
-    style S1 fill:#e8f5e9,stroke:#66bb6a
-    style C fill:#e8f5e9,stroke:#66bb6a
-    style S2 fill:#e8f5e9,stroke:#66bb6a
-    style G fill:#e8f5e9,stroke:#66bb6a
-    style T fill:#fff3e0,stroke:#fb8c00
-    style L fill:#fff3e0,stroke:#fb8c00
+    Left["<div style='text-align:left'><b>✅ Completed</b><br/>• Site(1)<br/>• Connector<br/>• Site(2)<br/>• AccessGrant</div>"]
+
+    Progress["67% Complete<br/>████████████████░░░░░░░░░░"]
+
+    Right["<div style='text-align:left'><b>✏️ Remaining</b><br/>• AccessToken<br/>• Listener</div>"]
+
+    Left --- Progress --- Right
+
+    style Left fill:#e8f5e9,stroke:#66bb6a,stroke-width:3px,color:#1b5e20,rx:10,ry:10
+    style Progress fill:#f1f8e9,stroke:#66bb6a,stroke-width:10px,color:#2e7d32,font-size:17px,rx:10,ry:10
+    style Right fill:#fff3e0,stroke:#fb8c00,stroke-width:3px,color:#e65100,rx:10,ry:10
 ----
 
 {empty} +
@@ -535,13 +549,17 @@ Almost there — one more resource to go:
 [.mermaid]
 ----
 flowchart LR
-    S1["✅ Site(1)"] --> C["✅ Connector"] --> S2["✅ Site(2)"] --> G["✅ AccessGrant"] --> T["✅ AccessToken"] --> L["✏️ Listener"]
-    style S1 fill:#e8f5e9,stroke:#66bb6a
-    style C fill:#e8f5e9,stroke:#66bb6a
-    style S2 fill:#e8f5e9,stroke:#66bb6a
-    style G fill:#e8f5e9,stroke:#66bb6a
-    style T fill:#e8f5e9,stroke:#66bb6a
-    style L fill:#fff3e0,stroke:#fb8c00
+    Left["<div style='text-align:left'><b>✅ Completed</b><br/>• Site(1)<br/>• Connector<br/>• Site(2)<br/>• AccessGrant<br/>• AccessToken</div>"]
+
+    Progress["83% Complete<br/>█████████████████████░░░░░"]
+
+    Right["<div style='text-align:left'><b>✏️ Remaining</b><br/>• Listener</div>"]
+
+    Left --- Progress --- Right
+
+    style Left fill:#e8f5e9,stroke:#66bb6a,stroke-width:3px,color:#1b5e20,rx:10,ry:10
+    style Progress fill:#f1f8e9,stroke:#66bb6a,stroke-width:10px,color:#2e7d32,font-size:17px,rx:10,ry:10
+    style Right fill:#fff3e0,stroke:#fb8c00,stroke-width:3px,color:#e65100,rx:10,ry:10
 ----
 
 {empty} +
@@ -638,13 +656,14 @@ All resources are in place:
 [.mermaid]
 ----
 flowchart LR
-    S1["✅ Site(1)"] --> C["✅ Connector"] --> S2["✅ Site(2)"] --> G["✅ AccessGrant"] --> T["✅ AccessToken"] --> L["✅ Listener"]
-    style S1 fill:#e8f5e9,stroke:#66bb6a
-    style C fill:#e8f5e9,stroke:#66bb6a
-    style S2 fill:#e8f5e9,stroke:#66bb6a
-    style G fill:#e8f5e9,stroke:#66bb6a
-    style T fill:#e8f5e9,stroke:#66bb6a
-    style L fill:#e8f5e9,stroke:#66bb6a
+    Left["<div style='text-align:left'><b>✅ Completed</b><br/>• Site(1)<br/>• Connector<br/>• Site(2)<br/>• AccessGrant<br/>• AccessToken<br/>• Listener</div>"]
+
+    Progress["100% Complete<br/>██████████████████████████"]
+
+    Left --- Progress
+
+    style Left fill:#e8f5e9,stroke:#66bb6a,stroke-width:3px,color:#1b5e20,rx:10,ry:10
+    style Progress fill:#e8f5e9,stroke:#66bb6a,stroke-width:10px,color:#2e7d32,font-size:17px,rx:10,ry:10
 ----
 
 {empty} +
@@ -727,7 +746,7 @@ flowchart LR
     end
 
     Client --> SVC2 --> Listener
-
+    S2 ~~~ S1
     S2 -.-|"🔒 secure link"| S1
 
     subgraph sharedLabel3 [shared-database]
