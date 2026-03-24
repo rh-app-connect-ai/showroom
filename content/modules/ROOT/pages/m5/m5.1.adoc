@@ -50,7 +50,7 @@ Now that you understand the architecture, it's time to lock down the LLM endpoin
 
 === Step 1: Review and Apply the AuthPolicy
 
-Examine the AuthPolicy and apply it by pasting the following command in your terminal:
+Examine the AuthPolicy and *apply* it by pasting the following command in your terminal:
 
 [.copypaste]
 ****
@@ -120,6 +120,8 @@ Key fields in this policy:
 ****
 oc describe authpolicy -n {user-username}-devspaces | grep -E "Name:|Target Ref:|Type:|Status:"
 ****
+
+{empty} +
 
 . You should see output confirming the AuthPolicy exists, is targeting the correct HTTPRoute, and is in an enforced state, similar to:
 ----

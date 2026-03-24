@@ -22,7 +22,7 @@ By the end of this module, the AI agent will be fully secured with tiered access
 
 === Your Environment
 
-* Login to the link:{url-codeready}[Red Hat OpenShift Dev Spaces, window="_blank"]environment you have been using throughout the workshop using the same credentials as before  {user-username} and your password.
+* Login to the link:{url-codeready}[Red Hat OpenShift Dev Spaces, window="_blank"] environment you have been using throughout the workshop using the same credentials as before  {user-username} and your password.
 
 * Start a new terminal session in your Dev Spaces IDE if you already donot have one open.
 +
@@ -39,7 +39,7 @@ oc project {user-username}-devspaces
 
 === What is Connectivity Link?
 
-_Red Hat Connectivity Link_ is a _Kubernetes_-native solution for managing, securing, and controlling API traffic. Built on the _Kuadrant_ project, it integrates directly with the _Gateway API_ to enforce policies at the gateway level and HTTP Route Level -- before requests ever reach the LLM backend.
+_Red Hat Connectivity Link_ is a _Kubernetes_-native solution for managing, securing, and controlling API traffic. Built on the link:https://kuadrant.io/[_Kuadrant_ project], it integrates directly with the _Gateway API_ to enforce policies at the gateway level and HTTP Route Level -- before requests ever reach the LLM backend.
 
 {empty} +
 
@@ -149,26 +149,26 @@ NAME               CLASS               ADDRESS                                  
 internal-gateway   openshift-default   internal-gateway-openshift-default.ai-gateway.svc.cluster.local   True         14h
 ----
 
-. Each user has http route `ai-proxy-route` in their namespace `{user-username}-ns` that targets the LLM API. Run the following command to verify it is present
+. Each user has http route `ai-proxy-route` in their namespace `{user-username}-devspaces` that targets the LLM API. Run the following command to verify it is present
 +
 [.copypaste]
 ****
 oc describe httproute -n {user-username}-devspaces | grep -E "Name:|Backend|Hostnames"
 ****
 +
-This command list the HTTPRoute details including the backend reference to the LLM API and the gateway it is attached to (which is the `internal-gateway` that you verified earlier). 
+This command lists the HTTPRoute details including the backend reference to the LLM API and the gateway it is attached to (which is the `internal-gateway` that you verified earlier). 
 
 . Look for output confirming the HTTPRoute exists and is correctly configured, similar to:
 +
 ----
 Name:         ai-proxy-route
-    Name:       internal-gateway
+    Name:       internal-ai-gateway
     Backend Refs:
       Name:       ai-api-external
           Name:   Host
           Name:   Authorization
     Controller Name:         openshift.io/gateway-controller/v1
-      Name:       internal-gateway
+      Name:       internal-ai-gateway
 ----
 
 

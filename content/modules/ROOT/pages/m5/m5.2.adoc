@@ -8,12 +8,22 @@ Now test that the AuthPolicy is working using the same chat interface from Phase
 
 === Configuring the API Key
 
-Let's configure the chat application to use the API key for authentication. The chat interface is set up to read the API key from the `forage-agent-factory.properties` file. Run the following command from the dev spaces terminal to setup the files needed for this exercise:
+Let's configure the chat application to use the API key for authentication. The chat interface is set up to read the API key from the `forage-agent-factory.properties` file. 
+
+. Run the following command from the dev spaces terminal to setup the files needed for this exercise:
 +
 [.copypaste]
 ****
 step 22
 ****
+
+. Navigate to the chat folder
++
+[.copypaste]
+****
+cd chat
+****
+
 
 
 
@@ -21,6 +31,7 @@ step 22
 
 . Open the `forage-agent-factory.properties` file under workshop/lab/chat.
 +
+image::m5/properties_file.png[Properties file location - placeholder,width=80%]
 {empty} +
 
 . Locate the `forage.myagent.agent.base.url` property and replace the placeholder *LLM_BASE_URL* with the actual base URL of your HTTP Route attached to the gateway.
@@ -35,15 +46,21 @@ http://internal-ai-gateway-openshift-default.ai-gateway.svc.cluster.local/v1
 +
 [.copypaste]
 ****
-iamafreeuser
+iamafree{user-username}
 ****
 {empty} +
-
++
 Example:
-
 [.copypaste]
 ****
-forage.myagent.agent.api.key=iamafreeuser
+forage.myagent.agent.api.key=iamafree{user-username}
+****
+
+. Make sure the run script is executable
++
+[.copypaste]
+****
+chmod +x ./run.sh
 ****
 
 . Run the chat application
@@ -53,11 +70,11 @@ forage.myagent.agent.api.key=iamafreeuser
 ./run.sh
 ****
 
-* Open the application in a new browser tab when prompted
+. Open the application in a new browser tab when prompted
 +
 image::m5/chat_app_launch.png[Chat application launch - placeholder,width=80%]
 
-* You should see the chat interface as shown below. Try sending a message to the LLM (e.g., "What is Kubernetes?") and see if you get a response.
+. You should see the chat interface as shown below. Try sending a message to the LLM for example: `What is Kubernetes?`` and see if you get a response.
 +
 image::m5/chat_image.png[Chat interface response - placeholder,width=80%]
 
@@ -73,26 +90,43 @@ image::m5/chat_image.png[Chat interface response - placeholder,width=80%]
 Test the following scenarios by updating the API key value and sending a message through the chat interface:
 
 {blank}
+. Stop the application by pressing `CTRL+C` in the terminal
 
-. **Invalid credentials** -- Set an invalid API key:
+. **Invalid credentials** -- Set an invalid API key in `forage-agent-factory.properties`:
 +
 [.copypaste]
 ****
-forage.myagent.agent.api.key=invalidkey
+invalidkey
 ****
+
+. Run the application again 
 +
+[.copypaste]
+****
+./run.sh
+****
+
 Send a message. The request should be **denied** (401 Unauthorized).
 +
 {empty} +
 
-. **Valid free-tier key** -- Set the free-tier API key:
+. Stop the application again by pressing `CTRL+C` in the terminal
+
+. **Valid free-tier key** -- Set the free-tier API key in `forage-agent-factory.properties`:
 +
 [.copypaste]
 ****
-forage.myagent.agent.api.key=iamafreeuser
+iamafree{user-username}
 ****
+
+. Run the application again 
 +
-Send a message. The request should be **allowed** -- you receive a response from the LLM.
+[.copypaste]
+****
+./run.sh
+****
+
+. Send a message. The request should be **allowed** -- you receive a response again from the LLM.
 
 // TODO: Add screenshot showing a successful LLM response in the chat interface
 image::m5/auth_test_success.png[Successful authentication test - placeholder,width=80%]

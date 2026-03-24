@@ -9,8 +9,12 @@ Now that access is secured, you will add a **TokenRateLimitPolicy** to control h
 {empty} +
 
 === Step 1: Review and Apply the AuthPolicy
-Examine the TokenRateLimitPolicy and apply it by pasting the following command in your terminal:
+. Open a new terminal tab in your dev space (keep the previous tab with the chat running so you can test later).
++
+image::m5/devspace_terminal_new.png[Dev Spaces terminal - placeholder,width=80%]
 
+. Examine the TokenRateLimitPolicy and *apply* it by pasting the following command in your terminal:
++
 [.copypaste]
 ****
 oc apply -f - <<EOF
@@ -120,7 +124,7 @@ Use the chat interface to test the rate limiting behavior.
 
 ==== Test 1: Free-tier token limits
 
-. Send a message that asks the LLM to generate a longer response (e.g., _"Explain Kubernetes in 500 words"_).
+. Send a message that asks the LLM to generate a longer response  `Explain Kubernetes in 500 words`.
 +
 {empty} +
 
