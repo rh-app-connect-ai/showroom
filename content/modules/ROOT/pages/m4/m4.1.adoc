@@ -49,7 +49,59 @@ The workshop includes handy helper scripts that let you jump to any step or rese
 
 . Check your lab folder
 +
-After executing the commands above, have a look in your editor's tree view to confirm it looks healthy.
+After executing the commands above, have a look in your editor's tree view to confirm it looks healthy. It should be similar to:
++
+--
+[.indent2]
+📁 workshop +
+&nbsp;&nbsp;📁 lab +
+&nbsp;&nbsp;&nbsp;&nbsp;📁 agent +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *agent.camel.yaml* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: teal"><b>&nbsp;&lt;&gt;</b></mark>] *index.html* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>&nbsp;$&nbsp;&nbsp;</b></mark>] *run.sh* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: #b07219"><b>&nbsp;J&nbsp;&nbsp;</b></mark>] *s3Presigner.java* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: #563d7c"><b>&nbsp;#&nbsp;&nbsp;</b></mark>] *style.css* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>&nbsp;≡&nbsp;&nbsp;</b></mark>] *system.message* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>&nbsp;≡&nbsp;&nbsp;</b></mark>] *template-pdf.xsl* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: #b07219"><b>&nbsp;J&nbsp;&nbsp;</b></mark>] *x12.java* +
+
+[.indent2]
+NOTE: Make sure the files are visible in your file explorer in the left panel of _VSCode_.
+--
++
+{empty} +
+
+. Configure the AI model
++
+Open `application.properties` and add the following configuration for the AI agent:
++
+{blank}
++
+[.copypaste]
+****
+[.path]
+/credentials/model
+
+[.default]
+https://model-url, model-api-key
+
+# Model configuration
+forage.myagent.agent.model.kind=openai
+forage.myagent.agent.model.name=qwen3-14b
+forage.myagent.agent.base.url=REPLACE
+forage.myagent.agent.api.key=REPLACE
+
+# Memory settings
+forage.myagent.agent.features=memory
+forage.myagent.agent.memory.kind=message-window
+forage.myagent.agent.memory.max.messages=20
+
+# Log configuration
+forage.myagent.agent.log.requests=true
+forage.myagent.agent.log.responses=true
+****
++
+Save the file.
 +
 {empty} +
 

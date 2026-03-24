@@ -27,3 +27,476 @@ The `set system prompt` step is disabled — there's no AI agent yet, so no prom
 Your task will be to replace the `dummy response` with a MaaS-powered AI agent, and enable the system prompt that guides its behaviour.
 
 {empty} +
+
+=== Run the starting point
+
+Start by running the Camel route as-is to see the placeholder behaviour in action:
+
+{blank}
+
+[.copypaste]
+****
+camel forage run \
+  agent/* \
+  application.properties \
+  --dep=mvn:io.kaoto.forage:forage-memory-message-window:1.1-SNAPSHOT \
+  --dev
+****
+
+[TIP]
+--
+.What does this command do?
+[%collapsible]
+====
+* `camel forage run` — runs the Camel route using the Forage agent runtime
+* `agent/*` — loads all files from the `agent/` folder (route, tools, templates)
+* `application.properties` — loads the model configuration and credentials
+* `--dep=mvn:io.kaoto.forage:forage-memory-message-window:1.1-SNAPSHOT` — adds the message-window memory dependency at runtime
+* `--dev` — dev mode, automatically reloads when you save changes to any source file
+====
+--
+
+Once the route is running, switch to your _Rocket.Chat_ window and select the `ai-support` channel matching your user number (e.g. `ai-support3` for `user3`). Type a simple message:
+
+{blank}
+
+[.copypaste]
+****
+Hi
+****
+
+The Camel bot picks up the message and responds with `Hello World` — confirming the route is working end to end:
+
+{blank}
+
+[subs=attributes]
+++++
+<div style="display: flex; align-items: flex-start; gap: 15px;">
+  <!-- Rocket.Chat icon — sized to match chat height -->
+  <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+    <div style="width: 90px; height: 90px; background-color: #f5455c; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
+      <svg width="60" height="60" viewBox="0 0 24 24" fill="white">
+        <g transform="translate(-2 -2) scale(.9)">
+          <path d="M 7.5488281 5 C 6.2638281 5 5.055 5.3086094 4 5.8496094 C 5.422467 6.9694938 6.4322525 8.5274703 6.8359375 10.300781 C 5.0652471 11.854193 4 13.838545 4 16 C 4 18.1 5.0028438 20.110797 6.8398438 21.716797 C 6.5498438 22.966797 5.9480312 24.134047 5.0820312 25.123047 L 4.0136719 26.345703 L 5.5859375 26.751953 C 6.2259375 26.917953 6.8868281 27 7.5488281 27 C 9.7768281 27 11.841828 26.197516 13.423828 24.728516 C 14.425828 24.908516 15.458 25 16.5 25 C 23.393 25 29 20.962 29 16 C 29 11.038 23.393 7 16.5 7 C 15.440923 7 14.418235 7.1058017 13.435547 7.2851562 C 11.913547 5.8774278 9.8442485 5 7.5488281 5 z M 16.5 9 C 22.29 9 27 12.14 27 16 C 27 19.86 22.29 23 16.5 23 C 15.412 23 14.338594 22.888969 13.308594 22.667969 L 12.757812 22.548828 L 12.371094 22.957031 C 11.147094 24.252031 9.469625 24.976 7.640625 25 C 8.290625 23.917 8.727875 22.724516 8.921875 21.478516 L 9.0136719 20.896484 L 8.5488281 20.535156 C 6.9058281 19.256156 6 17.646 6 16 C 6 12.14 10.71 9 16.5 9 z M 11.5 15 A 1.5 1.5 0 0 0 11.5 18 A 1.5 1.5 0 0 0 11.5 15 z M 16.5 15 A 1.5 1.5 0 0 0 16.5 18 A 1.5 1.5 0 0 0 16.5 15 z M 21.5 15 A 1.5 1.5 0 0 0 21.5 18 A 1.5 1.5 0 0 0 21.5 15 z"/>
+        </g>
+      </svg>
+    </div>
+    <span style="font-size: 16px; color: #000; font-weight: 500; margin-top: 5px;">rocket.chat</span>
+  </div>
+  <!-- Chat messages -->
+  <div style="border: 1px solid #ddd; border-radius: 4px; background: #fff; width: 340px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 8px 10px; gap: 10px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    <!-- User message: hi -->
+    <div style="gap: 10px; display: flex; flex-direction: row;">
+      <div style="width: 36px; height: 36px; background-color: #6c757d; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
+        U
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center;">
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
+          <span style="font-weight: bold; font-size: 14px; color: #333;">{username}</span>
+          <span style="font-size: 11px; color: #aaa;">5:05 PM</span>
+        </div>
+        <div style="font-size: 14px; color: #333; line-height: 1.4;">
+          hi
+        </div>
+      </div>
+    </div>
+    <!-- Bot response: Hello World -->
+    <div style="gap: 10px; display: flex; flex-direction: row;">
+      <div style="width: 36px; height: 36px; background-color: #3ea18e; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
+        A
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center;">
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
+          <span style="font-weight: bold; font-size: 14px; color: #333;">ai-bot</span>
+          <span style="font-size: 11px; color: #aaa;">5:05 PM</span>
+        </div>
+        <div style="font-size: 14px; color: #333; line-height: 1.4;">
+          Hello World
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+++++
+
+{empty} +
+
+=== Wire the AI agent
+
+Now replace the dummy response with a real AI agent. Open `agent.camel.yaml` in _Kaoto_ and follow the steps below:
+
+{empty} +
+
+. *Enable the system prompt*
++
+The `set system prompt` step is currently disabled — it's greyed out because there was no AI agent to use it. Now that you're about to add one, enable it: hover the step and click the {btn-enable} button (next to the {btn-replace} button).
++
+{empty} +
+
+. *Replace the dummy response with an Agent*
++
+The `dummy response` step is a placeholder — it always returns "Hello World". Replace it with the _LangChain4j Agent_ component that connects to MaaS.
++
+
+1. Hover the `dummy response` step and click the floating {btn-replace} button.
+1. Find and select the _LangChain4j Agent_ component.
+1. Select the `All` configuration tab.
+1. Set the `Agent Id` to:
++
+[.copypaste]
+****
+agent
+****
++
+Save the file. Because you're running in dev mode, Camel hot-reloads automatically. Watch the terminal — the logs should confirm the agent is running:
++
+{blank}
++
+++++
+<pre style="background-color: #181818; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #818181">2026-03-24 18:14:11.113  <span style="color:#A649A6">INFO</span> <span style="color:#10A9CD">camel.support.RouteWatcherReloadStrategy</span> : <span style="color:#fff">Routes reloaded summary</span> (total:<span style="color:#0FBC7A">4</span> started:<span style="color:#0FBC7A">4</span>)
+2026-03-24 18:14:11.115  <span style="color:#A649A6">INFO</span> <span style="color:#10A9CD">camel.support.RouteWatcherReloadStrategy</span> :     Started <span style="color:#0FBC7A">agent</span> (platform-http:///ai-support)
+2026-03-24 18:14:11.115  <span style="color:#A649A6">INFO</span> <span style="color:#10A9CD">camel.support.RouteWatcherReloadStrategy</span> :     Started <span style="color:#0FBC7A">tool-get-pdf</span> (langchain4j-tools://getInvoicePDFurl)
+2026-03-24 18:14:11.115  <span style="color:#A649A6">INFO</span> <span style="color:#10A9CD">camel.support.RouteWatcherReloadStrategy</span> :     Started <span style="color:#0FBC7A">get-pdf</span> (direct://get-pdf-url)
+2026-03-24 18:14:11.116  <span style="color:#A649A6">INFO</span> <span style="color:#10A9CD">camel.support.RouteWatcherReloadStrategy</span> :     Started <span style="color:#0FBC7A">to-rocketchat</span> (direct://to-rocketchat)</pre>
+++++
+
+Here's the updated flow — the system prompt is now active and the AI agent has replaced the dummy response:
+
+{blank}
+
+[.mermaid]
+----
+flowchart LR
+    A(RocketChat) --> B(get text) --> C(set system prompt) --> D2 --> E(to rocketchat)
+
+    subgraph D2 ["Done: Agent"]
+        D(LangChain4j Agent)
+    end
+
+    style D2 fill:#e8f5e9,stroke:#66bb6a,color:#1b5e20
+----
+
+The agent is live. Switch back to your _Rocket.Chat_ window and test it:
+
+{blank}
+
+[.copypaste]
+****
+Hi again
+****
+
+This time the AI agent processes your message — it sends it to the LLM via MaaS, which reasons about it and returns a natural language response. You should see something like:
+
+{blank}
+
+[subs=attributes]
+++++
+<div style="display: flex; align-items: flex-start; gap: 15px;">
+  <!-- Rocket.Chat icon -->
+  <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+    <div style="width: 90px; height: 90px; background-color: #f5455c; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
+      <svg width="60" height="60" viewBox="0 0 24 24" fill="white">
+        <g transform="translate(-2 -2) scale(.9)">
+          <path d="M 7.5488281 5 C 6.2638281 5 5.055 5.3086094 4 5.8496094 C 5.422467 6.9694938 6.4322525 8.5274703 6.8359375 10.300781 C 5.0652471 11.854193 4 13.838545 4 16 C 4 18.1 5.0028438 20.110797 6.8398438 21.716797 C 6.5498438 22.966797 5.9480312 24.134047 5.0820312 25.123047 L 4.0136719 26.345703 L 5.5859375 26.751953 C 6.2259375 26.917953 6.8868281 27 7.5488281 27 C 9.7768281 27 11.841828 26.197516 13.423828 24.728516 C 14.425828 24.908516 15.458 25 16.5 25 C 23.393 25 29 20.962 29 16 C 29 11.038 23.393 7 16.5 7 C 15.440923 7 14.418235 7.1058017 13.435547 7.2851562 C 11.913547 5.8774278 9.8442485 5 7.5488281 5 z M 16.5 9 C 22.29 9 27 12.14 27 16 C 27 19.86 22.29 23 16.5 23 C 15.412 23 14.338594 22.888969 13.308594 22.667969 L 12.757812 22.548828 L 12.371094 22.957031 C 11.147094 24.252031 9.469625 24.976 7.640625 25 C 8.290625 23.917 8.727875 22.724516 8.921875 21.478516 L 9.0136719 20.896484 L 8.5488281 20.535156 C 6.9058281 19.256156 6 17.646 6 16 C 6 12.14 10.71 9 16.5 9 z M 11.5 15 A 1.5 1.5 0 0 0 11.5 18 A 1.5 1.5 0 0 0 11.5 15 z M 16.5 15 A 1.5 1.5 0 0 0 16.5 18 A 1.5 1.5 0 0 0 16.5 15 z M 21.5 15 A 1.5 1.5 0 0 0 21.5 18 A 1.5 1.5 0 0 0 21.5 15 z"/>
+        </g>
+      </svg>
+    </div>
+    <span style="font-size: 16px; color: #000; font-weight: 500; margin-top: 5px;">rocket.chat</span>
+  </div>
+  <!-- Chat messages -->
+  <div style="border: 1px solid #ddd; border-radius: 4px; background: #fff; width: 340px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 8px 10px; gap: 10px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    <!-- User message -->
+    <div style="gap: 10px; display: flex; flex-direction: row;">
+      <div style="width: 36px; height: 36px; background-color: #6c757d; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
+        U
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center;">
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
+          <span style="font-weight: bold; font-size: 14px; color: #333;">{username}</span>
+          <span style="font-size: 11px; color: #aaa;">5:06 PM</span>
+        </div>
+        <div style="font-size: 14px; color: #333; line-height: 1.4;">
+          Hi again
+        </div>
+      </div>
+    </div>
+    <!-- Bot response -->
+    <div style="gap: 10px; display: flex; flex-direction: row;">
+      <div style="width: 36px; height: 36px; background-color: #3ea18e; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
+        A
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center;">
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
+          <span style="font-weight: bold; font-size: 14px; color: #333;">ai-bot</span>
+          <span style="font-size: 11px; color: #aaa;">5:06 PM</span>
+        </div>
+        <div style="font-size: 14px; color: #333; line-height: 1.4;">
+          Hello! How can I assist you today?
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+++++
+
+The AI agent is connected and responding — but it's not very smart yet. Try asking it something specific:
+
+{blank}
+
+[.copypaste]
+****
+Can you show me invoice 61356293
+****
+
+The bot responds with something like:
+
+{blank}
+
+[subs=attributes]
+++++
+<div style="display: flex; align-items: flex-start; gap: 15px;">
+  <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+    <div style="width: 90px; height: 90px; background-color: #f5455c; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
+      <svg width="60" height="60" viewBox="0 0 24 24" fill="white">
+        <g transform="translate(-2 -2) scale(.9)">
+          <path d="M 7.5488281 5 C 6.2638281 5 5.055 5.3086094 4 5.8496094 C 5.422467 6.9694938 6.4322525 8.5274703 6.8359375 10.300781 C 5.0652471 11.854193 4 13.838545 4 16 C 4 18.1 5.0028438 20.110797 6.8398438 21.716797 C 6.5498438 22.966797 5.9480312 24.134047 5.0820312 25.123047 L 4.0136719 26.345703 L 5.5859375 26.751953 C 6.2259375 26.917953 6.8868281 27 7.5488281 27 C 9.7768281 27 11.841828 26.197516 13.423828 24.728516 C 14.425828 24.908516 15.458 25 16.5 25 C 23.393 25 29 20.962 29 16 C 29 11.038 23.393 7 16.5 7 C 15.440923 7 14.418235 7.1058017 13.435547 7.2851562 C 11.913547 5.8774278 9.8442485 5 7.5488281 5 z M 16.5 9 C 22.29 9 27 12.14 27 16 C 27 19.86 22.29 23 16.5 23 C 15.412 23 14.338594 22.888969 13.308594 22.667969 L 12.757812 22.548828 L 12.371094 22.957031 C 11.147094 24.252031 9.469625 24.976 7.640625 25 C 8.290625 23.917 8.727875 22.724516 8.921875 21.478516 L 9.0136719 20.896484 L 8.5488281 20.535156 C 6.9058281 19.256156 6 17.646 6 16 C 6 12.14 10.71 9 16.5 9 z M 11.5 15 A 1.5 1.5 0 0 0 11.5 18 A 1.5 1.5 0 0 0 11.5 15 z M 16.5 15 A 1.5 1.5 0 0 0 16.5 18 A 1.5 1.5 0 0 0 16.5 15 z M 21.5 15 A 1.5 1.5 0 0 0 21.5 18 A 1.5 1.5 0 0 0 21.5 15 z"/>
+        </g>
+      </svg>
+    </div>
+    <span style="font-size: 16px; color: #000; font-weight: 500; margin-top: 5px;">rocket.chat</span>
+  </div>
+  <div style="border: 1px solid #ddd; border-radius: 4px; background: #fff; width: 400px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 8px 10px; gap: 10px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    <div style="gap: 10px; display: flex; flex-direction: row;">
+      <div style="width: 36px; height: 36px; background-color: #6c757d; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
+        U
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center;">
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
+          <span style="font-weight: bold; font-size: 14px; color: #333;">{username}</span>
+          <span style="font-size: 11px; color: #aaa;">5:07 PM</span>
+        </div>
+        <div style="font-size: 14px; color: #333; line-height: 1.4;">
+          Can you show me invoice 61356293
+        </div>
+      </div>
+    </div>
+    <div style="gap: 10px; display: flex; flex-direction: row;">
+      <div style="width: 36px; height: 36px; background-color: #3ea18e; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
+        A
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center;">
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
+          <span style="font-weight: bold; font-size: 14px; color: #333;">ai-bot</span>
+          <span style="font-size: 11px; color: #aaa;">5:07 PM</span>
+        </div>
+        <div style="font-size: 14px; color: #333; line-height: 1.4;">
+          I'm sorry, I don't have the capability to retrieve that PDF right now.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+++++
+
+The agent knows what it _should_ do — the system prompt describes its role and capabilities — but it doesn't have the tools to act on it. It's like a support agent who knows the process but can't access the systems.
+
+[TIP]
+--
+.Why did the bot respond that way?
+[%collapsible]
+====
+The `system.message` file contains the system prompt that guides the AI agent's behaviour. One of its rules explicitly instructs the model to decline when it lacks the right tool:
+
+----
+# CRITICAL CONSTRAINTS
+* **NO TOOL, NO URL:** If `get_invoice_pdf` is missing from your
+  current toolset, respond EXACTLY: "I'm sorry, I don't have the
+  capability to retrieve that PDF right now."
+----
+
+The model follows this constraint because it can see which tools are available. Right now it has none — so it politely refuses. Once you register the tools, the model will use them instead.
+====
+--
+
+{empty} +
+
+=== Hook the tools
+
+The route already includes a predefined tool (`get_invoice_pdf`) — but the agent doesn't know about it yet. Camel uses _tags_ to match agents with their tools: when an agent's tag matches a tool's tag, the tool becomes available.
+
+. *Configure the agent's tags*
++
+
+1. Click the `LangChain4j Agent` step to open its configuration.
+1. Select the `All` configuration tab.
+1. Set the `Tags` property to:
++
+[.copypaste]
+****
+all
+****
++
+Save the file. Camel hot-reloads and the agent now has access to the tool. Try it — go back to _Rocket.Chat_ and ask:
+
+{blank}
+
+[.copypaste]
+****
+What about now?
+****
+
+This time the LLM discovers the tool, calls it, and responds with the invoice:
+
+{blank}
+
+[subs=attributes]
+++++
+<div style="display: flex; align-items: flex-start; gap: 15px;">
+  <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+    <div style="width: 90px; height: 90px; background-color: #f5455c; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
+      <svg width="60" height="60" viewBox="0 0 24 24" fill="white">
+        <g transform="translate(-2 -2) scale(.9)">
+          <path d="M 7.5488281 5 C 6.2638281 5 5.055 5.3086094 4 5.8496094 C 5.422467 6.9694938 6.4322525 8.5274703 6.8359375 10.300781 C 5.0652471 11.854193 4 13.838545 4 16 C 4 18.1 5.0028438 20.110797 6.8398438 21.716797 C 6.5498438 22.966797 5.9480312 24.134047 5.0820312 25.123047 L 4.0136719 26.345703 L 5.5859375 26.751953 C 6.2259375 26.917953 6.8868281 27 7.5488281 27 C 9.7768281 27 11.841828 26.197516 13.423828 24.728516 C 14.425828 24.908516 15.458 25 16.5 25 C 23.393 25 29 20.962 29 16 C 29 11.038 23.393 7 16.5 7 C 15.440923 7 14.418235 7.1058017 13.435547 7.2851562 C 11.913547 5.8774278 9.8442485 5 7.5488281 5 z M 16.5 9 C 22.29 9 27 12.14 27 16 C 27 19.86 22.29 23 16.5 23 C 15.412 23 14.338594 22.888969 13.308594 22.667969 L 12.757812 22.548828 L 12.371094 22.957031 C 11.147094 24.252031 9.469625 24.976 7.640625 25 C 8.290625 23.917 8.727875 22.724516 8.921875 21.478516 L 9.0136719 20.896484 L 8.5488281 20.535156 C 6.9058281 19.256156 6 17.646 6 16 C 6 12.14 10.71 9 16.5 9 z M 11.5 15 A 1.5 1.5 0 0 0 11.5 18 A 1.5 1.5 0 0 0 11.5 15 z M 16.5 15 A 1.5 1.5 0 0 0 16.5 18 A 1.5 1.5 0 0 0 16.5 15 z M 21.5 15 A 1.5 1.5 0 0 0 21.5 18 A 1.5 1.5 0 0 0 21.5 15 z"/>
+        </g>
+      </svg>
+    </div>
+    <span style="font-size: 16px; color: #000; font-weight: 500; margin-top: 5px;">rocket.chat</span>
+  </div>
+  <div style="border: 1px solid #ddd; border-radius: 4px; background: #fff; width: 400px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 8px 10px; gap: 10px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    <!-- User message -->
+    <div style="gap: 10px; display: flex; flex-direction: row;">
+      <div style="width: 36px; height: 36px; background-color: #6c757d; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
+        U
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center;">
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
+          <span style="font-weight: bold; font-size: 14px; color: #333;">{username}</span>
+          <span style="font-size: 11px; color: #aaa;">6:47 PM</span>
+        </div>
+        <div style="font-size: 14px; color: #333; line-height: 1.4;">
+          What about now?
+        </div>
+      </div>
+    </div>
+    <!-- Bot response with attachment -->
+    <div style="gap: 10px; display: flex; flex-direction: row;">
+      <div style="width: 36px; height: 36px; background-color: #3ea18e; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
+        A
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center;">
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
+          <span style="font-weight: bold; font-size: 14px; color: #333;">ai-bot</span>
+          <span style="font-size: 11px; color: #aaa;">6:47 PM</span>
+        </div>
+        <div style="font-size: 14px; color: #333; line-height: 1.4;">
+          Here's your invoice:
+        </div>
+        <!-- Attachment block -->
+        <div style="border-left: 3px solid #3ea18e; padding: 8px 12px; margin-top: 6px;">
+          <div style="font-size: 14px; color: #1d74f5; margin-bottom: 4px;">
+            Invoice 61356293 PDF ▾
+          </div>
+          <div style="font-size: 13px; color: #555;">
+            Click to view or download the PDF (expires in 1 hour)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+++++
+
+The agent found the `get_invoice_pdf` tool, called it to generate a pre-signed S3 URL, and returned the link to the support agent — all from a single natural language request. Clicking the link opens the PDF in a new tab:
+
+{blank}
+
+++++
+<div style="width: 420px; background: #fff; border: 1px solid #ccc; box-shadow: 2px 2px 8px rgba(0,0,0,0.15); font-family: 'Times New Roman', serif; padding: 30px 35px; font-size: 12px; color: #333; line-height: 1.5;">
+
+  <div style="font-size: 16px; font-weight: bold; color: #1a3c6e;">Invoice no: 61356293</div>
+  <div style="margin-top: 4px; color: #8b6914;">Date of issue: <span style="margin-left: 40px;">09/06/2012</span></div>
+
+  <hr style="border: none; border-top: 1px solid #ccc; margin: 12px 0;">
+
+  <div style="display: flex; gap: 30px;">
+    <div style="flex: 1;">
+      <div style="font-weight: bold; font-size: 13px;">Seller:</div>
+      <div style="color: #8b6914; font-size: 11px;">
+        Georgia World Congress Center<br>
+        285 Andrew Young International Blvd NW<br>
+        Atlanta, Georgia GA 30313<br><br>
+        <span style="color: #555;">Tax Id: 939-98-8477</span><br>
+        <span style="color: #555;">IBAN: GB50ACIE59715038217063</span>
+      </div>
+    </div>
+    <div style="flex: 1;">
+      <div style="font-weight: bold; font-size: 13px;">Client:</div>
+      <div style="color: #8b6914; font-size: 11px;">
+        Chapman, Kim and Green<br>
+        64751 James Branch<br>
+        Smithmouth, NC 26872<br><br>
+        <span style="color: #555;">Tax Id: 949-84-9105</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-weight: bold; font-size: 14px; margin-top: 15px; color: #1a3c6e;">ITEMS</div>
+
+  <table style="width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11px;">
+    <thead>
+      <tr style="background: #f0f0f0; border-bottom: 2px solid #999;">
+        <th style="text-align: left; padding: 4px;">No.</th>
+        <th style="text-align: left; padding: 4px;">Description</th>
+        <th style="text-align: right; padding: 4px;">Qty</th>
+        <th style="text-align: left; padding: 4px;">UM</th>
+        <th style="text-align: right; padding: 4px;">Net price</th>
+        <th style="text-align: right; padding: 4px;">Net worth</th>
+        <th style="text-align: right; padding: 4px;">VAT [%]</th>
+        <th style="text-align: right; padding: 4px;">Gross worth</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid #ddd;">
+        <td style="padding: 4px;">1.</td>
+        <td style="padding: 4px;">Wine Glasses Goblets Pair Clear Glass</td>
+        <td style="text-align: right; padding: 4px;">5,00</td>
+        <td style="padding: 4px;">each</td>
+        <td style="text-align: right; padding: 4px;">12,00</td>
+        <td style="text-align: right; padding: 4px;">60,00</td>
+        <td style="text-align: right; padding: 4px;">10%</td>
+        <td style="text-align: right; padding: 4px;">66,00</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="font-weight: bold; font-size: 14px; margin-top: 15px; color: #1a3c6e;">SUMMARY</div>
+
+  <table style="width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11px;">
+    <thead>
+      <tr style="background: #f0f0f0; border-bottom: 2px solid #999;">
+        <th style="text-align: right; padding: 4px;">VAT [%]</th>
+        <th style="text-align: right; padding: 4px;">Net worth</th>
+        <th style="text-align: right; padding: 4px;">VAT</th>
+        <th style="text-align: right; padding: 4px;">Gross worth</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid #ddd;">
+        <td style="text-align: right; padding: 4px;">10%</td>
+        <td style="text-align: right; padding: 4px;">192,81</td>
+        <td style="text-align: right; padding: 4px;">19,28</td>
+        <td style="text-align: right; padding: 4px;">212,09</td>
+      </tr>
+      <tr style="border-top: 2px solid #999; font-weight: bold;">
+        <td style="text-align: right; padding: 4px;">Total</td>
+        <td style="text-align: right; padding: 4px;">$ 192,81</td>
+        <td style="text-align: right; padding: 4px;">$ 19,28</td>
+        <td style="text-align: right; padding: 4px;">$ 212,09</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+++++
+
+{empty} +
