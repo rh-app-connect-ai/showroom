@@ -1,0 +1,29 @@
+:imagesdir: ../../assets/images
+:page-time: 7
+include::partial$style.adoc[]
+
+[id='lab4-agentic-flow']
+== Building the Agentic Flow
+
+Here's the Camel route you'll be working with. It listens for messages from Rocket.Chat, extracts the text, and sends a response back:
+
+{blank}
+
+[.mermaid]
+----
+flowchart LR
+    A(RocketChat) --> B(get text) --> C(set system prompt) --> D2 --> E(to rocketchat)
+
+    subgraph D2 ["To do: Agent"]
+        D(dummy response)
+    end
+
+    style C fill:#eee,stroke:#ccc,color:#aaa
+    style D2 fill:#dde4f6,stroke:#6690e6,color:#335
+----
+
+The `set system prompt` step is disabled — there's no AI agent yet, so no prompt is needed. In its place, the `dummy response` step simply returns "Hello World" to Rocket.Chat. Any message sent to the bot triggers this flow and gets back the placeholder reply.
+
+Your task will be to replace the `dummy response` with a MaaS-powered AI agent, and enable the system prompt that guides its behaviour.
+
+{empty} +

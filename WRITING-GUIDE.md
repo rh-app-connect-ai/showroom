@@ -19,6 +19,7 @@ This file captures the author's preferences for writing workshop documentation. 
 
 ## Diagrams (Mermaid)
 
+- **Prefer horizontal layout (`flowchart LR`)** for all diagrams unless there's a specific reason for vertical. Horizontal diagrams are shorter on the page and prevent endless scrolling — this is critical for the student's navigation experience.
 - Keep diagrams minimal — only show what's relevant to the concept being explained.
 - Don't include internal details (like Network Policies) unless the student interacts with them directly. Show the effect, not the implementation.
 - Don't introduce implementation details (like Listener, Connector) too early — start with the high-level concept first.

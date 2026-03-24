@@ -30,6 +30,12 @@ window.addEventListener('DOMContentLoaded', function() {
 
       var container = document.createElement('div');
       container.className = 'mermaid';
+      // Carry over extra classes (e.g. text-center) from the original block
+      block.classList.forEach(function(cls) {
+        if (cls !== 'listingblock' && cls !== 'mermaid') {
+          container.classList.add(cls);
+        }
+      });
       container.textContent = code.textContent;
       block.parentNode.replaceChild(container, block);
     });

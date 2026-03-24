@@ -45,6 +45,12 @@ summary  {
     display: inline-block;
 }
 
+/* Center Mermaid diagrams with [.text-center] role */
+.mermaid.text-center svg {
+    display: block;
+    margin: 0 auto;
+}
+
 /* Inline images: vertically center with surrounding text */
 .doc span.image img {
     vertical-align: middle;

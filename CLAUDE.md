@@ -250,6 +250,7 @@ content/modules/ROOT/
       tiles.adoc            # [.tile] sidebar blocks (dynamic time/tasks from nav + fetch)
       steps.adoc            # steps overview overlay on first tile click
       celebration.adoc      # module completion overlay
+      mermaid-hints.adoc    # [.mermaid-hints-*] interactive hover popovers on Mermaid diagram nodes
       README.md             # documentation
 ```
 
@@ -367,6 +368,30 @@ Description text for the tile card.
 - CSS class `.sidebarblock.tile { display: none }` prevents flash of unstyled content
 
 To add a new module tile, just add another `[.tile]` block in `index.adoc`.
+
+## Mermaid Hints (Interactive Diagram Popovers)
+
+Hover popovers on Mermaid diagram nodes. Defined in `partials/patterns/mermaid-hints.adoc`. The pattern name is namespaced — `mermaid-hints-simple` is the current variant; future variants (e.g. `mermaid-hints-rich`) can share the `mermaid-hints-` prefix.
+
+```asciidoc
+[.mermaid-hints-simple]
+****
+S2 | Site | The foundation of the Skupper network. +
+Grant | AccessGrant | Created on the receiving side. +
+It generates credentials that allow a remote Site to connect. +
+Listener | Listener | Exposes a remote service locally.
+****
+```
+
+- Place the block immediately after the `[.mermaid]` diagram it targets
+- Each hint line: `NodeId | Title | Description` — separated by ` +`
+- Lines without `|` are continuation lines, appended to the previous hint (shown on a new line in the popover)
+- Blank lines are cosmetic only (for grouping in the source)
+- Node IDs match both regular nodes (`flowchart-{id}-{n}`) and subgraphs (`{id}`) automatically
+- Do NOT use raw HTML tags (e.g. `<br>`) inside the block — they break the sidebar structure
+- A single shared popover is created per page; multiple hint blocks targeting different diagrams are supported
+
+Used in: `m3/m3.2`.
 
 ## Steps Overlay
 

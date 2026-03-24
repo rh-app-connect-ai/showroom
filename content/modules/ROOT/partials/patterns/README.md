@@ -268,6 +268,103 @@ flowchart LR
 
 ---
 
+## Mermaid Hints
+
+Interactive hover popovers on Mermaid diagram nodes. Place a `[.mermaid-hints-*]` sidebar block after a `[.mermaid]` diagram — the pattern automatically finds the preceding diagram and attaches hover handlers to the specified nodes.
+
+**File:** `mermaid-hints.adoc`
+
+The pattern name is **namespaced**: `mermaid-hints-simple` is the current variant (title + plain text). Future variants (e.g. `mermaid-hints-rich` with formatted HTML content) can be added as separate patterns sharing the `mermaid-hints-` prefix.
+
+### Basic usage
+
+Each line defines a hint: `NodeId | Title | Description`. Lines are separated by ` +` (AsciiDoc line continuation). The `NodeId` must match a node or subgraph ID in the Mermaid diagram.
+
+```asciidoc
+[.mermaid]
+----
+flowchart LR
+    subgraph S1 ["Site(1)"]
+        Connector((Connector))
+    end
+    subgraph S2 ["Site(2)"]
+        Listener((Listener))
+        Grant[AccessGrant]
+    end
+    S2 -.-|"🔒 link"| S1
+----
+
+[.mermaid-hints-simple]
+****
+S2 | Site | The foundation of the Skupper network. Each namespace runs one. +
+S1 | Site | Same as above, on the other side. +
+Grant | AccessGrant | An invitation for a remote Site to connect. +
+Listener | Listener | Exposes a remote service locally in your namespace. +
+Connector | Connector | Connects a local service to the Skupper network.
+****
+
+TIP: Hover over each component in the diagram to learn what it does.
+```
+
+### Multi-line descriptions
+
+Lines without the `NodeId | Title | Description` pattern are appended to the previous hint's description, shown on a new line in the popover:
+
+```asciidoc
+[.mermaid-hints-simple]
+****
+Grant | AccessGrant | Created on the receiving side. +
+It generates credentials that allow a remote Site to connect. +
+Think of it as an invitation to join the network. +
+Token | AccessToken | Created on the connecting side.
+****
+```
+
+### Blank lines for grouping
+
+Blank lines between hints are purely cosmetic — they create visual grouping in the AsciiDoc source without affecting behavior:
+
+```asciidoc
+[.mermaid-hints-simple]
+****
+S2 | Site | Description. +
+S1 | Site | Description.
+
+Grant | AccessGrant | Description. +
+Token | AccessToken | Description.
+****
+```
+
+### Node ID matching
+
+Mermaid generates different ID patterns for regular nodes vs subgraphs:
+
+| Diagram element | Mermaid ID pattern | Example |
+|---|---|---|
+| Regular node (`Grant[AccessGrant]`) | `flowchart-{id}-{n}` | `flowchart-Grant-3` |
+| Subgraph (`subgraph S2 [...]`) | `{id}` | `S2` |
+
+The pattern handles both automatically — no special syntax needed.
+
+### Behavior
+
+- A single shared popover is created per page (dark background, purple title, grey description)
+- The popover appears below the hovered node, centered horizontally, clamped to viewport edges
+- Moving the cursor to the popover keeps it visible (for reading longer descriptions)
+- The pattern wraps the preceding `[.mermaid]` block in a container div to reliably track it through Mermaid's async CDN rendering
+- Multiple `[.mermaid-hints-*]` blocks on a page are supported, each targeting its preceding diagram
+
+### Important
+
+- Do NOT use raw HTML tags (e.g. `<br>`) inside the sidebar block — AsciiDoc passes them through and they break the block structure
+- The `[.mermaid-hints-simple]` block must appear AFTER the `[.mermaid]` diagram it targets (the pattern walks backwards through siblings to find it)
+
+### Used in
+
+`m3/m3.2`
+
+---
+
 ## Creating a new pattern
 
 1. Create `partials/patterns/newpattern.adoc` with a `++++` passthrough block containing `<style>` and `<script>` sections

@@ -109,9 +109,11 @@ flowchart LR
     style DB fill:#336,color:#fff
 ----
 
+From your application's perspective, the database will appear as a local service — no special configuration needed.
+
 {empty} +
 
-From your application's perspective, the database will appear as a local service — no special configuration needed.
+NOTE: In this exercise you're connecting two namespaces on the same cluster — a deliberately simple setup to focus on learning the core concepts. You might wonder why Service Interconnect is needed for something that could be solved with a simple network policy. The answer is scale: Service Interconnect is designed for multi-site networks where services span multiple clusters, regions, and cloud providers — with many connections sharing the same secure mesh. What you learn here applies directly to those real-world scenarios. We'll look at a brief example at the end of this exercise.
 
 {empty} +
 
@@ -165,9 +167,18 @@ flowchart LR
     style DB fill:#336,color:#fff
 ----
 
-{empty} +
+[.mermaid-hints-simple]
+****
+S2 | Site | The foundation of the Skupper network. Each participating namespace runs a Site. Sites discover each other through AccessGrants and AccessTokens. +
+S1 | Site | The foundation of the Skupper network. Each participating namespace runs a Site. Sites discover each other through AccessGrants and AccessTokens. +
+Grant | AccessGrant | Created on the receiving side. It generates credentials that allow a remote Site to connect. Think of it as an invitation to join the network. +
+Token | AccessToken | Created on the connecting side using the grant details. It establishes the encrypted link between two Sites. +
+Listener | Listener | Exposes a remote service locally in your namespace. It matches a Connector on the other side by routing key, making the remote service appear as a local one. +
+Connector | Connector | Connects a local service to the Skupper network. It publishes the service so that matching Listeners in other namespaces can reach it. +
+SVC2 | Service (auto-created) | When a Listener is created, Service Interconnect automatically creates a local Kubernetes service. Your application connects to this service as if the database were local.
+****
 
-Each side runs a *Site* — the foundation that enables the Skupper network. The connection between them is established through an *AccessGrant* and *AccessToken* pair. Traffic flows from the *Listener* in your namespace to the *Connector* on the database side.
+TIP: Hover over each component in the diagram to learn what it does.
 
 NOTE: The database lives in a secure, air-tight environment — no inbound ports are exposed. To keep it that way, the link is initiated *from* the database side *outward* to your site. This is why you create an AccessGrant on your side: it gives the database site permission to connect to you and establish a bidirectional communication link. Its environment never opens an entrypoint that could be exploited.
 
@@ -175,16 +186,53 @@ NOTE: The database lives in a secure, air-tight environment — no inbound ports
 
 === What you will do
 
-The server side has been partially configured by your platform team:
+Every Service Interconnect setup follows two stages: first you *build the network* — the secure mesh that connects your environments — then you *expose services* through it. Once the network is in place, adding a new service is just a matter of pairing a Listener with a Connector — no network changes needed.
 
-* A *Site* in the `shared-database` namespace
-* A *Connector* that bridges the Skupper network to the PostgreSQL service on port `5432`
+{empty} +
 
-Your job is to complete the client side:
+[.mermaid]
+----
+flowchart LR
+    subgraph netLabel ["① Establish the network"]
+        subgraph net [" "]
+            direction LR
+            S1@{ shape: processes, label: "Sites" } -.-|"🔒 secure links"| S2@{ shape: processes, label: "Sites" }
+        end
+    end
 
+    subgraph svcLabel ["② Expose services"]
+        subgraph svc [" "]
+            direction LR
+            LA@{ shape: processes, label: "Listeners" } --- CA@{ shape: processes, label: "Connectors" }
+        end
+    end
+
+    netLabel ~~~ svcLabel
+
+    style netLabel fill:none,stroke:none
+    style svcLabel fill:none,stroke:none
+    style net fill:#e8eaf6,stroke:#7986cb
+    style svc fill:#e8f5e9,stroke:#66bb6a
+    style S1 fill:#fff,stroke:#7986cb
+    style S2 fill:#fff,stroke:#7986cb
+    style LA fill:#fff,stroke:#66bb6a
+    style CA fill:#fff,stroke:#66bb6a
+----
+
+In this exercise, that translates to:
+
+*Establish the network* — create the secure link between namespaces:
+
+[start=0]
+. A *Site* already exists in the `shared-database` namespace _(pre-configured)_
 . Create a *Site* in your namespace with `linkAccess` enabled
 . Generate an *AccessGrant* so the database namespace can connect to you
 . Create an *AccessToken* in the database namespace to establish the link
+
+*Expose the database service* — make the remote database accessible locally:
+
+[start=4]
+. A *Connector* already bridges the Skupper network to PostgreSQL on port `5432` _(pre-configured)_
 . Create a *Listener* to expose the remote database as a local service
 
 {blank}
@@ -284,7 +332,13 @@ flowchart LR
 
 {empty} +
 
-=== Step 1: Create a Site in Your Namespace
+=== Establish the network
+
+The first step is to set up the secure network between your namespace and the database namespace. This involves creating a Site, an AccessGrant, and an AccessToken — together, these establish an encrypted link between the two environments.
+
+{empty} +
+
+==== Step 1: Create a Site in Your Namespace
 
 Create a Site with `linkAccess` enabled. This makes your namespace a *listening site* that can accept incoming connections from the database.
 
@@ -340,7 +394,7 @@ flowchart LR
 
 {empty} +
 
-=== Step 2: Create an AccessGrant
+==== Step 2: Create an AccessGrant
 
 Before jumping in, remember that the link is initiated *from* Site(1) (database) *to* Site(2) (yours). Here's how the grant and token work together to make that happen:
 
@@ -426,7 +480,7 @@ flowchart LR
 
 {empty} +
 
-=== Step 3: Create an AccessToken in the Database Namespace
+==== Step 3: Create an AccessToken in the Database Namespace
 
 Now create an AccessToken in the `shared-database` namespace to establish the link from the database to your namespace. The token must be named `token-{username}`.
 
@@ -492,7 +546,15 @@ flowchart LR
 
 {empty} +
 
-=== Step 4: Create a Listener to Expose the Database Locally
+=== Expose the database service
+
+The network is now in place — your namespace and the database namespace are connected through an encrypted link. But having a network alone doesn't give you access to the database. You still need to tell Service Interconnect *which service* to expose into your namespace.
+
+This is where Listeners and Connectors come in. The Connector on the database side is already configured (you saw it in Step 0). Now you need to create a matching Listener on your side.
+
+{empty} +
+
+==== Step 4: Create a Listener to Expose the Database Locally
 
 The Listener creates a local service in your namespace that forwards traffic to the remote PostgreSQL database through the encrypted link.
 
@@ -587,7 +649,7 @@ flowchart LR
 
 {empty} +
 
-=== Step 5: Configure and query the database
+==== Step 5: Configure and query the database
 
 Now let's verify the connection works. First, store the database credentials in `application.properties` so they're available to all Camel routes:
 
@@ -696,13 +758,93 @@ flowchart LR
 
 You have successfully:
 
-* Created a Site, AccessGrant, and Listener in your environment
-* Created an AccessToken in the database environment to establish the link
-* Used a Camel route to query the database through the encrypted link
+* *Established the network* — Created a Site and AccessGrant in your namespace, and an AccessToken in the database namespace to form an encrypted link
+* *Exposed the service* — Created a Listener that makes the remote database accessible locally through the network
+* *Verified connectivity* — Used a Camel route to query the database through the encrypted link
 
 The database lives in a secure, air-tight environment — the connection was initiated *from* the database side *to* yours through an encrypted Skupper link. No network policy changes, no VPNs, no elevated permissions required.
 
 The link you've established will stay active — you'll need it in the next exercise to implement the full data flow: ingesting Purchase Orders, storing them in the database, and rendering PDF invoices.
+
+{empty} +
+
+=== Beyond this exercise: Service Interconnect at scale
+
+In this lab you connected two namespaces on the same cluster — a simple setup to demonstrate the concepts. In the real world, Service Interconnect shines when connecting services across multiple clusters, regions, and cloud providers — all sharing the same secure mesh.
+
+Consider a retail organisation with stores across different regions, each running AI-powered services. Edge sites collect training data and run inference against locally deployed models. Redundant on-prem data centers handle the heavy lifting — training new AI/ML models and pushing updated versions back to the stores. Regional hubs aggregate traffic from nearby edges before forwarding it to the core.
+
+{blank}
+
+[.text-center]
+[.mermaid]
+----
+flowchart LR
+    subgraph left [" "]
+        direction TB
+        subgraph E1L ["London"]
+            E1["AI data →\nAI model ←"]
+        end
+        subgraph E2L ["Berlin"]
+            E2["AI data →\nAI model ←"]
+        end
+    end
+
+    HL((Hub\nFrankfurt))
+
+    subgraph coreLabel [" "]
+        direction TB
+        subgraph DC1 ["Data Center 1"]
+            AI1(AI Model Training)
+        end
+        subgraph DC2 ["Data Center 2"]
+            AI2(AI Model Training)
+        end
+    end
+
+    HR((Hub\nSingapore))
+
+    subgraph right [" "]
+        direction TB
+        subgraph E3L ["Tokyo"]
+            E3["← AI data\n→ AI model"]
+        end
+        subgraph E4L ["Sydney"]
+            E4["← AI data\n→ AI model"]
+        end
+    end
+
+    E1 -.-|"🔒 N links"| HL
+    E2 -.-|"🔒 N links"| HL
+    HL -.-|"🔒 N links"| AI1
+    HL -.-|"🔒 N links"| AI2
+    AI1 -.-|"🔒 N links"| HR
+    AI2 -.-|"🔒 N links"| HR
+    HR -.-|"🔒 N links"| E3
+    HR -.-|"🔒 N links"| E4
+
+    style left fill:none,stroke:none
+    style right fill:none,stroke:none
+    style E1L fill:none,stroke:none
+    style E2L fill:none,stroke:none
+    style E3L fill:none,stroke:none
+    style E4L fill:none,stroke:none
+    style coreLabel fill:none,stroke:none
+    style DC1 fill:#e8eaf6,stroke:#7986cb
+    style DC2 fill:#e8eaf6,stroke:#7986cb
+    style AI1 fill:#fff,stroke:#7986cb
+    style AI2 fill:#fff,stroke:#7986cb
+    style HL fill:#e8eaf6,stroke:#7986cb
+    style HR fill:#e8eaf6,stroke:#7986cb
+    style E1 fill:#f5f5f5,stroke:#ccc
+    style E2 fill:#f5f5f5,stroke:#ccc
+    style E3 fill:#f5f5f5,stroke:#ccc
+    style E4 fill:#f5f5f5,stroke:#ccc
+----
+
+Each edge site pushes training data to the core and pulls updated models back. Multiple links between sites provide redundant routing — if one path fails, traffic flows through another. Hubs add a further layer of resilience: if the Frankfurt hub goes down, edges can reroute through Singapore. Redundant data centers ensure the AI pipeline stays available even during maintenance or outages.
+
+The same two-stage pattern you just learned applies here: Sites and links form the network, while Listeners and Connectors expose the specific services at each end. The difference is scale — instead of two namespaces on one cluster, this spans multiple regions, hubs, and data centers. But the building blocks are identical.
 
 {empty} +
 

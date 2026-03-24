@@ -1,168 +1,54 @@
 :imagesdir: ../../assets/images
+:page-time: 3
 include::partial$style.adoc[]
 
-[id='lab4-ai-assisted-customer-support']
-== Lab 4 - AI assisted Customer support
+[id='lab4-ai-customer-support']
+== Lab 4 - AI Customer Support
+
+Use an AI agent to orchestrate backend actions based on natural language chat — powered by Agentic Apache Camel and Model-as-a-Service (MaaS).
 
 {empty} +
 
-Test {username}
+*The Business Need*
 
-[.copypaste]
-****
-[.path]
-/credentials/im
+When a customer flags a mistake on their invoice, support agents traditionally have to manually navigate multiple backend databases and file systems to correct the issue. This is slow, error-prone, and frustrating for both agents and customers. They need a faster, frictionless way to resolve these tickets.
 
-[.default]
-my-fallback-password
+{empty} +
 
-REPLACE
-****
+*The Technical Solution*
 
-Example raw diagram:
+Support agents interact with an AI bot directly within their Rocket.Chat window using natural language. Powered by Agentic Apache Camel and Model-as-a-Service (MaaS), the AI acts as a smart assistant — it interprets the agent's request, autonomously decides which tools to call, updates the database, and regenerates the corrected invoice in S3 storage. This dramatically reduces resolution time and eliminates manual "swivel-chair" tasks for support teams.
 
-[source]
-----
-                      +---------------------+
-                      |   Chat Interface    |
-                      | (Bearer API Key)    |
-                      +---------+-----------+
-                                |
-                                v
-                      +---------------------+
-                      |      Gateway        |
-                      | (internal-gateway)  |
-                      +---------+-----------+
-                                |
-                                v
-                  +---------------------------+
-                  |        HTTPRoute          |
-                  |    (ai-proxy-route)       |
-                  |                           |
-                  |  +---------------------+  |
-                  |  |     AuthPolicy      |  |
-                  |  | (API key + groups)  |  |
-                  |  +---------------------+  |
-                  |                           |
-                  |  +---------------------+  |
-                  |  | TokenRateLimitPolicy|  |
-                  |  | (per-user token     |  |
-                  |  |  budget)            |  |
-                  |  +---------------------+  |
-                  +------------+--------------+
-                               |
-                               v
-                      +---------------------+
-                      |       LLM API       |                
-                      +---------------------+
-----
+{empty} +
 
-Mermaid version:
+*How it works*
 
 [.mermaid]
 ----
-flowchart TD
-    Chat[Chat Interface\nBearer API Key]
-    GW[Gateway\ninternal-gateway]
+flowchart LR
+    Agent([Support Agent]) -->|"① message"| RC[Rocket.Chat]
+    RC -->|"② forward"| Camel[Agentic Camel]
+    Camel <-->|"③ reason"| MaaS[MaaS]
+    Camel -->|"④ tool calls"| Tools
 
-    subgraph route [HTTPRoute — ai-proxy-route]
-        Auth[AuthPolicy\nAPI key + groups]
-        Token[TokenRateLimitPolicy\nper-user token budget]
+    subgraph Tools [Backend Tools]
+        DB[(Database)]
+        S3[(S3 / ODF)]
     end
 
-    LLM[LLM API]
-
-    Chat --> GW
-    GW --> route
-    Auth ~~~ Token
-    route --> LLM
+    Camel -->|"⑤ response"| RC
+    RC -->|"⑥ reply"| Agent
 ----
 
-Dark theme:
+The AI agent follows a reasoning loop — it consults the LLM via MaaS, which decides what actions to take. Camel then executes the appropriate tools (update the database, regenerate a PDF invoice in S3), feeds the results back to the LLM, and returns the final answer to the support agent in Rocket.Chat.
 
-[.mermaid]
-----
-%%{init: {'theme': 'dark'}}%%
-flowchart TD
-    Chat[Chat Interface\nBearer API Key]
-    GW[Gateway\ninternal-gateway]
+{empty} +
 
-    subgraph route [HTTPRoute — ai-proxy-route]
-        Auth[AuthPolicy\nAPI key + groups]
-        Token[TokenRateLimitPolicy\nper-user token budget]
-    end
+*What you will do in this lab:*
 
-    LLM[LLM API]
+. *Set up the environment* — Prepare the working folder and configure the AI agent.
+. *Build the Agentic flow* — Create the Agentic steps that connect Camel to MaaS and backend tools.
+. *Complete the flow* — Finish the integration that links Rocket.Chat, the AI agent, the database, and S3 storage.
+. *Test and deploy* — Simulate a customer/agent interaction, validate the results, and deploy to OpenShift.
 
-    Chat --> GW
-    GW --> route
-    Auth ~~~ Token
-    route --> LLM
-----
-
-Forest theme:
-
-[.mermaid]
-----
-%%{init: {'theme': 'forest'}}%%
-flowchart TD
-    Chat[Chat Interface\nBearer API Key]
-    GW[Gateway\ninternal-gateway]
-
-    subgraph route [HTTPRoute — ai-proxy-route]
-        Auth[AuthPolicy\nAPI key + groups]
-        Token[TokenRateLimitPolicy\nper-user token budget]
-    end
-
-    LLM[LLM API]
-
-    Chat --> GW
-    GW --> route
-    Auth ~~~ Token
-    route --> LLM
-----
-
-Neutral theme:
-
-[.mermaid]
-----
-%%{init: {'theme': 'neutral'}}%%
-flowchart TD
-    Chat[Chat Interface\nBearer API Key]
-    GW[Gateway\ninternal-gateway]
-
-    subgraph route [HTTPRoute — ai-proxy-route]
-        Auth[AuthPolicy\nAPI key + groups]
-        Token[TokenRateLimitPolicy\nper-user token budget]
-    end
-
-    LLM[LLM API]
-
-    Chat --> GW
-    GW --> route
-    Auth ~~~ Token
-    route --> LLM
-----
-
-Custom Red Hat-inspired:
-
-[.mermaid]
-----
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#e00', 'primaryTextColor': '#fff', 'primaryBorderColor': '#b00', 'lineColor': '#333', 'secondaryColor': '#f5f5f5', 'tertiaryColor': '#fff0f0'}}}%%
-flowchart TD
-    Chat[Chat Interface\nBearer API Key]
-    GW[Gateway\ninternal-gateway]
-
-    subgraph route [HTTPRoute — ai-proxy-route]
-        Auth[AuthPolicy\nAPI key + groups]
-        Token[TokenRateLimitPolicy\nper-user token budget]
-    end
-
-    LLM[LLM API]
-
-    Chat --> GW
-    GW --> route
-    Auth ~~~ Token
-    route --> LLM
-----
-
+{empty} +

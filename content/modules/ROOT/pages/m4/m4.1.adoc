@@ -1,0 +1,67 @@
+:imagesdir: ../../assets/images
+:page-time: 1
+include::partial$style.adoc[]
+
+[id="setup-lab4"]
+== Setup the Lab working folder
+
+{empty} +
+
+The following steps prepare the files you'll need for the AI customer support exercise:
+
+. Close tabs
++
+Before you start, make sure you close in your editor all the tabs (source files) from the previous exercise.
++
+image::m2/dev-close-tabs.png[width=100%]
++
+{blank}
++
+1. Click on the file explorer's `...` button +
+1. Ensure your `Open Editors` is ticked [√] +
+1. Click the `Close all Editors` button.
++
+{empty} +
+
+. Setup your working folder
++
+[.copypaste]
+****
+step 21
+****
++
+[TIP]
+--
+.Run the command above anytime to reset the exercise.
+[%collapsible]
+====
+The workshop includes handy helper scripts that let you jump to any step or reset the lab to a known good state:
+
+* `step N` — reset the lab to the beginning of step N
+* `steps` — list all available steps in the lab
+* `start` or `restart` — go to the very beginning (equivalent to `step 1`)
+* `ff` — fast-forward to the *next* step
+* `rw` — rewind to the *previous* step
+====
+--
++
+{empty} +
+
+. Check your lab folder
++
+After executing the commands above, have a look in your editor's tree view to confirm it looks healthy.
++
+{empty} +
+
+[.verification]
+****
+Do you see the expected folder structure and files?
+
+[.success]
+You're ready to continue.
+
+[.fail]
+Make sure the syntax of the commands are compatible with your environment and try again.
+****
+
+{empty} +
