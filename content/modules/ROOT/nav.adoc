@@ -4,6 +4,7 @@
 ** xref:intro/intro.0.adoc[Workshop overview]
 ** xref:intro/intro.1.adoc[Technologies overview]
 ** xref:intro/intro.2.adoc[Scenario introduction]
+** xref:intro/intro.2b.adoc[The workshop journey]
 ** xref:intro/intro.3.adoc[Development environment]
 
 * xref:m1/m1.0.adoc[Lab 1 - Messaging Access]
