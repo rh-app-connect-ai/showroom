@@ -111,7 +111,7 @@ Does the  TokenRateLimitPolicy show status **Enforced**?
 The token rate limit policy is active. Proceed to test token limits.
 
 [.fail]
-Check that you pasted the correct YAML and that the namespace is set to `{user-username}-ns`.
+Check that you pasted the correct YAML and that the namespace is set to `{user-username}-devspaces`.
 ****
 
 {empty} +
@@ -124,7 +124,7 @@ Use the chat interface to test the rate limiting behavior.
 
 ==== Test 1: Free-tier token limits
 
-. Send a message that asks the LLM to generate a longer response  `Explain Kubernetes in 500 words`.
+. Send a message that asks the LLM to generate a longer response  `Explain Kubernetes in 50 words`.
 +
 {empty} +
 
@@ -155,7 +155,7 @@ forage.myagent.agent.api.key=iamagold{user-username}
 +
 {empty} +
 
-. Send similar messages to the LLM using the chat interface in quick succession.
+. Send similar messages such as `Explain Kubernetes in 50 words` to the LLM using the chat interface in quick succession.
 +
 {empty} +
 

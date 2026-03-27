@@ -7,11 +7,11 @@ include::partial$style.adoc[]
 
 == Introduction
 
-In the previous phases of this workshop, you connected disparate chat platforms into a unified communication hub, securely ingested and transformed client data, and introduced an AI agent that helps support agents resolve invoice issues through natural language -- all powered by _Apache Camel_, _Kafka_, and Model-as-a-Service (MaaS).
+In the previous phases of this workshop, you connected disparate chat platforms into a unified communication hub, securely ingested and transformed client data, and introduced an AI agent that helps support agents resolve invoice issues through natural language -- all powered by _Apache Camel_, _Kafka_, and LLMs.
 
 But providing internal teams with access to Large Language Models introduces new challenges. AI resource costs are tied to **token consumption** rather than simple API hits. Without proper governance, there is no way to prevent system abuse or control runaway expenses. Traditional rate limiting -- which simply counts requests -- is not enough.
 
-In this final phase, you will place a **governance layer** in front of the LLM using _Red Hat Connectivity Link_. You will:
+In this final phase, you will place a **governance layer** in front of the LLM using _Red Hat Connectivity Link_. You will implement two key policies:
 
 * **AuthPolicy** -- Control _who_ can access the LLM API using API key-based authentication and group-based authorization.
 * **TokenRateLimitPolicy** -- Control _how much_ each user can consume by enforcing rate limits based on actual LLM token usage.
@@ -24,7 +24,7 @@ By the end of this module, the AI agent will be fully secured with tiered access
 
 * Login to the link:{url-codeready}[Red Hat OpenShift Dev Spaces, window="_blank"] environment you have been using throughout the workshop using the same credentials as before  {user-username} and your password.
 
-* Start a new terminal session in your Dev Spaces IDE if you already donot have one open.
+* Start a new terminal session in your Dev Spaces IDE if you already do not have one open.
 +
 image::intro/toggle-terminal.png[width=40%]
 
@@ -39,71 +39,79 @@ oc project {user-username}-devspaces
 
 === What is Connectivity Link?
 
-_Red Hat Connectivity Link_ is a _Kubernetes_-native solution for managing, securing, and controlling API traffic. Built on the link:https://kuadrant.io/[_Kuadrant_ project], it integrates directly with the _Gateway API_ to enforce policies at the gateway level and HTTP Route Level -- before requests ever reach the LLM backend.
+We will be Red Hat Connectivity Link across this module to implement the governance policies for the LLM. _Red Hat Connectivity Link_ is a _Kubernetes_-native solution for managing, securing, and controlling API traffic. Built on the link:https://kuadrant.io/[_Kuadrant_ project], it integrates directly with the _Gateway API_ to enforce policies at the gateway level and HTTP Route Level -- before requests ever reach the LLM backend.
 
 {empty} +
 
 === Gateway API Architecture
 
-_Connectivity Link_ operates at the _Gateway API_ layer -- a _Kubernetes_ standard for managing ingress traffic. It uses a layered model:
+Gateway API is an official Kubernetes project focused on L4 and L7 routing in Kubernetes. This project represents the next generation of Kubernetes Ingress, Load Balancing, and Service Mesh APIs. It uses a layered model:
 
-[source]
+[.mermaid]
+[subs="attributes"]
 ----
-GatewayClass          <-- Defines the controller (e.g., OpenShift Gateway Controller)
-    |
-    v
-Gateway               <-- The actual listener (port, protocol, namespace scope)
-    |
-    v
-HTTPRoute             <-- Routing rules (path matching, header modification, backend targets)
+flowchart LR
+    subgraph yoursLabel [" "]
+        subgraph yours ["OpenShift"]
+            GC[GatewayClass]
+            GT[Gateway]
+            HTTP[HTTPRoute]
+        end
+    end
+
+    GC --> GT --> HTTP
+
+    style yoursLabel fill:none,stroke:none
+    style GC fill:#fff,stroke:#7986cb
+    style GT fill:#fff,stroke:#7986cb
+    style HTTP fill:#fff,stroke:#7986cb
 ----
 
-_Connectivity Link_ attaches its policies (AuthPolicy, TokenRateLimitPolicy) directly to these _Gateway API_ resources. This means security and governance are enforced **at the infrastructure level**, without modifying application code or the AI agent itself.
+[.mermaid-hints-simple]
+****
+GC | GatewayClass | Gateways can be implemented by different controllers, often with different configurations. A Gateway object is associated with exactly one GatewayClass; the GatewayClass describes the gateway controller responsible for managing Gateways of this class +
+GT | Gateway | A Gateway describes an instance of traffic handling infrastructure. It defines a network endpoint that can be used for processing traffic, i.e. filtering, balancing, splitting, etc. for backends such as a Service. For example, a Gateway may represent a cloud load balancer or an in-cluster proxy server that is configured to accept HTTP traffic. +
+HTTP | HTTPRoute | The HTTPRoute kind specifies routing behavior of HTTP requests from a Gateway listener to backend network endpoints. For a Service backend, an implementation may represent the backend network endpoint as a Service IP or the backing EndpointSlices of the Service. An HTTPRoute represents configuration that is applied to the underlying Gateway implementation
+****
+TIP: Hover over each component in the diagram to learn what it does.
+
+_Connectivity Link_ operates at the _Gateway API_ layer._Connectivity Link_ attaches its policies (AuthPolicy, TokenRateLimitPolicy) directly to these _Gateway API_ resources. This means security and governance are enforced **at the infrastructure level**, without modifying application code or the AI agent itself.
 
 {empty} +
 
 === End-to-End Request Flow
+In this module we will deploy and use a simple chat interface to simulate requests to the LLM API, but the same architecture and policies would apply regardless of the client -- whether it's a support agent's rocket chat that you saw earlier, an internal chatbot, or an external application.
 
 The following diagram shows how a request flows from the chat interface through the governance layer to the LLM backend:
 
-[source]
+[.mermaid]
 ----
-                      +---------------------+
-                      |   Chat Interface    |
-                      | (Bearer API Key)    |
-                      +---------+-----------+
-                                |
-                                v
-                      +---------------------+
-                      |      Gateway        |
-                      | (internal-gateway)  |
-                      +---------+-----------+
-                                |
-                                v
-                  +---------------------------+
-                  |        HTTPRoute          |
-                  |    (ai-proxy-route)       |
-                  |                           |
-                  |  +---------------------+  |
-                  |  |     AuthPolicy      |  |
-                  |  | (API key + groups)  |  |
-                  |  +---------------------+  |
-                  |                           |
-                  |  +---------------------+  |
-                  |  | TokenRateLimitPolicy|  |
-                  |  | (per-user token     |  |
-                  |  |  budget)            |  |
-                  |  +---------------------+  |
-                  +------------+--------------+
-                               |
-                               v
-                      +---------------------+
-                      |       LLM API       |                
-                      +---------------------+
-----
+flowchart LR
+    subgraph yoursLabel [" "]
+        subgraph yours [" "]
+            Client["Chat Interface <br>(Bearer API Token)"]
+            Gateway["Gateway<br>(Internal AI Gateway)"]
+            LLM["LLM API"]
+            subgraph S2 ["HTTP Route"]
+                subgraph S3 ["Connectivity link"]
+                    Auth["Auth Policy<br>(API Key + groups)"]
+                    Token["Token Rate Limit Policy<br>(per-user token budget)"]
+            end
+        end
+    end
+end
 
-// TODO: Replace ASCII diagram with a proper architecture diagram screenshot
-image::m5/phase4_architecture_diagram.png[Phase 4 Architecture Diagram - placeholder,width=80%]
+    Client --> Gateway --> S2 --> LLM
+    Auth ~~~ Token
+
+
+
+    style yoursLabel fill:none,stroke:none
+    style S2 fill:#FFFFFF
+    style S3 fill:#e8eaf6,stroke:#7986cb
+    style Token fill:#fff,stroke:#7986cb
+    style Auth fill:#fff,stroke:#7986cb
+----
 
 {empty} +
 
@@ -149,7 +157,8 @@ NAME               CLASS               ADDRESS                                  
 internal-gateway   openshift-default   internal-gateway-openshift-default.ai-gateway.svc.cluster.local   True         14h
 ----
 
-. Each user has http route `ai-proxy-route` in their namespace `{user-username}-devspaces` that targets the LLM API. Run the following command to verify it is present
+
+. Each user has HTTPRoute with the `ai-proxy-route` in their namespace `{user-username}-devspaces` that targets the LLM API. Run the following command to verify it is present
 +
 [.copypaste]
 ****
