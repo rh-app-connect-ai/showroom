@@ -47,8 +47,34 @@ The AI agent follows a reasoning loop — it consults the LLM via MaaS, which de
 *What you will do in this lab:*
 
 . *Set up the environment* — Prepare the working folder and configure the AI agent.
-. *Build the Agentic flow* — Create the Agentic steps that connect Camel to MaaS and backend tools.
+. *Develop the Agent* — Progressively enable the AI agent, from basic routes to fully-equipped with tools.
 . *Complete the flow* — Finish the integration that links Rocket.Chat, the AI agent, the database, and S3 storage.
 . *Test and deploy* — Simulate a customer/agent interaction, validate the results, and deploy to OpenShift.
 
 {empty} +
+
+
+== TEST ZONE
+
+[.mermaid]
+----
+flowchart LR
+    Agent([Support Agent]) -->|"① message"| RC
+    RC -->|"② forward"| Camel["<img src='../_images/common/rh-logo-sm.svg'/>Agentic Camel"]
+    Camel <-->|"③ reason"| MaaS[MaaS]
+    Camel -->|"④ tool calls"| Tools
+
+    RC@{ img: "../_images/m4/rocketchat-icon.svg", label: "Rocket.Chat", pos: "b", h: 100, w: 100, constraint: "on" }
+
+    subgraph Tools [Backend Tools]
+        DB[(Database)]
+        S3[(S3 / ODF)]
+    end
+
+    Camel -->|"⑤ response"| RC
+    RC -->|"⑥ reply"| Agent
+
+    style RC fill:none,stroke:none
+----
+
+image:common/rh-logo.svg[width=20] HERE

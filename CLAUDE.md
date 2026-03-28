@@ -404,3 +404,86 @@ A fullscreen overlay that shows the list of pages in a module with per-page esti
 - Uses `[subs=attributes]` for the Red Hat background SVG (`{ico-redhat-dark}`)
 - CSS classes are prefixed `steps-*` to avoid collisions
 - Must be included after `tiles.adoc` (both use `window.addEventListener('DOMContentLoaded', ...)` and fire in registration order)
+
+## HTML Figure Templates (`_figures/`)
+
+Pages with inline HTML illustrations (mockups of Rocket.Chat, Matrix, HelpDesk, PDFs, etc.) use a `_figures/` directory to separate the HTML structure from the storyline content. This keeps the `.adoc` page focused on the narrative flow.
+
+**Convention:**
+- Each module that needs figures creates a `_figures/` directory under its `pages/` subfolder (e.g. `pages/m4/_figures/`)
+- The `_` prefix tells Antora to exclude the directory from publishing (same convention as AsciiDoc partials)
+- `_figures/` is project-specific — it does NOT belong in `partials/`, which is a portable package
+
+**Two types of templates:**
+
+1. **Reusable (attribute-driven):** The template uses `[subs=attributes]` and references `{fig-*}` attributes for variable content. The parent page sets these attributes before each include. The same template can be included multiple times with different attribute values — AsciiDoc processes top-to-bottom, so reassigning attributes works.
+
+```asciidoc
+// In the storyline page:
+:fig-time: 5:05 PM
+:fig-user-msg: hi
+:fig-bot-msg: Hello World
+\include::_figures/rc-interaction.adoc[]
+
+// Later, reused with different content:
+:fig-time: 5:06 PM
+:fig-user-msg: Hi again
+:fig-bot-msg: Hello! How can I assist you today?
+\include::_figures/rc-interaction.adoc[]
+```
+
+2. **Dedicated (self-contained):** The template contains all its content — no attributes needed. Used for one-off illustrations like a specific PDF or login page.
+
+```asciidoc
+\include::_figures/invoice-pdf.adoc[]
+```
+
+**`pass:[]` gotcha for attributes with HTML:** If an attribute value contains HTML tags or entities (e.g. `<span>`, `<br>`, `&#x1F4C4;`), wrap it in `pass:[]` to prevent AsciiDoc from escaping the content:
+
+```asciidoc
+// WRONG — HTML gets escaped:
+:fig-msg: &#x1F4C4; Ticket <span style="color: purple">#1025</span>
+
+// CORRECT — pass:[] preserves raw HTML:
+:fig-msg: pass:[&#x1F4C4; Ticket <span style="color: purple">#1025</span>]
+```
+
+**Attribute naming:** Use the `fig-` prefix for all figure attributes to avoid collisions with other document attributes. Common ones: `fig-time`, `fig-user-msg`, `fig-bot-msg`, `fig-attach-title`, `fig-attach-desc`, `fig-sender`, `fig-msg`.
+
+## Custom SVG Icons in Mermaid Diagrams
+
+Mermaid v11+ supports image nodes via the `@{ img: }` syntax. Custom SVG icons can be used in flowcharts to replace generic shapes with branded visuals (e.g. Rocket.Chat, Matrix logos).
+
+**File location:** Store SVG icon files in `assets/images/<module>/` (e.g. `assets/images/m4/rocketchat-icon.svg`). Antora publishes them to `_images/<module>/`.
+
+**Referencing in Mermaid:** Use the relative path `../_images/<module>/<file>.svg` from any page inside a module subdirectory.
+
+```asciidoc
+[.mermaid]
+----
+flowchart LR
+  RC@{ img: "../_images/m4/rocketchat-icon.svg", label: "Rocket.Chat", pos: "b", h: 100, w: 100, constraint: "on" }
+  B(Some node)
+
+  RC --> B
+
+  style RC fill:none,stroke:none
+----
+```
+
+**Key parameters:**
+- `img:` — path to the SVG file (relative to the page URL in the generated site)
+- `label:` — text shown below (`pos: "b"`) or above (`pos: "t"`) the icon
+- `h:`, `w:` — node container size in pixels (controls how large the icon appears)
+- `constraint: "on"` — keeps the node in the normal flow layout
+
+**Hiding the node box:** Add `style <NodeId> fill:none,stroke:none` to remove the default rectangle around image nodes.
+
+**Vertical alignment:** Mermaid arrows point to the center of the node container, not the icon. If the icon appears too high (because the label takes space below), adjust the SVG file itself: extend the viewBox height and shift the drawing down with a `translate(x, y)` on the inner `<g>` element. This adds transparent space above the icon, pushing it toward the arrow connection point.
+
+**SVG requirements:** Standalone SVG files must include `xmlns="http://www.w3.org/2000/svg"` — without it, browsers won't render the file when loaded via `<image>`.
+
+**What doesn't work:**
+- Relative paths with `..` were initially thought to cause Mermaid syntax errors, but the actual issue was a malformed SVG file. Relative paths work fine.
+- `data:image/svg+xml;base64,...` — base64 data URIs don't work with Mermaid's `@{ img: }`.
+- `data:image/svg+xml,...` — URL-encoded data URIs work but are hard to maintain. Prefer local SVG files.

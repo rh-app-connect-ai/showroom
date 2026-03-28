@@ -3,7 +3,7 @@
 include::partial$style.adoc[]
 
 [id='lab4-agentic-flow']
-== Building the Agentic Flow
+== Developing the Agent
 
 Here's the Camel route you'll be working with. It listens for messages from Rocket.Chat, extracts the text, and sends a response back:
 
@@ -69,55 +69,10 @@ The Camel bot picks up the message and responds with `Hello World` — confirmin
 
 {blank}
 
-[subs=attributes]
-++++
-<div style="display: flex; align-items: flex-start; gap: 15px;">
-  <!-- Rocket.Chat icon — sized to match chat height -->
-  <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
-    <div style="width: 90px; height: 90px; background-color: #f5455c; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
-      <svg width="60" height="60" viewBox="0 0 24 24" fill="white">
-        <g transform="translate(-2 -2) scale(.9)">
-          <path d="M 7.5488281 5 C 6.2638281 5 5.055 5.3086094 4 5.8496094 C 5.422467 6.9694938 6.4322525 8.5274703 6.8359375 10.300781 C 5.0652471 11.854193 4 13.838545 4 16 C 4 18.1 5.0028438 20.110797 6.8398438 21.716797 C 6.5498438 22.966797 5.9480312 24.134047 5.0820312 25.123047 L 4.0136719 26.345703 L 5.5859375 26.751953 C 6.2259375 26.917953 6.8868281 27 7.5488281 27 C 9.7768281 27 11.841828 26.197516 13.423828 24.728516 C 14.425828 24.908516 15.458 25 16.5 25 C 23.393 25 29 20.962 29 16 C 29 11.038 23.393 7 16.5 7 C 15.440923 7 14.418235 7.1058017 13.435547 7.2851562 C 11.913547 5.8774278 9.8442485 5 7.5488281 5 z M 16.5 9 C 22.29 9 27 12.14 27 16 C 27 19.86 22.29 23 16.5 23 C 15.412 23 14.338594 22.888969 13.308594 22.667969 L 12.757812 22.548828 L 12.371094 22.957031 C 11.147094 24.252031 9.469625 24.976 7.640625 25 C 8.290625 23.917 8.727875 22.724516 8.921875 21.478516 L 9.0136719 20.896484 L 8.5488281 20.535156 C 6.9058281 19.256156 6 17.646 6 16 C 6 12.14 10.71 9 16.5 9 z M 11.5 15 A 1.5 1.5 0 0 0 11.5 18 A 1.5 1.5 0 0 0 11.5 15 z M 16.5 15 A 1.5 1.5 0 0 0 16.5 18 A 1.5 1.5 0 0 0 16.5 15 z M 21.5 15 A 1.5 1.5 0 0 0 21.5 18 A 1.5 1.5 0 0 0 21.5 15 z"/>
-        </g>
-      </svg>
-    </div>
-    <span style="font-size: 16px; color: #000; font-weight: 500; margin-top: 5px;">rocket.chat</span>
-  </div>
-  <!-- Chat messages -->
-  <div style="border: 1px solid #ddd; border-radius: 4px; background: #fff; width: 340px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 8px 10px; gap: 10px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-    <!-- User message: hi -->
-    <div style="gap: 10px; display: flex; flex-direction: row;">
-      <div style="width: 36px; height: 36px; background-color: #6c757d; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
-        U
-      </div>
-      <div style="display: flex; flex-direction: column; justify-content: center;">
-        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
-          <span style="font-weight: bold; font-size: 14px; color: #333;">{username}</span>
-          <span style="font-size: 11px; color: #aaa;">5:05 PM</span>
-        </div>
-        <div style="font-size: 14px; color: #333; line-height: 1.4;">
-          hi
-        </div>
-      </div>
-    </div>
-    <!-- Bot response: Hello World -->
-    <div style="gap: 10px; display: flex; flex-direction: row;">
-      <div style="width: 36px; height: 36px; background-color: #3ea18e; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
-        A
-      </div>
-      <div style="display: flex; flex-direction: column; justify-content: center;">
-        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
-          <span style="font-weight: bold; font-size: 14px; color: #333;">ai-bot</span>
-          <span style="font-size: 11px; color: #aaa;">5:05 PM</span>
-        </div>
-        <div style="font-size: 14px; color: #333; line-height: 1.4;">
-          Hello World
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-++++
+:fig-time: 5:05 PM
+:fig-user-msg: hi
+:fig-bot-msg: Hello World
+include::_figures/rc-interaction.adoc[]
 
 {empty} +
 
@@ -189,55 +144,10 @@ This time the AI agent processes your message — it sends it to the LLM via Maa
 
 {blank}
 
-[subs=attributes]
-++++
-<div style="display: flex; align-items: flex-start; gap: 15px;">
-  <!-- Rocket.Chat icon -->
-  <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
-    <div style="width: 90px; height: 90px; background-color: #f5455c; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
-      <svg width="60" height="60" viewBox="0 0 24 24" fill="white">
-        <g transform="translate(-2 -2) scale(.9)">
-          <path d="M 7.5488281 5 C 6.2638281 5 5.055 5.3086094 4 5.8496094 C 5.422467 6.9694938 6.4322525 8.5274703 6.8359375 10.300781 C 5.0652471 11.854193 4 13.838545 4 16 C 4 18.1 5.0028438 20.110797 6.8398438 21.716797 C 6.5498438 22.966797 5.9480312 24.134047 5.0820312 25.123047 L 4.0136719 26.345703 L 5.5859375 26.751953 C 6.2259375 26.917953 6.8868281 27 7.5488281 27 C 9.7768281 27 11.841828 26.197516 13.423828 24.728516 C 14.425828 24.908516 15.458 25 16.5 25 C 23.393 25 29 20.962 29 16 C 29 11.038 23.393 7 16.5 7 C 15.440923 7 14.418235 7.1058017 13.435547 7.2851562 C 11.913547 5.8774278 9.8442485 5 7.5488281 5 z M 16.5 9 C 22.29 9 27 12.14 27 16 C 27 19.86 22.29 23 16.5 23 C 15.412 23 14.338594 22.888969 13.308594 22.667969 L 12.757812 22.548828 L 12.371094 22.957031 C 11.147094 24.252031 9.469625 24.976 7.640625 25 C 8.290625 23.917 8.727875 22.724516 8.921875 21.478516 L 9.0136719 20.896484 L 8.5488281 20.535156 C 6.9058281 19.256156 6 17.646 6 16 C 6 12.14 10.71 9 16.5 9 z M 11.5 15 A 1.5 1.5 0 0 0 11.5 18 A 1.5 1.5 0 0 0 11.5 15 z M 16.5 15 A 1.5 1.5 0 0 0 16.5 18 A 1.5 1.5 0 0 0 16.5 15 z M 21.5 15 A 1.5 1.5 0 0 0 21.5 18 A 1.5 1.5 0 0 0 21.5 15 z"/>
-        </g>
-      </svg>
-    </div>
-    <span style="font-size: 16px; color: #000; font-weight: 500; margin-top: 5px;">rocket.chat</span>
-  </div>
-  <!-- Chat messages -->
-  <div style="border: 1px solid #ddd; border-radius: 4px; background: #fff; width: 340px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 8px 10px; gap: 10px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-    <!-- User message -->
-    <div style="gap: 10px; display: flex; flex-direction: row;">
-      <div style="width: 36px; height: 36px; background-color: #6c757d; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
-        U
-      </div>
-      <div style="display: flex; flex-direction: column; justify-content: center;">
-        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
-          <span style="font-weight: bold; font-size: 14px; color: #333;">{username}</span>
-          <span style="font-size: 11px; color: #aaa;">5:06 PM</span>
-        </div>
-        <div style="font-size: 14px; color: #333; line-height: 1.4;">
-          Hi again
-        </div>
-      </div>
-    </div>
-    <!-- Bot response -->
-    <div style="gap: 10px; display: flex; flex-direction: row;">
-      <div style="width: 36px; height: 36px; background-color: #3ea18e; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
-        A
-      </div>
-      <div style="display: flex; flex-direction: column; justify-content: center;">
-        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
-          <span style="font-weight: bold; font-size: 14px; color: #333;">ai-bot</span>
-          <span style="font-size: 11px; color: #aaa;">5:06 PM</span>
-        </div>
-        <div style="font-size: 14px; color: #333; line-height: 1.4;">
-          Hello! How can I assist you today?
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-++++
+:fig-time: 5:06 PM
+:fig-user-msg: Hi again
+:fig-bot-msg: Hello! How can I assist you today?
+include::_figures/rc-interaction.adoc[]
 
 The AI agent is connected and responding — but it's not very smart yet. Try asking it something specific:
 
@@ -252,51 +162,10 @@ The bot responds with something like:
 
 {blank}
 
-[subs=attributes]
-++++
-<div style="display: flex; align-items: flex-start; gap: 15px;">
-  <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
-    <div style="width: 90px; height: 90px; background-color: #f5455c; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
-      <svg width="60" height="60" viewBox="0 0 24 24" fill="white">
-        <g transform="translate(-2 -2) scale(.9)">
-          <path d="M 7.5488281 5 C 6.2638281 5 5.055 5.3086094 4 5.8496094 C 5.422467 6.9694938 6.4322525 8.5274703 6.8359375 10.300781 C 5.0652471 11.854193 4 13.838545 4 16 C 4 18.1 5.0028438 20.110797 6.8398438 21.716797 C 6.5498438 22.966797 5.9480312 24.134047 5.0820312 25.123047 L 4.0136719 26.345703 L 5.5859375 26.751953 C 6.2259375 26.917953 6.8868281 27 7.5488281 27 C 9.7768281 27 11.841828 26.197516 13.423828 24.728516 C 14.425828 24.908516 15.458 25 16.5 25 C 23.393 25 29 20.962 29 16 C 29 11.038 23.393 7 16.5 7 C 15.440923 7 14.418235 7.1058017 13.435547 7.2851562 C 11.913547 5.8774278 9.8442485 5 7.5488281 5 z M 16.5 9 C 22.29 9 27 12.14 27 16 C 27 19.86 22.29 23 16.5 23 C 15.412 23 14.338594 22.888969 13.308594 22.667969 L 12.757812 22.548828 L 12.371094 22.957031 C 11.147094 24.252031 9.469625 24.976 7.640625 25 C 8.290625 23.917 8.727875 22.724516 8.921875 21.478516 L 9.0136719 20.896484 L 8.5488281 20.535156 C 6.9058281 19.256156 6 17.646 6 16 C 6 12.14 10.71 9 16.5 9 z M 11.5 15 A 1.5 1.5 0 0 0 11.5 18 A 1.5 1.5 0 0 0 11.5 15 z M 16.5 15 A 1.5 1.5 0 0 0 16.5 18 A 1.5 1.5 0 0 0 16.5 15 z M 21.5 15 A 1.5 1.5 0 0 0 21.5 18 A 1.5 1.5 0 0 0 21.5 15 z"/>
-        </g>
-      </svg>
-    </div>
-    <span style="font-size: 16px; color: #000; font-weight: 500; margin-top: 5px;">rocket.chat</span>
-  </div>
-  <div style="border: 1px solid #ddd; border-radius: 4px; background: #fff; width: 400px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 8px 10px; gap: 10px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-    <div style="gap: 10px; display: flex; flex-direction: row;">
-      <div style="width: 36px; height: 36px; background-color: #6c757d; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
-        U
-      </div>
-      <div style="display: flex; flex-direction: column; justify-content: center;">
-        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
-          <span style="font-weight: bold; font-size: 14px; color: #333;">{username}</span>
-          <span style="font-size: 11px; color: #aaa;">5:07 PM</span>
-        </div>
-        <div style="font-size: 14px; color: #333; line-height: 1.4;">
-          Can you show me invoice 61356293
-        </div>
-      </div>
-    </div>
-    <div style="gap: 10px; display: flex; flex-direction: row;">
-      <div style="width: 36px; height: 36px; background-color: #3ea18e; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
-        A
-      </div>
-      <div style="display: flex; flex-direction: column; justify-content: center;">
-        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
-          <span style="font-weight: bold; font-size: 14px; color: #333;">ai-bot</span>
-          <span style="font-size: 11px; color: #aaa;">5:07 PM</span>
-        </div>
-        <div style="font-size: 14px; color: #333; line-height: 1.4;">
-          I'm sorry, I don't have the capability to retrieve that PDF right now.
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-++++
+:fig-time: 5:07 PM
+:fig-user-msg: Can you show me invoice 61356293
+:fig-bot-msg: I'm sorry, I don't have the capability to retrieve that PDF right now.
+include::_figures/rc-interaction.adoc[]
 
 The agent knows what it _should_ do — the system prompt describes its role and capabilities — but it doesn't have the tools to act on it. It's like a support agent who knows the process but can't access the systems.
 
@@ -349,154 +218,191 @@ This time the LLM discovers the tool, calls it, and responds with the invoice:
 
 {blank}
 
-[subs=attributes]
-++++
-<div style="display: flex; align-items: flex-start; gap: 15px;">
-  <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
-    <div style="width: 90px; height: 90px; background-color: #f5455c; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
-      <svg width="60" height="60" viewBox="0 0 24 24" fill="white">
-        <g transform="translate(-2 -2) scale(.9)">
-          <path d="M 7.5488281 5 C 6.2638281 5 5.055 5.3086094 4 5.8496094 C 5.422467 6.9694938 6.4322525 8.5274703 6.8359375 10.300781 C 5.0652471 11.854193 4 13.838545 4 16 C 4 18.1 5.0028438 20.110797 6.8398438 21.716797 C 6.5498438 22.966797 5.9480312 24.134047 5.0820312 25.123047 L 4.0136719 26.345703 L 5.5859375 26.751953 C 6.2259375 26.917953 6.8868281 27 7.5488281 27 C 9.7768281 27 11.841828 26.197516 13.423828 24.728516 C 14.425828 24.908516 15.458 25 16.5 25 C 23.393 25 29 20.962 29 16 C 29 11.038 23.393 7 16.5 7 C 15.440923 7 14.418235 7.1058017 13.435547 7.2851562 C 11.913547 5.8774278 9.8442485 5 7.5488281 5 z M 16.5 9 C 22.29 9 27 12.14 27 16 C 27 19.86 22.29 23 16.5 23 C 15.412 23 14.338594 22.888969 13.308594 22.667969 L 12.757812 22.548828 L 12.371094 22.957031 C 11.147094 24.252031 9.469625 24.976 7.640625 25 C 8.290625 23.917 8.727875 22.724516 8.921875 21.478516 L 9.0136719 20.896484 L 8.5488281 20.535156 C 6.9058281 19.256156 6 17.646 6 16 C 6 12.14 10.71 9 16.5 9 z M 11.5 15 A 1.5 1.5 0 0 0 11.5 18 A 1.5 1.5 0 0 0 11.5 15 z M 16.5 15 A 1.5 1.5 0 0 0 16.5 18 A 1.5 1.5 0 0 0 16.5 15 z M 21.5 15 A 1.5 1.5 0 0 0 21.5 18 A 1.5 1.5 0 0 0 21.5 15 z"/>
-        </g>
-      </svg>
-    </div>
-    <span style="font-size: 16px; color: #000; font-weight: 500; margin-top: 5px;">rocket.chat</span>
-  </div>
-  <div style="border: 1px solid #ddd; border-radius: 4px; background: #fff; width: 400px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 8px 10px; gap: 10px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-    <!-- User message -->
-    <div style="gap: 10px; display: flex; flex-direction: row;">
-      <div style="width: 36px; height: 36px; background-color: #6c757d; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
-        U
-      </div>
-      <div style="display: flex; flex-direction: column; justify-content: center;">
-        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
-          <span style="font-weight: bold; font-size: 14px; color: #333;">{username}</span>
-          <span style="font-size: 11px; color: #aaa;">6:47 PM</span>
-        </div>
-        <div style="font-size: 14px; color: #333; line-height: 1.4;">
-          What about now?
-        </div>
-      </div>
-    </div>
-    <!-- Bot response with attachment -->
-    <div style="gap: 10px; display: flex; flex-direction: row;">
-      <div style="width: 36px; height: 36px; background-color: #3ea18e; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0;">
-        A
-      </div>
-      <div style="display: flex; flex-direction: column; justify-content: center;">
-        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; line-height: 1.2;">
-          <span style="font-weight: bold; font-size: 14px; color: #333;">ai-bot</span>
-          <span style="font-size: 11px; color: #aaa;">6:47 PM</span>
-        </div>
-        <div style="font-size: 14px; color: #333; line-height: 1.4;">
-          Here's your invoice:
-        </div>
-        <!-- Attachment block -->
-        <div style="border-left: 3px solid #3ea18e; padding: 8px 12px; margin-top: 6px;">
-          <div style="font-size: 14px; color: #1d74f5; margin-bottom: 4px;">
-            Invoice 61356293 PDF ▾
-          </div>
-          <div style="font-size: 13px; color: #555;">
-            Click to view or download the PDF (expires in 1 hour)
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-++++
+:fig-time: 6:47 PM
+:fig-user-msg: What about now?
+:fig-bot-msg: Here is the PDF for Invoice 61356293.
+:fig-attach-title: Invoice 61356293 PDF ▾
+:fig-attach-desc: Click to view or download
+include::_figures/rc-interaction-attach.adoc[]
 
 The agent found the `get_invoice_pdf` tool, called it to generate a pre-signed S3 URL, and returned the link to the support agent — all from a single natural language request. Clicking the link opens the PDF in a new tab:
 
 {blank}
 
-++++
-<div style="width: 420px; background: #fff; border: 1px solid #ccc; box-shadow: 2px 2px 8px rgba(0,0,0,0.15); font-family: 'Times New Roman', serif; padding: 30px 35px; font-size: 12px; color: #333; line-height: 1.5;">
-
-  <div style="font-size: 16px; font-weight: bold; color: #1a3c6e;">Invoice no: 61356293</div>
-  <div style="margin-top: 4px; color: #8b6914;">Date of issue: <span style="margin-left: 40px;">09/06/2012</span></div>
-
-  <hr style="border: none; border-top: 1px solid #ccc; margin: 12px 0;">
-
-  <div style="display: flex; gap: 30px;">
-    <div style="flex: 1;">
-      <div style="font-weight: bold; font-size: 13px;">Seller:</div>
-      <div style="color: #8b6914; font-size: 11px;">
-        Georgia World Congress Center<br>
-        285 Andrew Young International Blvd NW<br>
-        Atlanta, Georgia GA 30313<br><br>
-        <span style="color: #555;">Tax Id: 939-98-8477</span><br>
-        <span style="color: #555;">IBAN: GB50ACIE59715038217063</span>
-      </div>
-    </div>
-    <div style="flex: 1;">
-      <div style="font-weight: bold; font-size: 13px;">Client:</div>
-      <div style="color: #8b6914; font-size: 11px;">
-        Chapman, Kim and Green<br>
-        64751 James Branch<br>
-        Smithmouth, NC 26872<br><br>
-        <span style="color: #555;">Tax Id: 949-84-9105</span>
-      </div>
-    </div>
-  </div>
-
-  <div style="font-weight: bold; font-size: 14px; margin-top: 15px; color: #1a3c6e;">ITEMS</div>
-
-  <table style="width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11px;">
-    <thead>
-      <tr style="background: #f0f0f0; border-bottom: 2px solid #999;">
-        <th style="text-align: left; padding: 4px;">No.</th>
-        <th style="text-align: left; padding: 4px;">Description</th>
-        <th style="text-align: right; padding: 4px;">Qty</th>
-        <th style="text-align: left; padding: 4px;">UM</th>
-        <th style="text-align: right; padding: 4px;">Net price</th>
-        <th style="text-align: right; padding: 4px;">Net worth</th>
-        <th style="text-align: right; padding: 4px;">VAT [%]</th>
-        <th style="text-align: right; padding: 4px;">Gross worth</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr style="border-bottom: 1px solid #ddd;">
-        <td style="padding: 4px;">1.</td>
-        <td style="padding: 4px;">Wine Glasses Goblets Pair Clear Glass</td>
-        <td style="text-align: right; padding: 4px;">5,00</td>
-        <td style="padding: 4px;">each</td>
-        <td style="text-align: right; padding: 4px;">12,00</td>
-        <td style="text-align: right; padding: 4px;">60,00</td>
-        <td style="text-align: right; padding: 4px;">10%</td>
-        <td style="text-align: right; padding: 4px;">66,00</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div style="font-weight: bold; font-size: 14px; margin-top: 15px; color: #1a3c6e;">SUMMARY</div>
-
-  <table style="width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11px;">
-    <thead>
-      <tr style="background: #f0f0f0; border-bottom: 2px solid #999;">
-        <th style="text-align: right; padding: 4px;">VAT [%]</th>
-        <th style="text-align: right; padding: 4px;">Net worth</th>
-        <th style="text-align: right; padding: 4px;">VAT</th>
-        <th style="text-align: right; padding: 4px;">Gross worth</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr style="border-bottom: 1px solid #ddd;">
-        <td style="text-align: right; padding: 4px;">10%</td>
-        <td style="text-align: right; padding: 4px;">192,81</td>
-        <td style="text-align: right; padding: 4px;">19,28</td>
-        <td style="text-align: right; padding: 4px;">212,09</td>
-      </tr>
-      <tr style="border-top: 2px solid #999; font-weight: bold;">
-        <td style="text-align: right; padding: 4px;">Total</td>
-        <td style="text-align: right; padding: 4px;">$ 192,81</td>
-        <td style="text-align: right; padding: 4px;">$ 19,28</td>
-        <td style="text-align: right; padding: 4px;">$ 212,09</td>
-      </tr>
-    </tbody>
-  </table>
-
-</div>
-++++
+include::_figures/invoice-pdf.adoc[]
 
 {empty} +
+
+=== Amend the invoice
+
+The agent can do more than just retrieve data — it can act on it. Imagine the customer has changed their mind and wants to return one of the items. Ask the AI assistant to amend the invoice:
+
+{blank}
+
+[.copypaste]
+****
+The customer has changed his mind and wants to return one of the items purchased. Could you please amend the invoice?
+****
+
+The agent inspects the invoice, identifies the matching item, triggers the necessary tools to update the database, and responds with a summary of the changes:
+
+{blank}
+
+:fig-time: 6:49 PM
+:fig-user-msg: The customer has changed his mind and wants to return one of the items purchased. Could you please amend the invoice?
+:fig-bot-msg: The database records have been updated. The customer returned one item, so the quantity of the item has been reduced from 3 to 2. The net worth, VAT amount, and gross worth have been recalculated accordingly. Would you like to see the new PDF invoice?
+include::_figures/rc-interaction.adoc[]
+
+The agent acted autonomously — it inspected the invoice, identified the item, updated the quantity in the database, recalculated the totals, and confirmed the changes. All from a single natural language request.
+
+Notice the bot's response — it may suggest viewing the updated invoice (LLMs are unpredictable, so the exact wording varies). If it does, simply reply `yes`. If it doesn't, ask to see the amended invoice:
+
+{blank}
+
+[.copypaste]
+****
+Can you show me the updated invoice?
+****
+
+Either way, the bot responds with the updated PDF link:
+
+{blank}
+
+:fig-time: 6:50 PM
+:fig-bot-msg: Here is the updated PDF for Invoice 61356293.
+:fig-attach-title: Invoice 61356293 PDF ▾
+:fig-attach-desc: Click to view or download
+include::_figures/rc-bot-attach.adoc[]
+
+Click the link to open the updated PDF. Taking our previous invoice sample as reference, the amended document would look approximately like this:
+
+{blank}
+
+include::_figures/invoice-pdf-amended.adoc[]
+
+Inspect the document and verify the modifications are correct — the item quantity should reflect the return, and the totals should be recalculated accordingly.
+
+{empty} +
+
+=== Raise a ticket
+
+A customer support process rarely ends with a single action. Returning an item involves multiple departments — confirming the goods were received, processing the refund, updating inventory, notifying the customer. Rather than handling each step manually, ask the AI agent to raise a ticket that coordinates everything:
+
+{blank}
+
+[.copypaste]
+****
+Could you please raise a ticket? Include the details explained, and ask the right departments to refund the customer accordingly.
+****
+
+The agent gathers the context from the conversation, creates a ticket in the HelpDesk system, and responds with a confirmation:
+
+{blank}
+
+:fig-time: 6:52 PM
+:fig-user-msg: Could you please raise a ticket? Include the details explained, and ask the right departments to refund the customer accordingly.
+:fig-bot-msg: A ticket has been created with ID 1025. Would you like to share this ticket with the customer?
+include::_figures/rc-interaction.adoc[]
+
+At this point, the bot may behave in different ways — LLMs are unpredictable. Here's what to expect and how to respond:
+
+* **The bot asks to share the ticket** (as shown above) — reply with:
++
+[.copypaste]
+****
+Yes, please share it with the customer.
+****
+
+* **The bot shares the ticket automatically** without asking — no action needed, skip ahead.
+
+* **The bot doesn't mention sharing at all** — ask it explicitly:
++
+[.copypaste]
+****
+Could you share the ticket with the customer?
+****
+
+Either way, the final outcome is the same — the bot shares the ticket and the customer receives a link to the HelpDesk system:
+
+{blank}
+
+:fig-time: 6:53 PM
+:fig-bot-msg: The ticket #1025 has been successfully shared with the customer. They will receive a link to the HelpDesk system.
+:fig-attach-title: Ticket 1025 ▾
+:fig-attach-desc: Click to open HelpDesk and select ticket 1025
+include::_figures/rc-bot-attach.adoc[]
+
+Remember — the customer communicates from the _Matrix_ messaging platform. The bot indicated the ticket was shared, which means the customer should have received a message with the ticket reference. Switch to your _Matrix_ window and check.
+
+You should see a message like this:
+
+{blank}
+
+:fig-time: 11:05
+:fig-sender: ai@rocketchat:
+:fig-msg: pass:[&#x1F4C4; Ticket <span style="color: #6D28D9; font-weight: bold;">#1025</span> created.<br>(Click to open in HelpDesk)]
+include::_figures/matrix-message.adoc[]
+
+=== Verify the ticket from the customer's perspective
+
+Now put yourself in the customer's shoes. The customer received a message in _Matrix_ with a link to the _Globex HelpDesk_ ticketing system. Click the ticket link in the _Matrix_ window.
+
+A new tab opens with the _Globex HelpDesk_ login page:
+
+{blank}
+
+include::_figures/helpdesk-login.adoc[]
+
+Log in using the same credentials as _Rocket.Chat_ and _Matrix_:
+
+* *Username*:
++
+[.copypaste]
+****
+{user-username}
+****
+
+* *Password*:
++
+[.copypaste]
+****
+[.path]
+/credentials/im
+
+[.default]
+password
+
+REPLACE
+****
+
+Once logged in, the _Globex HelpDesk_ displays the list of open tickets. You should see the ticket the AI agent just created:
+
+{blank}
+
+include::_figures/helpdesk-tickets.adoc[]
+
+Click the ticket to inspect its details. The AI agent composed the ticket body from the conversation — it includes a summary of the changes and a link to the updated invoice:
+
+{blank}
+
+include::_figures/helpdesk-ticket-detail.adoc[]
+
+The full circle is complete: the agent retrieved an invoice, amended it, raised a ticket with all the relevant details, and shared it with the customer across messaging platforms. All from natural conversation.
+
+{empty} +
+
+[.verification]
+****
+Can you see the ticket details and the link to the updated invoice in the _Globex HelpDesk_?
+
+[.success]
+Well done — you've built an agentic flow that can retrieve, reason about, and modify data, raise tickets, and coordinate across departments through natural conversation.
+
+[.fail]
+Review your steps — make sure the agent has tools enabled (`Tags` = `all`) and the system prompt is active. Check the _Matrix_ window for the correct room.
+****
+
+{empty} +
+
+
+
