@@ -31,7 +31,7 @@ image::m3/dev-close-tabs.png[width=100%]
 +
 [.copypaste]
 ****
-step 3
+step 2
 ****
 +
 [TIP]
@@ -59,7 +59,7 @@ After executing the commands above, have a look in your editor's tree view to co
 [.indent2]
 📁 workshop +
 &nbsp;&nbsp;📁 lab +
-&nbsp;&nbsp;&nbsp;&nbsp;📁 k2r +
+&nbsp;&nbsp;&nbsp;&nbsp;📁 pass:[<b>k2r</b> <small style="color: #999">(Kafka to Rocket.Chat)</small>] +
 pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>⚙</b>&nbsp;</mark>] *application.properties* +
 pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *k2r.camel.yaml* +
 
