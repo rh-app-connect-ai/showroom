@@ -20,35 +20,35 @@ Get familiar with the workshop goals, the technologies at play, the scenario, an
 
 [.tile]
 ****
-xref:m1/m1.0.adoc[Lab 1 -- Scenario and Onboarding]
+xref:m1/m1.0.adoc[Lab 1 -- Ingest Service]
 
-Introduces the first integration flow and helps you onboard onto the Matrix and Rocket.Chat chat platforms.
+Ingest EDI Purchase Orders, transform and store them in a backend database, and generate PDF invoices — with secure cross-cluster connectivity powered by Service Interconnect.
 ****
 
 [.tile]
 ****
-xref:m2/m2.0.adoc[Lab 2 -- Kafka as the Backbone]
+xref:m2/m2.0.adoc[Lab 2 -- Messaging Access]
 
-Decouple the messaging architecture using Streams for Apache Kafka, define common data models, and deploy the full solution on OpenShift.
+Onboard onto the Matrix and Rocket.Chat platforms and explore the first integration flow connecting both messaging systems.
 ****
 
 [.tile]
 ****
-xref:m3/m3.0.adoc[Lab 3 -- Ingest Service]
+xref:m3/m3.0.adoc[Lab 3 -- Multi-channel Hub]
 
-TODO: Add description.
+Decouple the messaging architecture using Kafka as the backbone, adopt a standard data model, and deploy the full event-driven solution on OpenShift.
 ****
 
 [.tile]
 ****
-xref:m4/m4.0.adoc[Lab 4 -- AI assisted Customer support]
+xref:m4/m4.0.adoc[Lab 4 -- AI Customer Support]
 
-TODO: Add description.
+Build an AI-powered support agent that resolves invoice issues through natural language in Rocket.Chat — orchestrated by Agentic Apache Camel and MaaS.
 ****
 
 [.tile]
 ****
-xref:m5/m5.0.adoc[Lab 5 -- Protect LLM consumption with Connectivity Link]
+xref:m5/m5.0.adoc[Lab 5 -- LLM Governance]
 
-TODO: Add description.
+Secure and govern LLM access with Red Hat Connectivity Link — enforce API key authentication and token-based rate limiting per user tier.
 ****

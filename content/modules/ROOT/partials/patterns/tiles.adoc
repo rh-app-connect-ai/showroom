@@ -34,7 +34,7 @@
   height: 100%;
 }
 .tile-card .tile-header {
-  background-color: #3e8635;
+  background-color: #4A6785;
   color: white;
   padding: 12px 16px;
   font-weight: 600;
@@ -248,6 +248,9 @@ window.addEventListener('DOMContentLoaded', function() {
     var pct = Math.min(100, Math.round((earned / totalTasks) * 100));
     var progDiv = card.querySelector('.tile-progress');
     progDiv.style.display = '';
+    if (pct === 100) {
+      card.querySelector('.tile-header').style.backgroundColor = '#3e8635';
+    }
     progDiv.innerHTML =
       '<div class="tile-progress-track">' +
         '<div class="tile-progress-fill" style="width:' + pct + '%"></div>' +
