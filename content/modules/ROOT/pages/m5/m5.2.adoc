@@ -50,19 +50,11 @@ iamafree{user-username}
 ****
 {empty} +
 
-
-. Make sure the run script is executable
-+
-[.copypaste]
-****
-chmod +x ./run.sh
-****
-
 . Run the chat application
 +
 [.copypaste]
 ****
-./run.sh
++++./run.sh+++
 ****
 
 . Open the application in a new browser tab when prompted
@@ -98,7 +90,7 @@ invalidkey
 +
 [.copypaste]
 ****
-./run.sh
++++./run.sh+++
 ****
 
 . Send a message. The request should be **denied** (401 Unauthorized).
@@ -117,7 +109,7 @@ iamafree{user-username}
 +
 [.copypaste]
 ****
-./run.sh
++++./run.sh+++
 ****
 
 . Send a message. The request should be **allowed** -- you receive a response again from the LLM.
