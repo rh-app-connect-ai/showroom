@@ -1,5 +1,5 @@
 name: modules
-title: Integrate Platforms and Plugin AI Capabilities with Apache Camel and Kafka
+title: AI Data Flows & Application Connectivity
 version: master
 nav:
   - modules/ROOT/nav.adoc

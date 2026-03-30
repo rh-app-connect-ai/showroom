@@ -5,9 +5,9 @@ include::partial$style.adoc[]
 <style>.pagination, .nav-footer { display: none !important; }</style>
 ++++
 
-== Apache Camel Workshop
+== AI Data Flows & Application Connectivity
 
-Welcome to the Apache Camel workshop. Select a module below to get started.
+Welcome to the workshop. Select a module below to get started.
 
 {empty} +
 

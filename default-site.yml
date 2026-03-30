@@ -1,6 +1,6 @@
 ---
 site:
-  title: Integrate Platforms and Plugin AI Capabilities with Apache Camel and Kafka
+  title: AI Data Flows & Application Connectivity
   url: https://github.com/rh-app-connect-ai
   start_page: modules::index.adoc
   keys:
