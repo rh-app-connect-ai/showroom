@@ -5,6 +5,8 @@ include::partial$style.adoc[]
 [id="workshop-journey"]
 == The workshop journey
 
+{banner-under-construction}
+
 You play the role of an integration developer at a customer support provider. Through the workshop labs you will put together a platform that connects applications across network boundaries, bridges chat systems, plugs in AI for customer support, and adds governance on top — all using Apache Camel as the integration backbone.
 
 {empty} +

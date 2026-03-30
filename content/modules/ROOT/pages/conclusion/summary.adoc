@@ -3,6 +3,8 @@ include::partial$style.adoc[]
 
 == Summary of this workshop
 
+{banner-work-in-progress}
+
 By the end of this workshop, you've helped {corp} make significant strides in modernizing their application connectivity, security, and observability across hybrid cloud environments. 
 
 Leveraging OpenShift, Red Hat Service Interconnect, OpenShift Service Mesh, and Red Hat Connectivity Link, {corp} was able to:

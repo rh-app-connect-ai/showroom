@@ -5,6 +5,8 @@ include::partial$style.adoc[]
 [id="kafka-to-rocketchat"]
 == Kafka to Rocket.Chat
 
+{banner-under-construction}
+
 To connect _Matrix_ and _Rocket.Chat_ through _Kafka_, you need two data flows:
 
 {empty} +

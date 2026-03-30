@@ -5,4 +5,6 @@ include::partial$style.adoc[]
 [id='lab4-complete-flow']
 == Completing the Flow
 
+{banner-under-construction}
+
 {empty} +

@@ -5,6 +5,8 @@ include::partial$style.adoc[]
 [id="setup-lab3"]
 == Setup the Lab working folder
 
+{banner-under-construction}
+
 {empty} +
 
 

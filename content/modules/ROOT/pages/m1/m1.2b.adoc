@@ -5,6 +5,8 @@ include::partial$style.adoc[]
 [id="lab3-ingestion-flow"]
 == The Ingestion Flow
 
+{banner-under-construction}
+
 With database connectivity in place via {rhsi}, you can now implement the complete ingestion flow. The Camel integration will handle the full lifecycle of an incoming Purchase Order — from reception to archival.
 
 {empty} +

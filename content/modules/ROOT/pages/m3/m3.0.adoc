@@ -4,6 +4,8 @@ include::partial$style.adoc[]
 [id='lab2-matrix-kafka-rocketchat']
 == Lab 2 - Kafka as the Backbone
 
+{banner-under-construction}
+
 Open the architecture by decoupling the messaging systems using streaming capabilities with Streams for Apache Kafka.
 
 

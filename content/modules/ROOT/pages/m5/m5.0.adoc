@@ -5,6 +5,8 @@ include::partial$style.adoc[]
 [id='lab5-protect-llm-consumption-with-connectivity-link']
 == Lab 5 - Protect LLM consumption with Connectivity Link
 
+{banner-under-construction}
+
 == Introduction
 
 In the previous phases of this workshop, you connected disparate chat platforms into a unified communication hub, securely ingested and transformed client data, and introduced an AI agent that helps support agents resolve invoice issues through natural language -- all powered by _Apache Camel_, _Kafka_, and LLMs.

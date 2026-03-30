@@ -5,6 +5,8 @@ include::partial$style.adoc[]
 [id="enable-and-test"]
 == Enable all flows
 
+{banner-under-construction}
+
 You've built and deployed the _Kafka_ to _Rocket.Chat_ flow from scratch. The remaining flows follow the same pattern — to save time, let's enable them all at once and test the full end-to-end integration.
 
 {empty} +

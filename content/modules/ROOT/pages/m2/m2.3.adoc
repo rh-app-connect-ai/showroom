@@ -5,6 +5,8 @@ include::partial$style.adoc[]
 [id="rocketchat-chat"]
 == Rocket.Chat platform onboarding
 
+{banner-under-construction}
+
 TIP: If you're unfamiliar with link:https://www.rocket.chat/[_Rocket.Chat_,window="_blank"], it is an open-source communications platform with high data protection standards. It enables real-time conversations between colleagues, other companies, or your customers across web, desktop, or mobile devices.
 
 {empty} +

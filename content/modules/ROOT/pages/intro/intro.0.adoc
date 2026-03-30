@@ -5,6 +5,10 @@ include::partial$style.adoc[]
 [id="workshop-overview"]
 == Workshop overview
 
+{banner-work-in-progress}
+
+{banner-under-construction}
+
 This is a quick overview of the workshop goals and what to expect from the lab exercises as you make progress by completing the tasks.
 
 {empty} +

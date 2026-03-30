@@ -4,6 +4,8 @@ include::partial$style.adoc[]
 
 == Test Authentication via the Chat Interface
 
+{banner-under-construction}
+
 Now test that the AuthPolicy is working using the same chat interface from Phase 3.
 
 === Configuring the API Key

@@ -5,4 +5,6 @@ include::partial$style.adoc[]
 [id='lab4-test-deploy']
 == Test and Deploy
 
+{banner-under-construction}
+
 {empty} +

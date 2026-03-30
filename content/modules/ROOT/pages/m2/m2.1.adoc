@@ -5,6 +5,8 @@ include::partial$style.adoc[]
 [id="scenario-intro"]
 == Data flow overview
 
+{banner-under-construction}
+
 The picture below illustrates the data flow traversing our Camel instance:
 
 [.text-center]

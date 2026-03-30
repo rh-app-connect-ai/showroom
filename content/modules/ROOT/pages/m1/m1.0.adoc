@@ -5,6 +5,8 @@ include::partial$style.adoc[]
 [id='lab3-ingest-service']
 == Lab 3 - Ingest Service
 
+{banner-under-construction}
+
 Ingest data from external organisations, store it in a backend database, and generate PDF invoices — all orchestrated by Apache Camel with secure cross-cluster connectivity powered by {rhsi}.
 
 {empty} +

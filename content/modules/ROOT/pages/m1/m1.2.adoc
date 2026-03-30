@@ -5,6 +5,8 @@ include::partial$style.adoc[]
 [id='lab3-service-interconnect']
 == Enabling Database Connectivity
 
+{banner-under-construction}
+
 You have a Camel route ready to query the database — but the database isn't reachable yet. Let's find out why, and enable the connection.
 
 {empty} +

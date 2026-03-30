@@ -5,6 +5,10 @@ include::partial$style.adoc[]
 [id="tech-overview"]
 == Technologies overview
 
+{banner-work-in-progress}
+
+{banner-under-construction}
+
 If you're unfamilar with Apache Camel, in a nutshell, it is an integration framework to define data flows connecting sources to destinations, applying _EIPs_ (enterprise integration patterns) as transformational processes between the two ends.
 
 The image below illustrates typical integration flows connecting sources to detinations:

@@ -4,6 +4,8 @@ include::partial$style.adoc[]
 
 == Enforcing Token Budgets with Rate Limiting
 
+{banner-under-construction}
+
 Now that access is secured, you will add a **TokenRateLimitPolicy** to control how many LLM tokens each user can consume. This is the key differentiator for AI workloads -- unlike traditional rate limiting (which counts requests), token rate limiting counts the actual **tokens used** in LLM responses, giving you fine-grained cost control over AI consumption.
 
 {empty} +

@@ -5,6 +5,8 @@ include::partial$style.adoc[]
 [id='dev-environment']
 == Development environment
 
+{banner-under-construction}
+
 The following instructions introduce you to your development environment, and the cluster where you'll deploy your applications throughout this workshop.
 
 === Overview

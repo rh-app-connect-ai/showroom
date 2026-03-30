@@ -5,6 +5,8 @@ include::partial$style.adoc[]
 [id='lab4-agentic-flow']
 == Developing the Agent
 
+{banner-under-construction}
+
 Here's the Camel route you'll be working with. It listens for messages from Rocket.Chat, extracts the text, and sends a response back:
 
 {blank}

@@ -5,6 +5,8 @@ include::partial$style.adoc[]
 [id="flow"]
 == Preview of the integration flow
 
+{banner-under-construction}
+
 === Process overview
 
 The diagram below illustrates the processing flow you're about to create:
