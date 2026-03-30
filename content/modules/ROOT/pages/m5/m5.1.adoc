@@ -15,18 +15,19 @@ NOTE: We are using simple API key authentication for this workshop to keep thing
 Two API key secrets have been pre-created. Understanding their structure is important because both policies reference the labels and annotations on these secrets.
 
 **Free-tier user:**
+[subs="attributes"]
 ----
 apiVersion: v1
 kind: Secret
 metadata:
-  name: trlp-tutorial-api-key-free-{user-username}
+  name: trlp-tutorial-api-key-free-{username}
   namespace: kuadrant-system
   labels:
     authorino.kuadrant.io/managed-by: authorino
     app: my-llm
   annotations:
     kuadrant.io/groups: free
-    secret.kuadrant.io/user-id: {user-username}
+    secret.kuadrant.io/user-id: {username}
 stringData:
   api_key: iamafreeuser
 type: Opaque
@@ -127,6 +128,7 @@ oc describe authpolicy -n {user-username}-devspaces | grep -E "Name:|Target Ref:
 ****
 
 . You should see output confirming the AuthPolicy exists, is targeting the correct HTTPRoute, and is in an enforced state, similar to:
++
 ----
 Name:         ai-proxy-auth
   Target Ref:
