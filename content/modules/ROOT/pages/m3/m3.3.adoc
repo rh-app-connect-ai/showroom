@@ -1,477 +1,91 @@
 :imagesdir: ../../assets/images
-:page-time: 7
+:page-time: 5
 include::partial$style.adoc[]
 
-[id='lab3-flow-implementation']
-== Flow Implementation
+[id="deploy-kafka-to-rocketchat"]
+== Deploy to OpenShift
 
-Now that you understand the full ingestion flow, let's build it step by step. Here's the Camel route you'll be working with:
-
-{blank}
-
-[.mermaid]
-----
-flowchart LR
-    A((platform-http)) --> B(transform-x12) --> C2 --> D2
-
-    subgraph C2 ["To do: Enable"]
-        C[(sql)]
-    end
-
-    subgraph D2 ["To do: Enable"]
-        D(store-pdf-s3)
-    end
-
-    style C fill:#eee,stroke:#ccc,color:#aaa
-    style D fill:#eee,stroke:#ccc,color:#aaa
-    style C2 fill:#dde4f6,stroke:#6690e6,color:#335
-    style D2 fill:#dde4f6,stroke:#6690e6,color:#335
-----
-
-Notice that `sql` and `store-pdf-s3` are grayed out — they're disabled in the route. Camel will skip them when running. The idea is to start small: get the first steps working, verify the results, then enable the next ones as you progress.
+Now that the _Kafka_ to _Rocket.Chat_ flow has been validated locally, it's time to deploy it on _OpenShift_.
 
 {empty} +
 
-=== EDI to XML transformation
+=== Stop the local process
 
-With the active steps (`platform-http` and `transform-x12`), the route receives a Purchase Order in EDI format and returns it as XML:
+Make sure you have stopped your local _Camel_ instance. If it is still running, press kbd:[Ctrl+C] to stop it.
 
-[.mermaid]
-----
-flowchart LR
-    PO["📄 Purchase Order\n(EDI)"] -->|HTTP request| Camel((Camel)) -->|response| XML["📄 Invoice\n(XML)"]
-----
+{empty} +
+
+=== Deploy the flow
+
+Use the command below to deploy on _OpenShift_:
+
+{blank}
+
+[.copypaste]
+****
+labdeploy k2r
+****
+
+{blank}
+
+NOTE: Be patient, this action may take some time to complete.
+
+{empty} +
+
+=== Check the deployment
+
+Monitor the state of the resource with the following command:
+
+{blank}
+
+[.copypaste]
+****
+oc get deployment/k2r
+****
+
+{blank}
+
+When the deployment is ready, the command outputs something similar to:
 
 ++++
-<div id="xml-popover" style="display:none; position:absolute; z-index:9999; background:#272822; border-radius:8px; padding:16px 22px; max-width:520px; box-shadow:0 8px 32px rgba(0,0,0,0.4)">
-  <div style="color:#aaa; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px">XML Invoice (output)</div>
-  <pre style="background:#363630 !important; color:white !important; font-family:monospace; font-size:12px; line-height:1.5; margin:0; white-space:pre-wrap; padding:12px 16px; border-radius:4px">&lt;<span style="color:#ff6188">Invoice</span>&gt;
-  &lt;<span style="color:#ff6188">InvoiceId</span>&gt;INV-0042&lt;/<span style="color:#ff6188">InvoiceId</span>&gt;
-  &lt;<span style="color:#ff6188">OrderRef</span>&gt;61356293&lt;/<span style="color:#ff6188">OrderRef</span>&gt;
-  &lt;<span style="color:#ff6188">Date</span>&gt;2012-09-06&lt;/<span style="color:#ff6188">Date</span>&gt;
-  &lt;<span style="color:#ff6188">Buyer</span>&gt;
-    &lt;<span style="color:#ff6188">Name</span>&gt;Rodriguez-Stevens&lt;/<span style="color:#ff6188">Name</span>&gt;
-    &lt;<span style="color:#ff6188">Address</span>&gt;
-      &lt;<span style="color:#ff6188">Street</span>&gt;2280 Angela Plain&lt;/<span style="color:#ff6188">Street</span>&gt;
-      &lt;<span style="color:#ff6188">City</span>&gt;Hortonshire&lt;/<span style="color:#ff6188">City</span>&gt;
-      &lt;<span style="color:#ff6188">State</span>&gt;MS&lt;/<span style="color:#ff6188">State</span>&gt;
-      &lt;<span style="color:#ff6188">PostalCode</span>&gt;93248&lt;/<span style="color:#ff6188">PostalCode</span>&gt;
-    &lt;/<span style="color:#ff6188">Address</span>&gt;
-  &lt;/<span style="color:#ff6188">Buyer</span>&gt;
-  &lt;<span style="color:#ff6188">Seller</span>&gt;
-    &lt;<span style="color:#ff6188">Name</span>&gt;Chapman, Kim and Green&lt;/<span style="color:#ff6188">Name</span>&gt;
-    &lt;<span style="color:#ff6188">Address</span>&gt;...&lt;/<span style="color:#ff6188">Address</span>&gt;
-    &lt;<span style="color:#ff6188">TaxId</span>&gt;949849105&lt;/<span style="color:#ff6188">TaxId</span>&gt;
-    &lt;<span style="color:#ff6188">IBAN</span>&gt;GB50ACIE59715038217063&lt;/<span style="color:#ff6188">IBAN</span>&gt;
-  &lt;/<span style="color:#ff6188">Seller</span>&gt;
-  &lt;<span style="color:#ff6188">Items</span>&gt;
-    &lt;<span style="color:#ff6188">Item</span> sku=&quot;WINEGLASS01&quot; qty=&quot;5&quot; price=&quot;12.00&quot;&gt;
-      Wine Glasses Goblets Pair Clear Glass
-    &lt;/<span style="color:#ff6188">Item</span>&gt;
-  &lt;/<span style="color:#ff6188">Items</span>&gt;
-  &lt;<span style="color:#ff6188">Total</span>&gt;212.09&lt;/<span style="color:#ff6188">Total</span>&gt;
-&lt;/<span style="color:#ff6188">Invoice</span>&gt;</pre>
-</div>
-<div id="edi-popover" style="display:none; position:absolute; z-index:9999; background:#272822; border-radius:8px; padding:16px 22px; max-width:600px; box-shadow:0 8px 32px rgba(0,0,0,0.4)">
-  <div style="color:#aaa; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px">EDI Purchase Order (X12 850)</div>
-  <pre style="background:#363630 !important; color:white !important; font-family:monospace; font-size:12px; line-height:1.5; margin:0; white-space:pre-wrap; padding:12px 16px; border-radius:4px"><span style="color:#ff6188">ISA</span>*00*          *00*          *01*939988477    *01*949849105    *120906*1200*U*00401*000000001*0*P*:~
-<span style="color:#ff6188">GS</span>*PO*939988477*949849105*20120906*1200*1*X*004010~
-<span style="color:#ff6188">ST</span>*850*0001~
-<span style="color:#ff6188">BEG</span>*00*SA*61356293**20120906~
-<span style="color:#ff6188">N1</span>*BY*Rodriguez-Stevens*91*939988477~
-<span style="color:#ff6188">N3</span>*2280 Angela Plain~
-<span style="color:#ff6188">N4</span>*Hortonshire*MS*93248~
-<span style="color:#ff6188">N1</span>*SE*Chapman, Kim and Green*91*949849105~
-<span style="color:#ff6188">N3</span>*64731 James Branch~
-<span style="color:#ff6188">N4</span>*Smithmouth*NC*26872~
-<span style="color:#ff6188">N9</span>*IB*GB50ACIE59715038217063~
-<span style="color:#ff6188">PO1</span>*1*5*EA*12.00*QT*SK*WINEGLASS01~
-<span style="color:#ff6188">PID</span>*F****Wine Glasses Goblets Pair Clear Glass~
-<span style="color:#ff6188">CTT</span>*4*11~
-<span style="color:#ff6188">AMT</span>*TT*212.09~
-<span style="color:#ff6188">SE</span>*15*0001~
-<span style="color:#ff6188">GE</span>*1*1~
-<span style="color:#ff6188">IEA</span>*1*000000001~</pre>
-  <div style="color:#888; font-size:10px; margin-top:10px; border-top:1px solid #555; padding-top:6px"><span style="color:#ff6188">ISA/GS</span>=Header &nbsp; <span style="color:#ff6188">BEG</span>=Order &nbsp; <span style="color:#ff6188">N1</span>=Name &nbsp; <span style="color:#ff6188">N3/N4</span>=Address &nbsp; <span style="color:#ff6188">PO1/PID</span>=Line Item &nbsp; <span style="color:#ff6188">AMT</span>=Total &nbsp;·&nbsp; <code style="color:#fff">*</code> separates fields &nbsp; <code style="color:#fff">~</code> ends segments</div>
-</div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var pop = document.getElementById('edi-popover');
-  var check = setInterval(function() {
-    var node = document.querySelector('[id*="flowchart-PO-"]');
-    if (!node) return;
-    clearInterval(check);
-    node.style.cursor = 'pointer';
-    node.addEventListener('mouseenter', function(e) {
-      var rect = node.getBoundingClientRect();
-      pop.style.left = rect.left + 'px';
-      pop.style.top = (rect.bottom + window.scrollY + 8) + 'px';
-      pop.style.display = 'block';
-    });
-    node.addEventListener('mouseleave', function(e) {
-      var to = e.relatedTarget;
-      if (to && (to === pop || pop.contains(to))) return;
-      pop.style.display = 'none';
-    });
-    pop.addEventListener('mouseleave', function() {
-      pop.style.display = 'none';
-    });
-    var xmlPop = document.getElementById('xml-popover');
-    var xmlNode = document.querySelector('[id*="flowchart-XML-"]');
-    if (xmlNode) {
-      xmlNode.style.cursor = 'pointer';
-      xmlNode.addEventListener('mouseenter', function(e) {
-        var rect = xmlNode.getBoundingClientRect();
-        xmlPop.style.left = (rect.right - xmlPop.offsetWidth) + 'px';
-        xmlPop.style.top = (rect.bottom + window.scrollY + 8) + 'px';
-        xmlPop.style.display = 'block';
-      });
-      xmlNode.addEventListener('mouseleave', function(e) {
-        var to = e.relatedTarget;
-        if (to && (to === xmlPop || xmlPop.contains(to))) return;
-        xmlPop.style.display = 'none';
-      });
-      xmlPop.addEventListener('mouseleave', function() {
-        xmlPop.style.display = 'none';
-      });
-    }
-  }, 200);
-});
-</script>
-++++
-
-Before running the route, let's personalise the data mapping so the XML output includes your own Seller information.
-
-{empty} +
-
-=== Explore and modify the data mapping
-
-The `transform-x12` step uses a Kaoto data mapper to convert EDI fields into XML. Let's open it to see how the mappings work, and personalise the Seller Address with your own location.
-
-{empty} +
-
-. *Open the data mapper*
-+
---
-From your editor:
-
-. Open the file `x12.camel.yaml` — Kaoto will render the visual route
-. Click the `transform-x12` step to expand it — you'll see the sub-route:
-+
-[.mermaid]
-----
-flowchart LR
-    A(transform-x12) --> B(unmarshal) --> C2 --> D(get invoiceid)
-
-    subgraph C2 ["To do: Update"]
-        C(kaoto-datamapper)
-    end
-
-    style C2 fill:#dde4f6,stroke:#6690e6,color:#335
-----
-+
-. Click the `kaoto-datamapper` step inside the pass:[<code style="background-color: #4494E5; color: white;">&nbsp;To do: Update&nbsp;</code>] container
-. Click the pass:a[<span {btn-stl-blue}>{map-wrench}  Configure</span>] button to open the data mapper
---
-+
-{empty} +
-
-. *Explore the mappings*
-+
-The data mapper shows how EDI fields are mapped to XML. On the right side (Target), scroll down to the *Seller > Address* section. You'll see that each address field is mapped using XPath expressions that extract values from the original EDI data.
-+
-{empty} +
-
-. *Personalise the Seller information*
-+
-The Seller fields currently use XPath expressions to extract data from the EDI source (e.g. `/X12_850/Header/N1Loop[1]/N1/N1-02` for the Name). Let's replace them with your own details — enter the name and address of a place near you, or where you are right now. Overwrite the following fields in the *Target* with hardcoded values:
-+
-... `Name`:
-+
-[.copypaste]
-****
-"Georgia World Congress Center"
-****
-+
-{blank}
-+
-... `Street`:
-+
-[.copypaste]
-****
-"285 Andrew Young International Blvd NW"
-****
-+
-{blank}
-+
-... `City`:
-+
-[.copypaste]
-****
-"Atlanta"
-****
-+
-{blank}
-+
-... `State`:
-+
-[.copypaste]
-****
-"Georgia"
-****
-+
-{blank}
-+
-... `PostalCode`:
-+
-[.copypaste]
-****
-"GA 30313"
-****
-+
-{blank}
-+
-TIP: Feel free to use your own address instead — enter the street, city, state, and postal code of where you are right now.
-+
-{empty} +
-
-. *Run the route and test*
-+
-Save the file, then run the route:
-+
-{blank}
-+
-[.copypaste]
-****
-camel run \
---dev \
-ingest/* \
-application.properties
-****
-+
-Open a new terminal and send a sample EDI Purchase Order. We'll use an XPath query to extract just the Seller section from the response:
-+
-{blank}
-+
-[.copypaste]
-****
-curl -s \
--H "content-type: text" \
--d @ingest/edi \
-localhost:8080/ingest/x12 \
-| xmllint --xpath '//Seller' - \
-| bat -pP -lxml
-****
-+
-[TIP]
---
-.What does this command do?
-[%collapsible]
-====
-* `curl -s` — sends the request in silent mode (no progress bar)
-* `-H "content-type: text"` — tells the server the payload is plain text (EDI format)
-* `-d @ingest/edi` — sends the contents of the `edi` file as the request body
-* `localhost:8080/ingest/x12` — the Camel route's HTTP endpoint
-* `xmllint --xpath '//Seller'` — extracts only the `<Seller>` element from the full XML using an XPath query
-* `bat -pP -lxml` — displays the output with XML syntax highlighting
-====
---
-+
-The Seller information should now show your personalised values:
-+
-{blank}
-+
-++++
-<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 13px; color: #f8f8f2">&lt;<span style="color:#f92672">Seller</span>&gt;
-  &lt;<span style="color:#f92672">Name</span>&gt;<span style="background-color: #49483e">Georgia World Congress Center</span>&lt;/<span style="color:#f92672">Name</span>&gt;
-  &lt;<span style="color:#f92672">Address</span>&gt;
-    &lt;<span style="color:#f92672">Street</span>&gt;<span style="background-color: #49483e">285 Andrew Young International Blvd NW</span>&lt;/<span style="color:#f92672">Street</span>&gt;
-    &lt;<span style="color:#f92672">City</span>&gt;<span style="background-color: #49483e">Atlanta</span>&lt;/<span style="color:#f92672">City</span>&gt;
-    &lt;<span style="color:#f92672">State</span>&gt;<span style="background-color: #49483e">Georgia</span>&lt;/<span style="color:#f92672">State</span>&gt;
-    &lt;<span style="color:#f92672">PostalCode</span>&gt;<span style="background-color: #49483e">GA 30313</span>&lt;/<span style="color:#f92672">PostalCode</span>&gt;
-  &lt;/<span style="color:#f92672">Address</span>&gt;
-  &lt;<span style="color:#f92672">TaxId</span>&gt;939988477&lt;/<span style="color:#f92672">TaxId</span>&gt;
-  &lt;<span style="color:#f92672">IBAN</span>&gt;GB50ACIE59715038217063&lt;/<span style="color:#f92672">IBAN</span>&gt;
-&lt;/<span style="color:#f92672">Seller</span>&gt;</pre>
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+k2r    1/1     1            1           31s</pre>
 ++++
 
 {empty} +
 
-=== Enable the SQL step
+=== Test the deployed flow
 
-With the transformation working, it's time to enable the next step in the route — persisting the invoice data to the database.
-
-{blank}
-
-[.mermaid]
-----
-flowchart LR
-    A((platform-http)) --> B(transform-x12) --> C2 --> D2
-
-    subgraph C2 ["To do: Enable"]
-        C[(sql)]
-    end
-
-    subgraph D2 [" "]
-        D(store-pdf-s3)
-    end
-
-    style C fill:#eee,stroke:#ccc,color:#aaa
-    style D fill:#eee,stroke:#ccc,color:#aaa
-    style C2 fill:#dde4f6,stroke:#6690e6,color:#335
-    style D2 fill:#eee,stroke:#ccc,color:#aaa
-----
-
-In Kaoto, find the `sql` step and enable it. Since Camel is running in `--dev` mode, saving the file will automatically reload the route with the new step active.
-
-Send a Purchase Order to trigger the full flow — the route will now transform the EDI and insert the data into the database:
+The _Kafka_ cluster lives in your namespace, so the deployed pod consumes from the same topic you used locally. Send a test message:
 
 {blank}
 
 [.copypaste]
 ****
-curl -s \
--H "content-type: text" \
--d @ingest/edi \
-localhost:8080/ingest/x12
+camel cmd send k2r --body '{"user":"test","channel":"room2","source": "test","text": "Hello from OpenShift"}'
 ****
-
-To verify the data was inserted, query the database using Camel's `cmd` tool:
-
-{blank}
-
-[.copypaste]
-****
-camel cmd send \
---uri "sql:select count(*) from invoices" \
---properties application.properties \
---reply
-****
-
-[TIP]
---
-.What does this command do?
-[%collapsible]
-====
-* `camel cmd send` — sends a message to a Camel endpoint from the command line
-* `--endpoint "sql:select count(*) from invoices"` — runs a SQL query against the configured database
-* `--properties application.properties` — loads database connection settings
-* `--reply` — waits for and displays the response
-====
---
-
-You should see a row count confirming the insert:
-
-{blank}
-
-++++
-<pre style="background-color: #181818; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #818181">2026-03-23 10:14:08.939  <span style="color:#A649A6">11530</span> ---   <span style="color:#10A9CD">sql://SELECT%20count(*)%20FROM%20invoice</span> : <span style="color:#0FBC7A">Reply received</span> <span style="color:#0FBC7A">(success)</span> <span style="color:#fff">(304ms)</span>
- <span style="color:#fff">Endpoint</span>  <span style="color:#fff">sql://SELECT%20count(*)%20FROM%20invoices</span>
- <span style="color:#fff">Exchange</span>  (DefaultExchange)  <span style="color:#6F416E">InOut</span>   <span style="color:#fff">E3D444D7E02ADCD-0000000000000000</span>
- <span style="color:#fff">Message</span>   (DefaultMessage)
- <span style="color:#fff">Header</span>    (Integer)             <span style="color:#fff">CamelSqlRowCount  1</span>
- <span style="color:#fff">Body</span>      (ArrayList) (size: 1 bytes: 11)
- <span style="background-color: yellow; color: black">[{count=1}]</span></pre>
-++++
 
 {empty} +
 
-=== Enable the S3 storage step
+Open your _Rocket.Chat_ room — you should see the message delivered by the deployed flow:
 
-The last step in the route generates a PDF invoice from the XML and uploads it to S3 object storage.
+{empty} +
 
-{blank}
-
-[.mermaid]
-----
-flowchart LR
-    A((platform-http)) --> B(transform-x12) --> C[(sql)] --> D2
-
-    subgraph D2 ["To do: Enable"]
-        D(store-pdf-s3)
-    end
-
-    style D fill:#eee,stroke:#ccc,color:#aaa
-    style D2 fill:#dde4f6,stroke:#6690e6,color:#335
-----
-
-In Kaoto, find the `store-pdf-s3` step and enable it. Save the file — Camel will reload the route automatically.
-
-Clicking the `store-pdf-s3` step reveals what happens inside:
-
-{blank}
-
-[.mermaid]
-----
-flowchart LR
-    A(store-pdf-s3) --> B(Template PDF) --> C(generate PDF) --> D(store PDF) --> E(get Link)
-----
-
-The sub-route applies an XSLT template to produce a PDF from the XML invoice, uploads it to S3 object storage, and returns a presigned link to the document.
-
-Send another Purchase Order to trigger the complete flow — the response will include a presigned link to the generated PDF:
-
-{blank}
-
-[.copypaste]
-****
-curl -s \
--H "content-type: text" \
--d @ingest/edi \
-localhost:8080/ingest/x12; \
-echo
-****
-
-[TIP]
---
-.What does this command do?
-[%collapsible]
-====
-* `curl -s` — sends the request in silent mode (no progress bar)
-* `-H "content-type: text"` — tells the server the payload is plain text (EDI format)
-* `-d @edi` — sends the contents of the `edi` file as the request body
-* `localhost:8080/ingest/x12` — the Camel route's HTTP endpoint
-* `echo` — adds a newline after the response URL for readability
-====
---
-
-You should see a URL similar to:
-
-{blank}
-
-++++
-<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 13px; color: #5fdfdf; word-break: break-all">https://s3-openshift-storage.apps.cluster-xxxxx.dynamic.redhatworkshops.io/invoices/<span style="color:#fff">invoice_61356293.pdf</span>?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Date=...&amp;X-Amz-Expires=3600&amp;X-Amz-Signature=...</pre>
-++++
-
-Hold kbd:[Cmd] and click the link in your terminal to open the PDF in your browser. The Seller section should display the values you entered in the data mapper:
-
-{blank}
-
-++++
-<div style="background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 20px 28px; max-width: 380px; font-family: sans-serif; color: #222; line-height: 1.6">
-  <div style="display: flex; align-items: center; margin-bottom: 8px; margin-left: 38px">
-    <div style="width: 28px; height: 14px; background: #aaa; border-radius: 2px; margin-right: 10px; margin-left: -38px"></div>
-    <span style="font-weight: bold; font-size: 15px">Seller:</span>
-  </div>
-  <div style="font-size: 14px; margin-left: 38px">
-    Georgia World Congress Center<br/>
-    285 Andrew Young International Blvd NW<br/>
-    Atlanta, Georgia GA 30313
-  </div>
-</div>
-++++
+:fig-avatar: C
+:fig-sender: camel-bot
+:fig-time: 3:55 PM
+:fig-msg: pass:[<b>test@test:</b> Hello from OpenShift]
+include::_figures/rc-message.adoc[]
 
 {empty} +
 
 [.verification]
 ****
-Does the PDF show your personalised Seller address?
+Did you see the message in your _Rocket.Chat_ room?
 
 [.success]
-The full ingestion flow is working — EDI transformation, database storage, and PDF generation are all connected. You're ready to deploy.
+The flow is running on _OpenShift_. In the next section, you'll wire up the other half — _Matrix_ to _Kafka_.
 
 [.fail]
-Review the data mapper values and make sure Camel reloaded after saving. Try sending the request again.
+Check the pod logs with `oc logs deployment/k2r` for errors.
 ****
-
-{empty} +

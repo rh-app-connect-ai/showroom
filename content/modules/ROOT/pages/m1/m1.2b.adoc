@@ -74,7 +74,7 @@ The following steps set up the files you'll need for the flow implementation exe
 +
 Before you start, make sure you close in your editor all the tabs (source files) from the previous exercise.
 +
-image::m2/dev-close-tabs.png[width=100%]
+image::m3/dev-close-tabs.png[width=100%]
 +
 {blank}
 +

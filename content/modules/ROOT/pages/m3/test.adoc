@@ -1,0 +1,151 @@
+:imagesdir: ../../assets/images
+include::partial$style.adoc[]
+
+== TEST ZONE
+
+image:common/rh-logo-sm.svg[] test inline image
+
+// arrows: [{x, y, rot, size, color}] — rot (default 0=up), size (default 1), color (default red)
+// numbers: [{x, y, size, color}] — circled numbers, auto-numbered 1,2,3...
+// labels: [{x, y, text, rot, size, color}] — rot (default 0=horizontal), size (default 1), color (default red)
+:arrows: [ \
+  {x: 9,  y: 70}, \
+  {x: 30, y: 24, rot: 180, size: 2}, \
+  {x: 54, y: 65} \
+]
+:numbers: [ \
+  {x: 9,  y: 58, size: 2}, \
+  {x: 30, y: 38}, \
+  {x: 54, y: 53} \
+]
+:labels: [ \
+  {x: 9,  y: 140, size: 2, rot: 90, text: "Kafka source"}, \
+  {x: 30, y: 15, text: "Filter step", rot: -20}, \
+  {x: 54, y: 90, text: "Mapping"} \
+]
+
+[subs=attributes]
+++++
+<div class="arrow-overlay" style="position: relative; display: inline-block; width: 80%; margin-top: 50px; margin-bottom: 60px;">
+  <img src="../_images/m4/kafka-to-rocketchat.png" style="width: 100%; max-width: 100%;"/>
+  <svg style="position: absolute; top: -50px; left: 0; width: 100%; height: calc(100% + 110px); pointer-events: none; overflow: visible;"
+       data-arrows='{arrows}'
+       data-numbers='{numbers}'
+       data-labels='{labels}'>
+  </svg>
+</div>
+++++
+
+// Second image — different arrows
+:arrows: [{x: 50, y: 50, rot: 45}, {x: 10, y: 10}]
+
+[subs=attributes]
+++++
+<div class="arrow-overlay" style="position: relative; display: inline-block; width: 80%; margin-top: 50px; margin-bottom: 60px;">
+  <img src="../_images/m4/kafka-to-rocketchat.png" style="width: 100%; max-width: 100%;"/>
+  <svg style="position: absolute; top: -50px; left: 0; width: 100%; height: calc(100% + 110px); pointer-events: none; overflow: visible;"
+       data-arrows='{arrows}'>
+  </svg>
+</div>
+++++
+
+// Third image — 50% width test
+:arrows: [ \
+  {x: 30, y: 24, rot: 180}, \
+  {x: 0, y: 24, rot: 180}, \
+  {x: 100, y: 24, rot: 180} \
+]
+
+[subs=attributes]
+++++
+<div class="arrow-overlay" style="position: relative; display: inline-block; width: 50%; margin-top: 50px; margin-bottom: 60px;">
+  <img src="../_images/m4/kafka-to-rocketchat.png" style="width: 100%; max-width: 100%;"/>
+  <svg style="position: absolute; top: -50px; left: 0; width: 100%; height: calc(100% + 110px); pointer-events: none; overflow: visible;"
+       data-arrows='{arrows}'>
+  </svg>
+</div>
+++++
+
+++++
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.arrow-overlay').forEach(function(container) {
+    var svg = container.querySelector('svg');
+    var img = container.querySelector('img');
+    if (!svg || !img) return;
+    function parse(attr) { try { return eval('(' + (attr || '[]') + ')'); } catch(e) { return []; } }
+    var arrows = parse(svg.getAttribute('data-arrows'));
+    var numbers = parse(svg.getAttribute('data-numbers'));
+    var labels = parse(svg.getAttribute('data-labels'));
+    function draw() {
+      var iw = img.naturalWidth, ih = img.naturalHeight;
+      var overflow = 50;
+      var vw = iw, vh = ih + overflow * 2;
+      svg.setAttribute('viewBox', '0 0 ' + vw + ' ' + vh);
+      svg.innerHTML = '';
+      var shaft = iw * 0.003, head = iw * 0.008, headLen = ih * 0.075, len = ih * 0.5;
+      arrows.forEach(function(a) {
+        var x = a.x / 100 * iw;
+        var y = a.y / 100 * ih + overflow;
+        var rot = a.rot || 0;
+        var s = a.size || 1;
+        var pts = (-shaft)+','+len+' '+(shaft)+','+len+' '+(shaft)+','+(headLen)+' '+(head)+','+(headLen)+' 0,0 '+(-head)+','+(headLen)+' '+(-shaft)+','+(headLen);
+        var p = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        p.setAttribute('points', pts);
+        p.setAttribute('fill', a.color || 'red');
+        p.setAttribute('opacity', '0.85');
+        p.setAttribute('transform', 'translate(' + x + ',' + y + ') rotate(' + rot + ') scale(' + s + ')');
+        svg.appendChild(p);
+      });
+      var r = iw * 0.012;
+      var fontSize = r * 1.4;
+      numbers.forEach(function(n, i) {
+        var x = n.x / 100 * iw;
+        var y = n.y / 100 * ih + overflow;
+        var s = n.size || 1;
+        var nr = r * s;
+        var nf = fontSize * s;
+        var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('cx', x);
+        c.setAttribute('cy', y);
+        c.setAttribute('r', nr);
+        c.setAttribute('fill', n.color || 'red');
+        svg.appendChild(c);
+        var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        t.setAttribute('x', x);
+        t.setAttribute('y', y);
+        t.setAttribute('text-anchor', 'middle');
+        t.setAttribute('dominant-baseline', 'central');
+        t.setAttribute('fill', 'white');
+        t.setAttribute('font-size', nf);
+        t.setAttribute('font-weight', 'bold');
+        t.setAttribute('font-family', 'sans-serif');
+        t.textContent = i + 1;
+        svg.appendChild(t);
+      });
+      var labelSize = iw * 0.014;
+      labels.forEach(function(l) {
+        var x = l.x / 100 * iw;
+        var y = l.y / 100 * ih + overflow;
+        var rot = l.rot || 0;
+        var s = l.size || 1;
+        var col = l.color || 'red';
+        var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        t.setAttribute('x', x);
+        t.setAttribute('y', y);
+        t.setAttribute('text-anchor', 'middle');
+        t.setAttribute('dominant-baseline', 'central');
+        t.setAttribute('fill', col);
+        t.setAttribute('font-size', labelSize * s);
+        t.setAttribute('font-weight', 'bold');
+        t.setAttribute('font-family', 'sans-serif');
+        if (rot) t.setAttribute('transform', 'rotate(' + rot + ',' + x + ',' + y + ')');
+        t.textContent = l.text;
+        svg.appendChild(t);
+      });
+    }
+    if (img.complete) draw(); else img.onload = draw;
+  });
+});
+</script>
+++++

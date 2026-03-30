@@ -37,6 +37,13 @@ This file captures the author's preferences for writing workshop documentation. 
 - Add a `{blank}` between introductory text and a copypaste block or `++++`/`<pre>` output block to avoid them rendering too close together.
 - When introducing a command, briefly explain why (e.g. "use `curl` as a simple way to test connectivity").
 - Use `-v` (verbose) over `-s` (silent) when the output is educational and helps the student understand what's happening.
+- **Escape reserved AsciiDoc symbols** inside copypaste blocks. The `[.copypaste]` pattern uses sidebar blocks (`****`), which parse content as AsciiDoc. Characters like `*` (bold), `_` (italic), `` ` `` (monospace), and `#` (highlight) will be consumed by the parser. Wrap the content in `+++` (triple-plus passthrough) to preserve them literally. Avoid `pass:[]` when the content contains `]` characters (e.g. `[@key='user']`) — AsciiDoc will close the passthrough at the first `]`:
+  ```asciidoc
+  [.copypaste]
+  ****
+  +++concat("*", field[@key='user'], ":* ", value)+++
+  ****
+  ```
 
 ## Explaining Commands
 

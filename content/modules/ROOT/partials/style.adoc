@@ -44,6 +44,10 @@ summary  {
 .imageblock.text-center .content img {
     display: inline-block;
 }
+.imageblock.bordered img {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
 
 /* Center Mermaid diagrams with [.text-center] role */
 .mermaid.text-center svg {

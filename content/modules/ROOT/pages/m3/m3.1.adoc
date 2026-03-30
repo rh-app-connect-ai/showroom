@@ -2,7 +2,7 @@
 :page-time: 1
 include::partial$style.adoc[]
 
-[id="setup-lab3"]
+[id="setup"]
 == Setup the Lab working folder
 
 {empty} +
@@ -13,9 +13,9 @@ The following set of instructions prepare the set of files you will be working w
 
 . Close tabs
 +
-Before you start this lab, make sure you close in your editor all the tabs (source files) from the previous exercise.
+Before you start this second lab, make sure you close in your editor all the tabs (source files) from the previous exercise.
 +
-image::m2/dev-close-tabs.png[width=100%]
+image::m3/dev-close-tabs.png[width=100%]
 +
 {blank}
 +
@@ -25,25 +25,25 @@ image::m2/dev-close-tabs.png[width=100%]
 +
 {empty} +
 
-. Setup your Lab 3 folder
+. Setup your Lab 2 folder
 +
 [.copypaste]
 ****
-step 19
+step 3
 ****
 +
 [TIP]
 --
-.Run the command above anytime to reset the exercise.
+Run the command above anytime to reset the exercise.
+
+.Helper commands
 [%collapsible]
 ====
-The workshop includes handy helper scripts that let you jump to any step or reset the lab to a known good state:
-
 * `step N` — reset the lab to the beginning of step N
 * `steps` — list all available steps in the lab
 * `start` or `restart` — go to the very beginning (equivalent to `step 1`)
-* `ff` — fast-forward to the *next* step
-* `rw` — rewind to the *previous* step
+* `ff` — fast-forward to the next step
+* `rw` — rewind to the previous step
 ====
 --
 +
@@ -57,50 +57,29 @@ After executing the commands above, have a look in your editor's tree view to co
 [.indent2]
 📁 workshop +
 &nbsp;&nbsp;📁 lab +
-&nbsp;&nbsp;&nbsp;&nbsp;📁 query +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>&nbsp;⚙&nbsp;&nbsp;</b></mark>] *application.properties* +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *db.camel.yaml* +
+&nbsp;&nbsp;&nbsp;&nbsp;📁 k2r +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>⚙</b>&nbsp;</mark>] *application.properties* +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *k2r.camel.yaml* +
+
+[.indent2]
+[NOTE]
+====
+The `application.properties` file contains pre-configured connection settings for your environment — it's ready to use. This lets you focus on building the integration logic rather than wiring up configuration.
+
+.What's inside?
+[%collapsible]
+=====
+++++
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white"><span style="color: #75715e"># Rocket.Chat credentials</span>
+<span style="color: #a6e22e">rocketchat.token</span>=<span style="color: #e6db74">&lt;your-token&gt;</span>
+<span style="color: #a6e22e">rocketchat.userid</span>=<span style="color: #e6db74">&lt;your-userid&gt;</span></pre>
+++++
+=====
+====
 
 [.indent2]
 NOTE: Make sure the files are visible in your file explorer in the left panel of _VSCode_.
 --
-+
-{empty} +
-
-. Understand the Camel route
-+
-The `db.camel.yaml` file contains a simple Camel route designed to query the backend database. The database lives in a secure, air-tight environment and is not reachable yet — but once you enable connectivity in the next exercise, you'll run this route to confirm the connection works:
-+
-[cols="1a,1a"]
-|===
-| *Diagram* | *Camel Route (YAML)*
-
-|
-[.mermaid]
-----
-flowchart LR
-    T(timer) --> SQL(sql:SELECT) --> L(log)
-----
-
-|
-[source,yaml]
-....
-- route:
-    id: query-invoices
-    from:
-      uri: timer:queryInvoices
-      parameters:
-        repeatCount: 1
-      steps:
-        - to:
-            uri: sql:SELECT count(*) FROM invoices
-        - log:
-            message: "${body}"
-....
-
-|===
-+
-The route fires once (`repeatCount: 1`), runs a `SELECT count(*)` query against the `invoices` table, and logs the result.
 +
 {empty} +
 

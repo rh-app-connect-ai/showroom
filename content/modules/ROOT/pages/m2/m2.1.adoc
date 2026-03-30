@@ -1,94 +1,25 @@
 :imagesdir: ../../assets/images
-:page-time: 1
+:page-time: 2
 include::partial$style.adoc[]
 
-[id="setup"]
-== Setup the Lab working folder
+[id="scenario-intro"]
+== Data flow overview
+
+The picture below illustrates the data flow traversing our Camel instance:
+
+[.text-center]
+image::m2/data-flow.png[width=80%]
+
+The above process bridges chat messages from _Matrix_ to _Rocket.Chat_.
+
+* _Matrix_ is an open standard and communication protocol for real-time decentralised communication. It works seamlessly between different service providers.
+
+* _Rocket.Chat_ is also an open-source communications platform with high data protection standards. It enables real-time conversations between colleagues, other companies, or your customers across web, desktop, or mobile devices.
 
 {empty} +
 
+They are both deployed in _OpenShift_ with convenient web access, making them ideal for students to use in this workshop.
 
-The following set of instructions prepare the set of files you will be working with:
-
-
-. Close tabs
-+
-Before you start this second lab, make sure you close in your editor all the tabs (source files) from the previous exercise.
-+
-image::m2/dev-close-tabs.png[width=100%]
-+
-{blank}
-+
-1. Click on the file explorer's `...` button +
-1. Ensure your `Open Editors` is ticked [√] +
-1. Click the `Close all Editors` button.
-+
-{empty} +
-
-. Setup your Lab 2 folder
-+
-[.copypaste]
-****
-step 5
-****
-+
-TIP: pass:[Run the command above anytime to reset the exercise. <details>
-  <summary>
-    <span class="triangle"></span>
-    <span class="sumtext">Click for more information</span>
-  </summary>
-<div style="margin-top: 1em; margin-left: 2em">
-<p>
-The workshop includes handy helper scripts that let you jump to any step or reset the lab to a known good state:
-<div class="ulist">
-  <ul>
-    <li><strong>step N</strong> – reset the lab to the beginning of step N</li>
-    <li><strong>steps</strong> – list all available steps in the lab</li>
-    <li><strong>start</strong> or <strong>restart</strong> – go to the very beginning (equivalent to <code>step 1</code>)</li>
-    <li><strong>ff</strong> – fast-forward to the <strong>next</strong> step</li>
-    <li><strong>rw</strong> – rewind to the <strong>previous</strong> step</li>
-  </ul>
-</div>
-</p></div>
-</details>]
-+
-{empty} +
-
-. Check your lab folder
-+
-After executing the commands above, have a look in your editor's tree view to confirm it looks healthy. It should be similar to:
-+
---
-[.indent2]
-📁 workshop +
-&nbsp;&nbsp;📁 lab +
-&nbsp;&nbsp;&nbsp;&nbsp;📁 k2m +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *k2m.camel.yaml* +
-&nbsp;&nbsp;&nbsp;&nbsp;📁 k2r +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *k2r.camel.yaml* +
-&nbsp;&nbsp;&nbsp;&nbsp;📁 m2k +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *m2k.camel.yaml* +
-&nbsp;&nbsp;&nbsp;&nbsp;📁 r2k +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *r2k.camel.yaml* +
-pass:[<mark style="padding-left: 1rem; background-color: white; color: grey"><b>⚙</b></mark>] matrix.properties +
-pass:[<mark style="padding-left: 1rem; background-color: white; color: grey"><b>⚙</b></mark>] rocketchat.properties +
-
-[.indent2]
-NOTE: Make sure the files are visible in your file explorer in the left panel of _VSCode_.
---
-+
-{empty} +
-
-[.verification]
-****
-Do you see the same folder structure and files?
-
-[.success]
-You're ready to continue.
-
-[.fail]
-Make sure the syntax of the commands are compatible with with your environment and try again.
-****
-
+The tasks to complete in this lab will guide you on how to onboard to both messaging systems.
 
 {empty} +

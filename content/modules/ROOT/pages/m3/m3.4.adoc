@@ -2,9 +2,72 @@
 :page-time: 5
 include::partial$style.adoc[]
 
-[id='lab3-test-deploy']
-== Test and Deploy
+[id="enable-and-test"]
+== Enable all flows
 
-With the ingestion flow implemented, you will now run it locally to validate, then deploy it to OpenShift.
+You've built and deployed the _Kafka_ to _Rocket.Chat_ flow from scratch. The remaining flows follow the same pattern — to save time, let's enable them all at once and test the full end-to-end integration.
 
 {empty} +
+
+[.mermaid]
+----
+flowchart LR
+    M([Matrix]) --> K([Kafka])
+    K --> RC([Rocket.Chat])
+    RC --> K
+    K --> M
+
+    style M fill:#e8f5e9,stroke:#66bb6a
+    style K fill:#fff3e0,stroke:#fb8c00
+    style RC fill:#e8f5e9,stroke:#66bb6a
+----
+
+{empty} +
+
+=== Deploy the remaining flows
+
+Run the following command to deploy all remaining flows on _OpenShift_:
+
+{blank}
+
+[.copypaste]
+****
+labdeploy all
+****
+
+{blank}
+
+NOTE: Be patient, this action may take some time to complete.
+
+{empty} +
+
+=== Test end-to-end
+
+Now that all flows are running, send a message from _Matrix_ and watch it arrive in _Rocket.Chat_ — routed through _Kafka_.
+
+{empty} +
+
+. Go to your _Matrix_ room and send a message, for example `Hello from Matrix`.
+
+. Open your _Rocket.Chat_ room — the message should appear:
+
+{empty} +
+
+:fig-avatar: C
+:fig-sender: camel-bot
+:fig-time: 4:10 PM
+:fig-msg: pass:a[<b>{username}@matrix:</b> Hello from Matrix]
+include::_figures/rc-message.adoc[]
+
+{empty} +
+
+[.verification]
+****
+Did you see the message from _Matrix_ showing up in _Rocket.Chat_?
+
+[.success]
+The full integration is working. Messages flow from _Matrix_ through _Kafka_ and into _Rocket.Chat_.
+
+[.fail]
+Check the pod logs with `oc logs deployment/m2k` and `oc logs deployment/k2r` for errors.
+****
