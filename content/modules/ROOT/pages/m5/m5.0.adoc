@@ -1,5 +1,5 @@
 :imagesdir: ../../assets/images
-:page-time: 10
+:page-time: 4
 include::partial$style.adoc[]
 
 [id='lab5-protect-llm-consumption-with-connectivity-link']
@@ -19,65 +19,6 @@ In this final phase, you will place a **governance layer** in front of the LLM u
 * **TokenRateLimitPolicy** -- Control _how much_ each user can consume by enforcing rate limits based on actual LLM token usage.
 
 By the end of this module, the AI agent will be fully secured with tiered access control -- _free_ users get a limited token budget, while _gold_ users enjoy a higher allowance.
-
-{empty} +
-
-=== Your Environment
-
-* Login to the link:{url-codeready}[Red Hat OpenShift Dev Spaces, window="_blank"] environment you have been using throughout the workshop using the same credentials as before  {user-username} and your password.
-
-* Start a new terminal session in your Dev Spaces IDE if you already do not have one open.
-+
-image::intro/toggle-terminal.png[width=40%]
-
-* Verify you are in the correct namespace `{user-username}-devspaces` by running:
-+
-[.copypaste]
-****
-oc project {user-username}-devspaces
-****
-
-== Introducing Red Hat Connectivity Link
-
-=== What is Connectivity Link?
-
-We will be Red Hat Connectivity Link across this module to implement the governance policies for the LLM. _Red Hat Connectivity Link_ is a _Kubernetes_-native solution for managing, securing, and controlling API traffic. Built on the link:https://kuadrant.io/[_Kuadrant_ project], it integrates directly with the _Gateway API_ to enforce policies at the gateway level and HTTP Route Level -- before requests ever reach the LLM backend.
-
-{empty} +
-
-=== Gateway API Architecture
-
-Gateway API is an official Kubernetes project focused on L4 and L7 routing in Kubernetes. This project represents the next generation of Kubernetes Ingress, Load Balancing, and Service Mesh APIs. It uses a layered model:
-
-[.mermaid]
-[subs="attributes"]
-----
-flowchart LR
-    subgraph yoursLabel [" "]
-        subgraph yours ["OpenShift"]
-            GC[GatewayClass]
-            GT[Gateway]
-            HTTP[HTTPRoute]
-        end
-    end
-
-    GC --> GT --> HTTP
-
-    style yoursLabel fill:none,stroke:none
-    style GC fill:#fff,stroke:#7986cb
-    style GT fill:#fff,stroke:#7986cb
-    style HTTP fill:#fff,stroke:#7986cb
-----
-
-[.mermaid-hints-simple]
-****
-GC | GatewayClass | Gateways can be implemented by different controllers, often with different configurations. A Gateway object is associated with exactly one GatewayClass; the GatewayClass describes the gateway controller responsible for managing Gateways of this class +
-GT | Gateway | A Gateway describes an instance of traffic handling infrastructure. It defines a network endpoint that can be used for processing traffic, i.e. filtering, balancing, splitting, etc. for backends such as a Service. For example, a Gateway may represent a cloud load balancer or an in-cluster proxy server that is configured to accept HTTP traffic. +
-HTTP | HTTPRoute | The HTTPRoute kind specifies routing behavior of HTTP requests from a Gateway listener to backend network endpoints. For a Service backend, an implementation may represent the backend network endpoint as a Service IP or the backing EndpointSlices of the Service. An HTTPRoute represents configuration that is applied to the underlying Gateway implementation
-****
-TIP: Hover over each component in the diagram to learn what it does.
-
-_Connectivity Link_ operates at the _Gateway API_ layer._Connectivity Link_ attaches its policies (AuthPolicy, TokenRateLimitPolicy) directly to these _Gateway API_ resources. This means security and governance are enforced **at the infrastructure level**, without modifying application code or the AI agent itself.
 
 {empty} +
 
@@ -117,88 +58,70 @@ end
 
 {empty} +
 
-== Infrastructure Provisioned for This Phase
+// === Your Environment
 
-The following resources have been set up for you so you can focus on the policy configuration:
+// * Login to the link:{url-codeready}[Red Hat OpenShift Dev Spaces, window="_blank"] environment you have been using throughout the workshop using the same credentials as before  {user-username} and your password.
 
-[cols="1,2", options="header"]
-|===
-| Resource | Purpose
+// * Start a new terminal session in your Dev Spaces IDE if you already do not have one open.
+// +
+// image::intro/toggle-terminal.png[width=40%]
 
-| **GatewayClass, Gateway, HTTPRoute**
-| The _Gateway API_ stack that routes traffic from the chat interface to the external LLM backend.
+// * Verify you are in the correct namespace `{user-username}-devspaces` by running:
+// +
+// [.copypaste]
+// ****
+// oc project {user-username}-devspaces
+// ****
 
-| **Kuadrant Operator & System**
-| The _Connectivity Link_ operator, installed in the `kuadrant-system` namespace.
+== Introducing Red Hat Connectivity Link
 
-| **User Secrets**
-| API key secrets for `free` and `gold` tier users (details below).
-|===
+=== What is Connectivity Link?
 
-{empty} +
-
-=== Verify Your Environment
-
-Confirm everything is ready before starting the labs:
-
-{blank}
-
-. From the terminal in your Dev Spaces IDE, run the following command to check that gateway is up and running:
-+
-[.copypaste]
-****
-oc get gateway internal-ai-gateway -n ai-gateway
-****
-+
-{empty} +
-
-. You should see output confirming the gateway exists and is in a ready state, similar to:
-+
-----
-NAME               CLASS               ADDRESS                                                           PROGRAMMED   AGE
-internal-gateway   openshift-default   internal-gateway-openshift-default.ai-gateway.svc.cluster.local   True         14h
-----
-
-
-. Each user has HTTPRoute with the `ai-proxy-route` in their namespace `{user-username}-devspaces` that targets the LLM API. Run the following command to verify it is present
-+
-[.copypaste]
-****
-oc describe httproute -n {user-username}-devspaces | grep -E "Name:|Backend|Hostnames"
-****
-+
-This command lists the HTTPRoute details including the backend reference to the LLM API and the gateway it is attached to (which is the `internal-gateway` that you verified earlier). 
-
-. Look for output confirming the HTTPRoute exists and is correctly configured, similar to:
-+
-----
-Name:         ai-proxy-route
-    Name:       internal-ai-gateway
-    Backend Refs:
-      Name:       ai-api-external
-          Name:   Host
-          Name:   Authorization
-    Controller Name:         openshift.io/gateway-controller/v1
-      Name:       internal-ai-gateway
-----
-
-
-
-
-
-
-[.verification]
-****
-Were you able to list the `internal-ai-gateway` Gateway and `ai-proxy-route` HTTPRoute ?
-
-[.success]
-Your environment is ready. Proceed to Next step.
-
-[.fail]
-Contact the workshop facilitator to ensure your namespace is properly provisioned.
-****
+We will be using Red Hat Connectivity Link across this module to implement the governance policies for the LLM. _Red Hat Connectivity Link_ is a _Kubernetes_-native solution for managing, securing, and controlling API traffic. Built on the link:https://kuadrant.io/[_Kuadrant_ project], it integrates directly with the _Gateway API_ to enforce policies at the gateway level and HTTP Route Level -- before requests ever reach the LLM backend.
 
 {empty} +
+
+=== Gateway API Architecture
+
+Gateway API is an official Kubernetes project focused on L4 and L7 routing in Kubernetes. This project represents the next generation of Kubernetes Ingress, Load Balancing, and Service Mesh APIs. It uses a layered model:
+
+[.mermaid]
+[subs="attributes"]
+----
+flowchart LR
+    subgraph yoursLabel [" "]
+        subgraph yours ["OpenShift"]
+            GC[GatewayClass]
+            GT[Gateway]
+            HTTP[HTTPRoute]
+        end
+    end
+
+    GC --> GT --> HTTP
+
+    style yoursLabel fill:none,stroke:none
+    style GC fill:#fff,stroke:#7986cb
+    style GT fill:#fff,stroke:#7986cb
+    style HTTP fill:#fff,stroke:#7986cb
+----
+
+[.mermaid-hints-simple]
+****
+GC | GatewayClass | Gateways can be implemented by different controllers, often with different configurations. A Gateway object is associated with exactly one GatewayClass; the GatewayClass describes the gateway controller responsible for managing Gateways of this class +
+GT | Gateway | A Gateway describes an instance of traffic handling infrastructure. It defines a network endpoint that can be used for processing traffic, i.e. filtering, balancing, splitting, etc. for backends such as a Service. For example, a Gateway may represent a cloud load balancer or an in-cluster proxy server that is configured to accept HTTP traffic. +
+HTTP | HTTPRoute | The HTTPRoute kind specifies routing behavior of HTTP requests from a Gateway listener to backend network endpoints. For a Service backend, an implementation may represent the backend network endpoint as a Service IP or the backing EndpointSlices of the Service. An HTTPRoute represents configuration that is applied to the underlying Gateway implementation
+****
+TIP: Hover over each component in the diagram to learn what it does.
+
+_Connectivity Link_ operates at the _Gateway API_ layer._Connectivity Link_ attaches its policies (AuthPolicy, TokenRateLimitPolicy) directly to these _Gateway API_ resources. This means security and governance are enforced **at the infrastructure level**, without modifying application code or the AI agent itself.
+
+
+
+
+
+
+
+
 
 
 

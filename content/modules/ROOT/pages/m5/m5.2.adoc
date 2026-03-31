@@ -1,145 +1,243 @@
 :imagesdir: ../../assets/images
-:page-time: 10
+:page-time: 5
 include::partial$style.adoc[]
 
-== Test Authentication via the Chat Interface
+== Authentication
 
 {banner-under-construction}
 
-Now test that the AuthPolicy is working using the same chat interface from Phase 3.
+=== Infrastructure Provisioned for This Phase
 
-=== Configuring the API Key
+The following resources have been set up for you so you can focus on the policy configuration:
 
-Let's configure the chat application to use the API key for authentication. The chat interface is set up to read the API key from the `forage-agent-factory.properties` file. 
+[cols="1,2", options="header"]
+|===
+| Resource | Purpose
 
-. Run the following command from the dev spaces terminal to setup the files needed for this exercise:
-+
-[.copypaste]
-****
-step 24
-****
+| **GatewayClass, Gateway, HTTPRoute**
+| The _Gateway API_ stack that routes traffic from the chat interface to the external LLM backend.
 
-. Navigate to the chat folder
-+
-[.copypaste]
-****
-cd chat
-****
+| **Kuadrant Operator & System**
+| The _Connectivity Link_ operator, installed in the `kuadrant-system` namespace.
 
+| **User Secrets**
+| API key secrets for `free` and `gold` tier users (details below).
+|===
 
+{empty} +
 
+=== Verify Your Environment
+
+Confirm everything is ready before starting the labs:
 
 {blank}
 
-. Open the `forage-agent-factory.properties` file under workshop/lab/chat.
+. From the terminal in your Dev Spaces IDE, run the following command to check that gateway is up and running:
 +
-image::m5/properties_file.png[Properties file location - placeholder,width=80%]
+[.copypaste]
+****
+oc get gateway internal-ai-gateway -n ai-gateway
+****
++
 {empty} +
 
-. Locate the `forage.myagent.agent.base.url` property. This is the URL that the chat application will use to connect to the LLM. Since we are running the chat application from within the cluster, we will use the internal service address for the HTTPRoute. Replace the placeholder *REPLACE_WITH_HTTP_BASE_URL* with the following URL:
+. You should see output confirming the gateway exists and is in a ready state, similar to:
 +
-[.copypaste]
-****
-http://internal-ai-gateway-openshift-default.ai-gateway.svc.cluster.local/{user-username}/v1
-****
-+
-
-. Locate the `forage.myagent.agent.api.key` property and replace the placeholder *REPLACE_WITH_API_KEY* with the actual API key we created earlier using the auth policy.
-+
-[.copypaste]
-****
-iamafree{user-username}
-****
+++++
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre; overflow-x: auto; font-family: monospace; font-size: 14px; color: white">NAME               CLASS               ADDRESS                                                           PROGRAMMED   AGE
+internal-gateway   openshift-default   internal-gateway-openshift-default.ai-gateway.svc.cluster.local   True         14h</pre>
+++++
 {empty} +
 
-. Run the chat application
+. Each user has HTTPRoute with the `ai-proxy-route` in their namespace `{user-username}-devspaces` that targets the LLM API. Run the following command to verify it is present
 +
 [.copypaste]
 ****
-+++./run.sh+++
+oc describe httproute -n {user-username}-devspaces | grep -E "Name:|Backend|Hostnames"
+****
++
+This command lists the HTTPRoute details including the backend reference to the LLM API and the gateway it is attached to (which is the `internal-gateway` that you verified earlier). 
++
+{empty} +
+
+. Look for output confirming the HTTPRoute exists and is correctly configured, similar to:
++
+++++
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">Name:         ai-proxy-route
+    Name:       internal-ai-gateway
+    Backend Refs:
+      Name:       ai-api-external
+          Name:   Host
+          Name:   Authorization
+    Controller Name:         openshift.io/gateway-controller/v1
+      Name:       internal-ai-gateway</pre>
+++++
+
+
+
+
+
+
+[.verification]
+****
+Were you able to list the `internal-ai-gateway` Gateway and `ai-proxy-route` HTTPRoute ?
+
+[.success]
+Your environment is ready. Proceed to Next step.
+
+[.fail]
+Contact the workshop facilitator to ensure your namespace is properly provisioned.
 ****
 
-. Open the application in a new browser tab when prompted
-+
-image::m5/chat_app_launch.png[Chat application launch - placeholder,width=80%]
+{empty} +
 
-. You should see the chat interface as shown below. Send the below message  and see if you get a response.
-+
+=== Auth Policy Powered by Connectivity Link
+Now that you understand the architecture, it's time to lock down the LLM endpoint. In this exercise you will create an **AuthPolicy** that is applied to the HTTPRoute(`ai-proxy-route`)  and enforces a key-based authentication scheme. This will ensure that only authorized users with a valid API key can access the LLM, and it will extract identity information that we can use for rate limiting in the next step.
+
+NOTE: We are using simple API key authentication for this workshop to keep things straightforward and simple, but _Connectivity Link_ supports a wide range of authentication methods, including JWT, OAuth2 introspection, and more.
+
+=== Understanding the User Secrets
+
+Two API key secrets have been pre-created. Understanding their structure is important because both policies reference the labels and annotations on these secrets.
+
+**Free-tier user:**
+[subs="attributes"]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: trlp-tutorial-api-key-free-{username}
+  namespace: kuadrant-system
+  labels:
+    authorino.kuadrant.io/managed-by: authorino
+    app: my-llm
+  annotations:
+    kuadrant.io/groups: free
+    secret.kuadrant.io/user-id: {username}
+stringData:
+  api_key: iamafreeuser
+type: Opaque
+----
+
+Key fields in this secret:
+
+* `authorino.kuadrant.io/managed-by: authorino` -- Marks this secret as managed by _Authorino_ (the auth engine behind _Connectivity Link_).
+* `app: my-llm` -- Label selector -- the AuthPolicy uses this to discover valid API keys.
+* `kuadrant.io/groups: free` -- Group membership -- determines which rate limit tier applies.
+* `secret.kuadrant.io/user-id: {user-username}` -- Unique user ID -- used as a counter key for per-user rate limiting.
+
+The **gold-tier** secret follows the same structure but with `kuadrant.io/groups: gold`,`api_key: iamagolduser`.
+
+{empty} +
+
+== Securing the LLM with Authentication
+
+Now that you understand the architecture and the setup, it's time to lock down the LLM endpoint. You will create an **AuthPolicy** that is applied to the `ai-proxy-route` HTTPRoute and enforces:
+
+1. **API Key Authentication** -- Only requests with a valid Bearer token (matching a known secret) are allowed.
+2. **Group-based Authorization** -- Only users belonging to the `free` or `gold` groups can access the API.
+3. **Identity Extraction** -- The user's group and user ID are extracted from the secret's annotations and passed downstream for use by the TokenRateLimitPolicy.
+
+{empty} +
+
+=== Step 1: Review and Apply the AuthPolicy
+
+Examine the AuthPolicy and *apply* it by pasting the following command in your terminal:
+
 [.copypaste]
 ****
-Explain Kubernetes in 20 words
+oc apply -f - <<EOF
+apiVersion: kuadrant.io/v1
+kind: AuthPolicy
+metadata:
+  name: ai-proxy-auth
+  namespace: {user-username}-devspaces
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: ai-proxy-route
+  rules:
+    authentication:
+      api-key-users:
+        apiKey:
+          selector:
+            matchLabels:
+              app: my-llm
+        credentials:
+          authorizationHeader:
+            prefix: Bearer
+    response:
+      success:
+        filters:
+          identity:
+            json:
+              properties:
+                groups:
+                  selector: auth.identity.metadata.annotations.kuadrant\.io/groups
+                userid:
+                  selector: auth.identity.metadata.annotations.secret\.kuadrant\.io/user-id
+    authorization:
+      allow-groups:
+        opa:
+          rego: |
+            groups := split(object.get(input.auth.identity.metadata.annotations, "kuadrant.io/groups", ""), ",")
+            allow { groups[pass:[_]] == "free" }
+            allow { groups[pass:[_]] == "gold" }
+EOF
 ****
-+
-image::m5/chat_image.png[Chat interface response - placeholder,width=80%]
 
+Key fields in this policy:
 
+* `namespace: {user-username}-devspaces` -- The policy is created in your namespace.
+* `name: ai-proxy-route` -- Targets the `ai-proxy-route` HTTPRoute -- any request matching this route must pass authentication.
+* `app: my-llm` -- Looks for _Kubernetes_ Secrets with this label to find valid API keys.
+* `prefix: Bearer` -- Expects the API key in the `Authorization` header (e.g., `Authorization: Bearer iamafreeuser`).
+* `kuadrant\.io/groups` -- Extracts the group annotation from the matched secret and exposes it as `groups` in the response filter.
+* `secret\.kuadrant\.io/user-id` -- Extracts the user ID annotation and exposes it as `userid`.
+* `rego` -- OPA (Open Policy Agent) rule that only allows users whose group is `free` or `gold`.
 
-
+{empty} +
 
 
 {empty} +
 
-=== Negative Test Scenarios
-
-Since we have already tested the authentication  with the correct API key, let's test the negative scenarios to confirm that invalid keys are rejected.
+=== Step 2: Verify the AuthPolicy
 
 {blank}
-. Stop the application by pressing `CTRL+C` in the terminal
 
-. Set an invalid API key in `forage-agent-factory.properties`:
+. From the devspaces terminal, run the following command to check that the AuthPolicy was created successfully:
 +
 [.copypaste]
 ****
-invalidkey
+oc describe authpolicy -n {user-username}-devspaces | grep -E "Name:|Target Ref:|Type:|Status:"
 ****
 
-. Run the application again 
+. You should see output confirming the AuthPolicy exists, is targeting the correct HTTPRoute, and is in an enforced state, similar to:
 +
-[.copypaste]
-****
-+++./run.sh+++
-****
-
-. Send a message. The request should be **denied**.
-+
-image::m5/invalid_key_response.png[Response with invalid API key - placeholder,width=80%]   
-
-
-. Stop the application again by pressing `CTRL+C` in the terminal
-
-. **Valid free-tier key** -- Set the free-tier API key in `forage-agent-factory.properties`:
-+
-[.copypaste]
-****
-iamafree{user-username}
-****
-
-. Run the application again 
-+
-[.copypaste]
-****
-+++./run.sh+++
-****
-
-. Send a message. The request should be **allowed** -- you receive a response again from the LLM.
-
-
-
+----
+Name:         ai-proxy-auth
+  Target Ref:
+    Name:   ai-proxy-route
+Status:
+    Status:                True
+    Type:                  Accepted
+    Status:                True
+    Type:                  Enforced
+----
 {empty} +
-
-At this point, authentication and authorization are enforced. Only users with valid API keys belonging to the `free` or `gold` groups can access the LLM.
 
 {empty} +
 
 [.verification]
 ****
-Did the invalid key return a error, and the valid free-tier key return a successful LLM response?
+Does the `ai-proxy-auth` AuthPolicy show status **True** and Type **Enforced** ?
 
 [.success]
-Authentication and authorization are working correctly.
+The AuthPolicy is enforced. Proceed to test authentication.
 
 [.fail]
-Review the AuthPolicy status and the secret configurations in the forage-agent-factory.properties file.
+Check that you pasted the correct YAML and that the namespace is set to `{user-username}-devspaces`.
 ****
 
 {empty} +

@@ -1,194 +1,145 @@
 :imagesdir: ../../assets/images
-:page-time: 10
+:page-time: 5
 include::partial$style.adoc[]
 
-== Enforcing Token Budgets with Rate Limiting
+== Test Authentication via the Chat Interface
 
 {banner-under-construction}
 
-Now that access is secured, you will add a **TokenRateLimitPolicy** to control how many LLM tokens each user can consume. This is the key differentiator for AI workloads -- unlike traditional rate limiting (which counts requests), token rate limiting counts the actual **tokens used** in LLM responses, giving you fine-grained cost control over AI consumption.
+Now test that the AuthPolicy is working using the same chat interface from Phase 3.
 
-{empty} +
+=== Configuring the API Key
 
-=== Step 1: Review and Apply the AuthPolicy
-. Open a new terminal tab in your dev space (keep the previous tab with the chat running so you can test later).
-+
-image::m5/devspace_terminal_new.png[Dev Spaces terminal - placeholder,width=80%]
+Let's configure the chat application to use the API key for authentication. The chat interface is set up to read the API key from the `forage-agent-factory.properties` file. 
 
-. Examine the TokenRateLimitPolicy and *apply* it by pasting the following command in your terminal:
+. Run the following command from the dev spaces terminal to setup the files needed for this exercise:
 +
 [.copypaste]
 ****
-oc apply -f - <<EOF
-apiVersion: kuadrant.io/v1alpha1
-kind: TokenRateLimitPolicy
-metadata:
-  name: openai-token-limits
-  namespace: {user-username}-devspaces
-spec:
-  targetRef:
-    group: gateway.networking.k8s.io
-    kind: HTTPRoute
-    name: ai-proxy-route
-  limits:
-    free:
-      rates:
-        - limit: 50
-          window: 1m
-      when:
-        - predicate: |
-            auth.identity.groups.split(",").exists(g, g == "free")
-      counters:
-        - expression: auth.identity.userid
-    gold:
-      rates:
-        - limit: 200
-          window: 1m
-      when:
-        - predicate: |
-            auth.identity.groups.split(",").exists(g, g == "gold")
-      counters:
-        - expression: auth.identity.userid
-EOF
+step 24
 ****
 
-Key fields in this policy:
-
-* `namespace: {user-username}-devspaces` -- Created in your namespace.
-* `name: ai-proxy-route` -- Targets the same HTTPRoute as the AuthPolicy.
-* `free` -- **Free tier** -- limited to **50 tokens per minute**.
-* `request.path == "/v1/chat/completions"` -- Only applies to requests hitting the chat completions path.
-* `auth.identity.groups` -- Matches users whose `groups` identity property (set by the AuthPolicy response filter) contains `free` or `gold`.
-* `auth.identity.userid` -- Rate limit counter is **per user** -- each user gets their own token budget.
-* `gold` -- **Gold tier** -- limited to **200 tokens per minute**, same structure as free but with a higher allowance.
-
-[IMPORTANT]
-====
-Notice how the TokenRateLimitPolicy depends on the AuthPolicy:
-
-* The `auth.identity.groups` and `auth.identity.userid` fields referenced here are populated by the AuthPolicy's `response.success.filters` section.
-* Without the AuthPolicy, the TokenRateLimitPolicy would have no identity context to evaluate.
-====
-
-{empty} +
-
-
-
-=== Step 3: Verify the TokenRateLimitPolicy
-
-. From the devspaces terminal, run the following command to check that the AuthPolicy was created successfully:
+. Navigate to the chat folder
 +
 [.copypaste]
 ****
-oc describe tokenratelimitpolicy -n {user-username}-devspaces | grep -iE "Name:|target|free:|gold:|limit:|window:|type:|status:"
+cd chat
 ****
 
-. You should see output confirming the AuthPolicy exists, is targeting the correct HTTPRoute, and is in an enforced state, similar to:
-----
-Name:         openai-token-limits
-    Free:
-        Limit:   50
-        Window:  1m
-    Gold:
-        Limit:   200
-        Window:  1m
-  Target Ref:
-    Name:   ai-proxy-route
-Status:
-    Status:                True
-    Type:                  Accepted
-    Status:                True
-    Type:                  Enforced
-----
 
 
-
-[.verification]
-****
-Does the  TokenRateLimitPolicy show status **Enforced**?
-
-[.success]
-The token rate limit policy is active. Proceed to test token limits.
-
-[.fail]
-Check that you pasted the correct YAML and that the namespace is set to `{user-username}-devspaces`.
-****
-
-{empty} +
-
-=== Step 4: Test Token Rate Limiting via the Chat Interface
-
-Use the chat interface to test the rate limiting behavior.
-
-{empty} +
-
-==== Test 1: Free-tier token limits
-
-. Send a message that asks the LLM to generate a longer response  
-+
-.[copypaste]
-****
-Explain Kubernetes in 50 words
-****
-+
-{empty} +
-
-. Continue sending the same messages in quick succession.
-+
-{empty} +
-
-. After consuming **50 tokens within a minute**, your next request should be **rate limited** (429 Too Many Requests).
-+
-image::m5/trlp_free_rate_limited.png[Free-tier rate limited response - placeholder,width=80%]
-{empty} +
-
-. Wait for the 1-minute window to reset, then try again -- the request should succeed.
-
-
-{empty} +
-
-==== Optional Test : Gold-tier token limits
 
 {blank}
 
-. Update `forage-agent-factory.properties`:
+. Open the `forage-agent-factory.properties` file under workshop/lab/chat.
++
+image::m5/properties_file.png[Properties file location - placeholder,width=80%]
+{empty} +
+
+. Locate the `forage.myagent.agent.base.url` property. This is the URL that the chat application will use to connect to the LLM. Since we are running the chat application from within the cluster, we will use the internal service address for the HTTPRoute. Replace the placeholder *REPLACE_WITH_HTTP_BASE_URL* with the following URL:
 +
 [.copypaste]
 ****
-forage.myagent.agent.api.key=iamagold{user-username}
+http://internal-ai-gateway-openshift-default.ai-gateway.svc.cluster.local/{user-username}/v1
 ****
++
 
-. Stop the application by pressing `CTRL+C` in the terminal, then run it again:
+. Locate the `forage.myagent.agent.api.key` property and replace the placeholder *REPLACE_WITH_API_KEY* with the actual API key we created earlier using the auth policy.
 +
 [.copypaste]
 ****
-./run.sh
+iamafree{user-username}
+****
+{empty} +
+
+. Run the chat application
++
+[.copypaste]
+****
++++./run.sh+++
 ****
 
-. Send similar messages such as `Explain Kubernetes in 50 words` to the LLM using the chat interface in quick succession.
+. Open the application in a new browser tab when prompted
 +
+image::m5/chat_app_launch.png[Chat application launch - placeholder,width=80%]
+
+. You should see the chat interface as shown below. Send the below message  and see if you get a response.
++
+[.copypaste]
+****
+Explain Kubernetes in 20 words
+****
++
+image::m5/chat_image.png[Chat interface response - placeholder,width=80%]
+
+
+
+
+
+
 {empty} +
 
-. Notice that you can consume up to **200 tokens per minute** before being rate limited -- 4x the free-tier allowance.
+=== Negative Test Scenarios
+
+Since we have already tested the authentication  with the correct API key, let's test the negative scenarios to confirm that invalid keys are rejected.
+
+
+. Stop the application by pressing `CTRL+C` in the terminal
+
+. Locate the `forage.myagent.agent.api.key` in forage-agent-factory.properties property and set the value to an invalid API key:
++
+[.copypaste]
+****
+invalidkey
+****
+
+. Run the application again 
++
+[.copypaste]
+****
++++./run.sh+++
+****
+
+. Send a message. The request should be **denied**.
++
+image::m5/invalid_key_response.png[Response with invalid API key - placeholder,width=80%]   
+
+
+. Stop the application again by pressing `CTRL+C` in the terminal
+
+. **Valid free-tier key** -- Set the free-tier API key in `forage-agent-factory.properties`:
++
+[.copypaste]
+****
+iamafree{user-username}
+****
+
+. Run the application again 
++
+[.copypaste]
+****
++++./run.sh+++
+****
+
+. Send a message. The request should be **allowed** -- you receive a response again from the LLM.
+
+
 
 {empty} +
 
-[NOTE]
-====
-Rate limits are tracked **per user** using the `userid` counter from the AuthPolicy. Each user gets their own independent token budget -- one user hitting their limit does not affect another user's quota.
-====
+At this point, authentication and authorization are enforced. Only users with valid API keys belonging to the `free` or `gold` groups can access the LLM.
 
 {empty} +
 
 [.verification]
 ****
-Did the free-tier user hit a 429 rate limit after ~50 tokens, while the gold-tier user could consume up to ~200 tokens per minute?
+Did the invalid key return a error, and the valid free-tier key return a successful LLM response?
 
 [.success]
-Congratulations! You have successfully implemented tiered token-based rate limiting.
+Authentication and authorization are working correctly.
 
 [.fail]
-Ensure both the AuthPolicy and TokenRateLimitPolicy show Enforced status, and try again with a fresh 1-minute window.
+Review the AuthPolicy status and the secret configurations in the forage-agent-factory.properties file.
 ****
 
 {empty} +
