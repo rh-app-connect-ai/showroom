@@ -36,6 +36,7 @@ window.addEventListener('DOMContentLoaded', function() {
           container.classList.add(cls);
         }
       });
+      if (block.id) container.id = block.id;
       container.textContent = code.textContent;
       block.parentNode.replaceChild(container, block);
     });

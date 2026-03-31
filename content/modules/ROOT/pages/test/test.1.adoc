@@ -1,0 +1,159 @@
+:imagesdir: ../../assets/images
+include::partial$style.adoc[]
+
+== TEST ZONE
+
+== Inline SVG icon
+
+image:common/rh-logo-sm.svg[] test inline image
+
+== Test overlay pattern (on images - part1)
+
+{empty} +
+
+[#test-image]
+image::m4/kafka-to-rocketchat.png[width=50%]
+
+[.overlay]
+****
+[.target]
+test-image
+
+[.arrows]
+{x: 30, y: 24, rot: 45, color: "red"} +
+{x: 0, y: 24, rot: 180, color: "blue"} +
+{x: 100, y: 24, rot: 180, color: "green"}
+
+[.numbers]
+{x: 9, y: 58, size: 2} +
+{x: 30, y: 38} +
+{x: 54, y: 53}
+
+[.labels]
+{x: 18, y: 90, text: "Source", size: 1.2} +
+{x: 52, y: 90, text: "Process", size: 1.2}
+****
+
+{empty} +
+
+== Test overlay pattern (on images - part2)
+
+{empty} +
+
+[#test-image-2]
+image::m4/kafka-to-rocketchat.png[width=80%]
+
+[.overlay]
+****
+[.target]
+test-image-2
+
+[.arrows]
+{x: 30, y: 24, rot: 45, color: "red"} +
+{x: 0, y: 24, rot: 180, color: "blue"} +
+{x: 100, y: 24, rot: 180, color: "green"}
+
+[.numbers]
+{x: 9, y: 58, size: 2} +
+{x: 30, y: 38} +
+{x: 54, y: 53}
+
+[.labels]
+{x: 18, y: 90, text: "Source", size: 1.2} +
+{x: 52, y: 90, text: "Process", size: 1.2}
+****
+
+== Test overlay pattern (on outputs or snippets)
+
+++++
+<pre id="test-output" style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">$ oc get pods
+NAME                   READY   STATUS    RESTARTS   AGE
+k2r-6b4f8c9d5f-x7p2q  1/1     <span style="color: #a6e22e">Running</span>   0          2m
+
+$ oc get routes
+NAME   HOST                              READY
+k2r    k2r-user11.apps.cluster.local     <span style="color: #a6e22e">True</span></pre>
+++++
+
+[.overlay]
+****
+[.target]
+test-output
+
+[.arrows]
+{x: 29, y: 22, rot: -80} +
+{x: 44, y: 22, rot: -100}
+
+[.numbers]
+{x: 29, y: 22} +
+{x: 44, y: 22}
+
+[.labels]
+{x: 29, y: -5, text: "1) Status", size: 1.2} +
+{x: 44, y: -5, text: "2) Age", size: 1.2}
+****
+
+== Test overlay pattern (on diagrams)
+
+[#test-diagram.mermaid]
+----
+flowchart LR
+    A([Kafka]) -->|message| B[Apache Camel]
+    B -->|transformed| C([Rocket.Chat])
+
+    style A fill:#e8f5e9,stroke:#66bb6a
+    style B fill:#fff3e0,stroke:#fb8c00
+    style C fill:#e8f5e9,stroke:#66bb6a
+----
+
+[.overlay]
+****
+[.target]
+test-diagram
+
+[.arrows]
+{x: 13, y: 75, size: 1.5} +
+{x: 50, y: 75, size: 1.5} +
+{x: 88, y: 75, size: 1.5}
+
+[.labels]
+{x: 18, y: 95, text: "Source", size: 1.2} +
+{x: 50, y: 95, text: "Process", size: 1.2} +
+{x: 82, y: 95, text: "Destination", size: 1.2}
+****
+
+== Test overlay pattern (on sequence diagrams)
+
+[#test-sequence.mermaid]
+----
+sequenceDiagram
+    actor Student
+    participant GW as Gateway
+    participant Auth as Auth Service
+    participant LLM as LLM Endpoint
+
+    Student->>GW: POST /chat (Bearer token)
+    GW->>Auth: Validate API key
+    Auth-->>GW: OK + user group
+    GW->>LLM: Forward request
+    LLM-->>GW: Response
+    GW-->>Student: Chat response
+----
+
+[.overlay]
+****
+[.target]
+test-sequence
+
+[.arrows]
+{x: 38, y: 28, rot: -90, size: 1.2} +
+{x: 75, y: 62, size: 1.2}
+
+[.numbers]
+{x: 38, y: 28, size: 1.2} +
+{x: 75, y: 62, size: 1.2}
+
+[.labels]
+{x: 38, y: 18, text: "Authentication", size: 1} +
+{x: 75, y: 72, text: "LLM call", size: 1}
+****

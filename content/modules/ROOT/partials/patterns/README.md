@@ -365,6 +365,110 @@ The pattern handles both automatically — no special syntax needed.
 
 ---
 
+## Overlay
+
+SVG annotation overlays (arrows, numbered circles, labels) on images, terminal output, and Mermaid diagrams.
+
+**File:** `overlay.adoc`
+
+### Usage (on images)
+
+```asciidoc
+[#my-image]
+image::m4/kafka-to-rocketchat.png[width=50%]
+
+[.overlay]
+****
+[.target]
+my-image
+
+[.arrows]
+{x: 30, y: 24, rot: 45, color: "red"} +
+{x: 0, y: 24, rot: 180, color: "blue"}
+
+[.numbers]
+{x: 9, y: 58, size: 2} +
+{x: 30, y: 38}
+
+[.labels]
+{x: 18, y: 90, text: "Source", size: 1.2} +
+{x: 52, y: 90, text: "Process", size: 1.2}
+****
+```
+
+### Usage (on terminal output)
+
+Put the `id` directly on the `<pre>` tag — AsciiDoc `[#id]` doesn't wrap passthrough blocks.
+
+```asciidoc
+++++
+<pre id="my-output" style="background-color: #272822; ...">$ oc get pods
+NAME    READY   STATUS
+pod-1   1/1     Running</pre>
+++++
+
+[.overlay]
+****
+[.target]
+my-output
+
+[.arrows]
+{x: 50, y: 50}
+****
+```
+
+### Usage (on Mermaid diagrams)
+
+Combine id and class on one line — two separate attribute lines don't merge.
+
+```asciidoc
+[#my-diagram.mermaid]
+----
+flowchart LR
+    A([Source]) --> B[Process] --> C([Dest])
+----
+
+[.overlay]
+****
+[.target]
+my-diagram
+
+[.labels]
+{x: 15, y: 90, text: "Input", size: 1.2} +
+{x: 85, y: 90, text: "Output", size: 1.2}
+****
+```
+
+### Parameters
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `[.target]` | Yes | HTML id of the element to overlay. |
+| `[.arrows]` | No | Arrow annotations. Each item: `{x, y, rot, size, color}`. |
+| `[.numbers]` | No | Circled numbers, auto-numbered 1, 2, 3... Each item: `{x, y, size, color}`. |
+| `[.labels]` | No | Text labels. Each item: `{x, y, text, rot, size, color}`. |
+
+### Coordinate system
+
+- `x`, `y` — percentages (0–100) of the target element's dimensions. `0,0` = top-left.
+- `rot` — degrees. Arrows: 0 = pointing up, 90 = right, 180 = down. Labels: 0 = horizontal.
+- `size` — multiplier (default 1).
+- `color` — any CSS color (default `red`).
+
+### Behavior
+
+- Each item is a JS object literal on its own line, separated by ` +`
+- `{x: 30}` passes through AsciiDoc unchanged — no escaping needed
+- Overlays reposition on window resize (debounced)
+- Waits for Mermaid async rendering before initializing diagram overlays
+- CSS hides raw sidebar blocks (`display: none`) to prevent flash of unstyled content
+
+### Used in
+
+`test/test.1` (test page with examples for all three target types)
+
+---
+
 ## Creating a new pattern
 
 1. Create `partials/patterns/newpattern.adoc` with a `++++` passthrough block containing `<style>` and `<script>` sections

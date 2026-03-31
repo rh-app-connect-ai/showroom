@@ -251,6 +251,7 @@ content/modules/ROOT/
       steps.adoc            # steps overview overlay on first tile click
       celebration.adoc      # module completion overlay
       mermaid-hints.adoc    # [.mermaid-hints-*] interactive hover popovers on Mermaid diagram nodes
+      overlay.adoc          # [.overlay] sidebar blocks (arrows, numbers, labels on images/diagrams/outputs)
       README.md             # documentation
 ```
 
@@ -392,6 +393,50 @@ Listener | Listener | Exposes a remote service locally.
 - A single shared popover is created per page; multiple hint blocks targeting different diagrams are supported
 
 Used in: `m3/m3.2`.
+
+## Image/Diagram Overlay Pattern
+
+SVG annotation overlays (arrows, numbered circles, labels) on images, terminal output, and Mermaid diagrams. Defined in `partials/patterns/overlay.adoc`.
+
+```asciidoc
+[#my-image]
+image::m4/kafka-to-rocketchat.png[width=50%]
+
+[.overlay]
+****
+[.target]
+my-image
+
+[.arrows]
+{x: 30, y: 24, rot: 45, color: "red"} +
+{x: 0, y: 24, rot: 180, color: "blue"}
+
+[.numbers]
+{x: 9, y: 58, size: 2} +
+{x: 30, y: 38}
+
+[.labels]
+{x: 18, y: 90, text: "Source", size: 1.2} +
+{x: 52, y: 90, text: "Process", size: 1.2}
+****
+```
+
+- Place the `[.overlay]` block immediately after the target element
+- `[.target]` — the HTML id of the element to overlay (set via `[#id]` in AsciiDoc)
+- `[.arrows]` — arrow annotations: `{x, y, rot, size, color}`. `x`/`y` are percentages (0-100) of the target's dimensions. `rot` default 0 (pointing up), `size` default 1, `color` default red
+- `[.numbers]` — circled numbers, auto-numbered 1,2,3...: `{x, y, size, color}`
+- `[.labels]` — text labels: `{x, y, text, rot, size, color}`
+- Each item is a JS object literal on its own line, separated by ` +`
+- JSON values (`{x: 30}`) pass through AsciiDoc unchanged — no escaping needed
+- Supports three target types:
+  - **Images**: `[#id]` before `image::` macro. The id goes on the `.imageblock` wrapper
+  - **Terminal output**: put `id` directly on the `<pre>` tag inside `++++` passthrough
+  - **Mermaid diagrams**: combine id and class on one line: `[#id.mermaid]`
+- CSS class `.sidebarblock.overlay { display: none }` prevents flash of unstyled content
+- Overlays reposition on window resize (debounced)
+- Waits for Mermaid async rendering before initializing diagram overlays
+
+Used in: `test/test.1` (test page with examples for all three target types).
 
 ## Steps Overlay
 
