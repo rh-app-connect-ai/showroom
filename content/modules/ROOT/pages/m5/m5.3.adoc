@@ -124,7 +124,12 @@ Use the chat interface to test the rate limiting behavior.
 
 ==== Test 1: Free-tier token limits
 
-. Send a message that asks the LLM to generate a longer response  `Explain Kubernetes in 50 words`.
+. Send a message that asks the LLM to generate a longer response  
++
+.[copypaste]
+****
+Explain Kubernetes in 50 words
+****
 +
 {empty} +
 
@@ -152,8 +157,13 @@ image::m5/trlp_free_rate_limited.png[Free-tier rate limited response - placehold
 ****
 forage.myagent.agent.api.key=iamagold{user-username}
 ****
+
+. Stop the application by pressing `CTRL+C` in the terminal, then run it again:
 +
-{empty} +
+[.copypaste]
+****
+./run.sh
+****
 
 . Send similar messages such as `Explain Kubernetes in 50 words` to the LLM using the chat interface in quick succession.
 +

@@ -105,23 +105,23 @@ invalidkey
 image::m5/invalid_key_response.png[Response with invalid API key - placeholder,width=80%]   
 
 
-// . Stop the application again by pressing `CTRL+C` in the terminal
+. Stop the application again by pressing `CTRL+C` in the terminal
 
-// . **Valid free-tier key** -- Set the free-tier API key in `forage-agent-factory.properties`:
-// +
-// [.copypaste]
-// ****
-// iamafree{user-username}
-// ****
+. **Valid free-tier key** -- Set the free-tier API key in `forage-agent-factory.properties`:
++
+[.copypaste]
+****
+iamafree{user-username}
+****
 
-// . Run the application again 
-// +
-// [.copypaste]
-// ****
-// +++./run.sh+++
-// ****
+. Run the application again 
++
+[.copypaste]
+****
++++./run.sh+++
+****
 
-// . Send a message. The request should be **allowed** -- you receive a response again from the LLM.
+. Send a message. The request should be **allowed** -- you receive a response again from the LLM.
 
 
 
