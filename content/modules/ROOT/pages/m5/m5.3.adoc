@@ -36,7 +36,6 @@ spec:
         - limit: 50
           window: 1m
       when:
-        - predicate: request.path == "/v1/chat/completions"
         - predicate: |
             auth.identity.groups.split(",").exists(g, g == "free")
       counters:
@@ -46,7 +45,6 @@ spec:
         - limit: 200
           window: 1m
       when:
-        - predicate: request.path == "/v1/chat/completions"
         - predicate: |
             auth.identity.groups.split(",").exists(g, g == "gold")
       counters:
@@ -56,7 +54,7 @@ EOF
 
 Key fields in this policy:
 
-* `namespace: {user-username}-ns` -- Created in your namespace.
+* `namespace: {user-username}-devspaces` -- Created in your namespace.
 * `name: ai-proxy-route` -- Targets the same HTTPRoute as the AuthPolicy.
 * `free` -- **Free tier** -- limited to **50 tokens per minute**.
 * `request.path == "/v1/chat/completions"` -- Only applies to requests hitting the chat completions path.

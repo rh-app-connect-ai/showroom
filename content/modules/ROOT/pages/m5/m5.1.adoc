@@ -103,7 +103,7 @@ EOF
 
 Key fields in this policy:
 
-* `namespace: {user-username}-ns` -- The policy is created in your namespace.
+* `namespace: {user-username}-devspaces` -- The policy is created in your namespace.
 * `name: ai-proxy-route` -- Targets the `ai-proxy-route` HTTPRoute -- any request matching this route must pass authentication.
 * `app: my-llm` -- Looks for _Kubernetes_ Secrets with this label to find valid API keys.
 * `prefix: Bearer` -- Expects the API key in the `Authorization` header (e.g., `Authorization: Bearer iamafreeuser`).
@@ -151,7 +151,7 @@ Does the `ai-proxy-auth` AuthPolicy show status **True** and Type **Enforced** ?
 The AuthPolicy is enforced. Proceed to test authentication.
 
 [.fail]
-Check that you pasted the correct YAML and that the namespace is set to `{user-username}-ns`.
+Check that you pasted the correct YAML and that the namespace is set to `{user-username}-devspaces`.
 ****
 
 {empty} +

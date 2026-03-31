@@ -36,15 +36,15 @@ cd chat
 image::m5/properties_file.png[Properties file location - placeholder,width=80%]
 {empty} +
 
-. Locate the `forage.myagent.agent.base.url` property. The value has already been pre-populated with the internal URL for HTTPRoute (`ai-proxy-route`). This means that all requests from the chat interface will be sent to the HTTPRoute, and then routed to the LLM API.
+. Locate the `forage.myagent.agent.base.url` property. This is the URL that the chat application will use to connect to the LLM. Since we are running the chat application from within the cluster, we will use the internal service address for the HTTPRoute. Replace the placeholder *AI_GATEWAY_URL* with the following URL:
 +
 [.copypaste]
 ****
-http://internal-ai-gateway-openshift-default.ai-gateway.svc.cluster.local/v1
+http://internal-ai-gateway-openshift-default.ai-gateway.svc.cluster.local/{user-username}/v1
 ****
 +
 
-. Locate the `forage.myagent.agent.api.key` property and replace the placeholder *LLM_API_KEY* with the actual API key we created earlier using the auth policy.
+. Locate the `forage.myagent.agent.api.key` property and replace the placeholder *REPLACE_WITH_API_KEY* with the actual API key we created earlier using the auth policy.
 +
 [.copypaste]
 ****
@@ -63,7 +63,12 @@ iamafree{user-username}
 +
 image::m5/chat_app_launch.png[Chat application launch - placeholder,width=80%]
 
-. You should see the chat interface as shown below. Try sending a message to the LLM for example: `What is Kubernetes?`` and see if you get a response.
+. You should see the chat interface as shown below. Send the below message  and see if you get a response.
++
+[.copypaste]
+****
+Explain Kubernetes in 20 words
+****
 +
 image::m5/chat_image.png[Chat interface response - placeholder,width=80%]
 
@@ -74,14 +79,14 @@ image::m5/chat_image.png[Chat interface response - placeholder,width=80%]
 
 {empty} +
 
-=== Test Scenarios
+=== Negative Test Scenarios
 
-Test the following scenarios by updating the API key value and sending a message through the chat interface:
+Since we have already tested the authentication  with the correct API key, let's test the negative scenarios to confirm that invalid keys are rejected.
 
 {blank}
 . Stop the application by pressing `CTRL+C` in the terminal
 
-. **Invalid credentials** -- Set an invalid API key in `forage-agent-factory.properties`:
+. Set an invalid API key in `forage-agent-factory.properties`:
 +
 [.copypaste]
 ****
@@ -95,26 +100,28 @@ invalidkey
 +++./run.sh+++
 ****
 
-. Send a message. The request should be **denied** (401 Unauthorized).
-
-
-. Stop the application again by pressing `CTRL+C` in the terminal
-
-. **Valid free-tier key** -- Set the free-tier API key in `forage-agent-factory.properties`:
+. Send a message. The request should be **denied**.
 +
-[.copypaste]
-****
-iamafree{user-username}
-****
+image::m5/invalid_key_response.png[Response with invalid API key - placeholder,width=80%]   
 
-. Run the application again 
-+
-[.copypaste]
-****
-+++./run.sh+++
-****
 
-. Send a message. The request should be **allowed** -- you receive a response again from the LLM.
+// . Stop the application again by pressing `CTRL+C` in the terminal
+
+// . **Valid free-tier key** -- Set the free-tier API key in `forage-agent-factory.properties`:
+// +
+// [.copypaste]
+// ****
+// iamafree{user-username}
+// ****
+
+// . Run the application again 
+// +
+// [.copypaste]
+// ****
+// +++./run.sh+++
+// ****
+
+// . Send a message. The request should be **allowed** -- you receive a response again from the LLM.
 
 
 
@@ -126,13 +133,13 @@ At this point, authentication and authorization are enforced. Only users with va
 
 [.verification]
 ****
-Did the invalid key return a 401 error, and the valid free-tier key return a successful LLM response?
+Did the invalid key return a error, and the valid free-tier key return a successful LLM response?
 
 [.success]
 Authentication and authorization are working correctly.
 
 [.fail]
-Review the AuthPolicy YAML and ensure the API key secrets exist in `kuadrant-system`.
+Review the AuthPolicy status and the secret configurations in the forage-agent-factory.properties file.
 ****
 
 {empty} +
