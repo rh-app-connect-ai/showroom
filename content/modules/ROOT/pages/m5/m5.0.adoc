@@ -7,25 +7,25 @@ include::partial$style.adoc[]
 
 {banner-under-construction}
 
-== Introduction
+In the previous labs, you unified chat platforms, ingested client data, and introduced an AI agent that resolves invoice issues through natural language -- all powered by _Apache Camel_, _Kafka_, and LLMs.
 
-In the previous phases of this workshop, you connected disparate chat platforms into a unified communication hub, securely ingested and transformed client data, and introduced an AI agent that helps support agents resolve invoice issues through natural language -- all powered by _Apache Camel_, _Kafka_, and LLMs.
+{empty} +
 
-But providing internal teams with access to Large Language Models introduces new challenges. AI resource costs are tied to **token consumption** rather than simple API hits. Without proper governance, there is no way to prevent system abuse or control runaway expenses. Traditional rate limiting -- which simply counts requests -- is not enough.
+But giving teams access to Large Language Models introduces a new challenge: **cost control**. AI costs are driven by token consumption, not simple API hits. Traditional rate limiting -- which just counts requests -- isn't enough to prevent abuse or runaway expenses.
 
-In this final phase, you will place a **governance layer** in front of the LLM using _Red Hat Connectivity Link_. You will implement two key policies:
+In this lab, you'll place a **governance layer** in front of the LLM using _Red Hat Connectivity Link_ and implement two policies:
 
-* **AuthPolicy** -- Control _who_ can access the LLM API using API key-based authentication and group-based authorization.
-* **TokenRateLimitPolicy** -- Control _how much_ each user can consume by enforcing rate limits based on actual LLM token usage.
+* **AuthPolicy** -- Control _who_ can access the LLM API using API key authentication and group-based authorization.
+* **TokenRateLimitPolicy** -- Control _how much_ each user can consume by enforcing rate limits based on actual token usage.
 
-By the end of this module, the AI agent will be fully secured with tiered access control -- _free_ users get a limited token budget, while _gold_ users enjoy a higher allowance.
+By the end, the AI agent will have tiered access control -- _free_ users get a limited token budget, while _gold_ users get a higher allowance.
 
 {empty} +
 
 === End-to-End Request Flow
-In this module we will deploy and use a simple chat interface to simulate requests to the LLM API, but the same architecture and policies would apply regardless of the client -- whether it's a support agent's rocket chat that you saw earlier, an internal chatbot, or an external application.
+You'll use a simple chat interface to simulate requests to the LLM API. The same architecture applies regardless of the client -- whether it's the Rocket.Chat support agent from earlier, an internal chatbot, or an external application.
 
-The following diagram shows how a request flows from the chat interface through the governance layer to the LLM backend:
+Here's how a request flows from the chat interface through the governance layer to the LLM backend:
 
 [.mermaid]
 ----
@@ -73,17 +73,17 @@ end
 // oc project {user-username}-devspaces
 // ****
 
-== Introducing Red Hat Connectivity Link
 
-=== What is Connectivity Link?
 
-We will be using Red Hat Connectivity Link across this module to implement the governance policies for the LLM. _Red Hat Connectivity Link_ is a _Kubernetes_-native solution for managing, securing, and controlling API traffic. Built on the link:https://kuadrant.io/[_Kuadrant_ project], it integrates directly with the _Gateway API_ to enforce policies at the gateway level and HTTP Route Level -- before requests ever reach the LLM backend.
+=== Introducing Red Hat Connectivity Link
+
+_Red Hat Connectivity Link_ is a _Kubernetes_-native solution for managing, securing, and controlling API traffic. Built on the link:https://kuadrant.io/[_Kuadrant_ project], it integrates with the _Gateway API_ to enforce policies at the gateway and HTTP Route level -- before requests ever reach the LLM backend. It works in a single cluster or across multiple clusters.
 
 {empty} +
 
 === Gateway API Architecture
 
-Gateway API is an official Kubernetes project focused on L4 and L7 routing in Kubernetes. This project represents the next generation of Kubernetes Ingress, Load Balancing, and Service Mesh APIs. It uses a layered model:
+The _Kubernetes Gateway API_ standardizes how traffic routing is managed within Kubernetes clusters. Created as a more flexible alternative to the Ingress API, it handles ingress, load balancing, and traffic routing using a layered model:
 
 [.mermaid]
 [subs="attributes"]
@@ -107,21 +107,15 @@ flowchart LR
 
 [.mermaid-hints-simple]
 ****
-GC | GatewayClass | Gateways can be implemented by different controllers, often with different configurations. A Gateway object is associated with exactly one GatewayClass; the GatewayClass describes the gateway controller responsible for managing Gateways of this class +
-GT | Gateway | A Gateway describes an instance of traffic handling infrastructure. It defines a network endpoint that can be used for processing traffic, i.e. filtering, balancing, splitting, etc. for backends such as a Service. For example, a Gateway may represent a cloud load balancer or an in-cluster proxy server that is configured to accept HTTP traffic. +
-HTTP | HTTPRoute | The HTTPRoute kind specifies routing behavior of HTTP requests from a Gateway listener to backend network endpoints. For a Service backend, an implementation may represent the backend network endpoint as a Service IP or the backing EndpointSlices of the Service. An HTTPRoute represents configuration that is applied to the underlying Gateway implementation
+GC | GatewayClass | Defines the behavior and configuration of Gateways in a cluster. Specifies which controller implementation(istio, Openshift gateway controller ) will manage the Gateway. The GatewayClass also contains configurations like IP pools and resource limits. The infrastructure provider is responsible for defining and managing the GatewayClass   +
+GT | Gateway | The entry point to your cluster (e.g. a cloud load balancer or ClusterIP Service) that directs traffic to the right destinations. +
+HTTP | HTTPRoute | The routing rules for HTTP traffic -- it maps requests from the Gateway to your backend services(LLMs) based on URL paths, headers, or hosts.
 ****
 TIP: Hover over each component in the diagram to learn what it does.
 
-_Connectivity Link_ operates at the _Gateway API_ layer._Connectivity Link_ attaches its policies (AuthPolicy, TokenRateLimitPolicy) directly to these _Gateway API_ resources. This means security and governance are enforced **at the infrastructure level**, without modifying application code or the AI agent itself.
+_Connectivity Link_ attaches its policies (AuthPolicy, TokenRateLimitPolicy) directly to these _Gateway API_ resources. Security and governance are enforced **at the infrastructure level** -- no changes to application code or the AI agent itself.
 
-
-
-
-
-
-
-
+image::m5/rhcl-gateway-api-architecture.png[width=80%]
 
 
 
