@@ -58,7 +58,7 @@ NOTE: The model name has already been pre-populated in the `forage-agent-factory
 +
 [.copypaste]
 ****
-+++./run.sh+++
+camel run *
 ****
 +
 {empty} +
@@ -102,7 +102,7 @@ invalidkey
 +
 [.copypaste]
 ****
-+++./run.sh+++
+camel run *
 ****
 +
 {empty} +
@@ -129,12 +129,14 @@ image::m5/invalid_key_response.png[Response with invalid API key - placeholder,w
 ****
 iamafree{user-username}
 ****
++
+{empty} +
 
 . Run the application again and open the chat interface again if needed to prepare for the next section.
 +
 [.copypaste]
 ****
-+++./run.sh+++
+camel run *
 ****
 +
 {empty} +

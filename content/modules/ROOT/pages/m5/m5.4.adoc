@@ -88,13 +88,14 @@ oc describe tokenratelimitpolicy -n {user-username}-devspaces | grep -iE "Name:|
 {empty} +
 
 . You should see output confirming the AuthPolicy exists, is targeting the correct HTTPRoute, and is in an enforced state, similar to:
-----
-Name:         openai-token-limits
++
+++++
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">Name:         openai-token-limits
     Free:
         Limit:   50
         Window:  1m
     Gold:
-        Limit:   200
+        Limit:   500
         Window:  1m
   Target Ref:
     Name:   ai-proxy-route
@@ -102,8 +103,8 @@ Status:
     Status:                True
     Type:                  Accepted
     Status:                True
-    Type:                  Enforced
-----
+    Type:                  Enforced</pre>
+++++
 
 
 
@@ -173,7 +174,7 @@ iamagold{user-username}
 +
 [.copypaste]
 ****
-+++./run.sh+++
+camel run *
 ****
 +
 {empty} +

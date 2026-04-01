@@ -215,16 +215,16 @@ oc describe authpolicy -n {user-username}-devspaces | grep -E "Name:|Target Ref:
 
 . You should see output confirming the AuthPolicy exists, is targeting the correct HTTPRoute, and is in an enforced state, similar to:
 +
-----
-Name:         ai-proxy-auth
+++++
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">Name:         ai-proxy-auth
   Target Ref:
     Name:   ai-proxy-route
 Status:
     Status:                True
     Type:                  Accepted
     Status:                True
-    Type:                  Enforced
-----
+    Type:                  Enforced</pre>
+++++
 {empty} +
 
 {empty} +
