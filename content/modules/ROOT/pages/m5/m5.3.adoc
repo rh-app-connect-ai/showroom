@@ -107,7 +107,7 @@ camel run *
 +
 {empty} +
 
-. Send the same message. The request should be **denied**.
+. Send the same message. The request should be **denied** with an error message.
 +
 [.copypaste]
 ****

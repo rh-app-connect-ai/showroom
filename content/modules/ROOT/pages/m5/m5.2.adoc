@@ -110,7 +110,7 @@ metadata:
   namespace: kuadrant-system
   labels:
     authorino.kuadrant.io/managed-by: authorino
-    app: my-llm
+    app: my-llm-{username}
   annotations:
     kuadrant.io/groups: free
     secret.kuadrant.io/user-id: {username}
@@ -122,7 +122,7 @@ type: Opaque
 Key fields in this secret:
 
 * `authorino.kuadrant.io/managed-by: authorino` -- Marks this secret as managed by _Authorino_ (the auth engine behind _Connectivity Link_).
-* `app: my-llm` -- Label selector -- the AuthPolicy uses this to discover valid API keys.
+* `app: my-llm-{username}` -- Label selector -- the AuthPolicy uses this to discover valid API keys.
 * `kuadrant.io/groups: free` -- Group membership -- determines which rate limit tier applies.
 * `secret.kuadrant.io/user-id: {user-username}` -- Unique user ID -- used as a counter key for per-user rate limiting.
 
@@ -163,7 +163,7 @@ spec:
         apiKey:
           selector:
             matchLabels:
-              app: my-llm
+              app: my-llm-{user-username}
         credentials:
           authorizationHeader:
             prefix: Bearer
@@ -177,6 +177,26 @@ spec:
                   selector: auth.identity.metadata.annotations.kuadrant\.io/groups
                 userid:
                   selector: auth.identity.metadata.annotations.secret\.kuadrant\.io/user-id
+      unauthenticated:
+        headers:
+          "content-type":
+            value: application/json
+        body:
+          value: |
+            {
+              "error": "Unauthenticated",
+              "message": "Invalid or missing API Key."
+            }
+      unauthorized:
+        headers:
+          "content-type":
+            value: application/json
+        body:
+          value: |
+            {
+              "error": "Forbidden",
+              "message": "Access denied. Your account does not have the required permissions (Free/Gold)."
+            }
     authorization:
       allow-groups:
         opa:
@@ -191,7 +211,7 @@ Key fields in this policy:
 
 * `namespace: {user-username}-devspaces` -- The policy is created in your namespace.
 * `name: ai-proxy-route` -- Targets the `ai-proxy-route` HTTPRoute -- any request matching this route must pass authentication.
-* `app: my-llm` -- Looks for _Kubernetes_ Secrets with this label to find valid API keys.
+* `app: my-llm-{user-username}` -- Looks for _Kubernetes_ Secrets with this label to find valid API keys.
 * `prefix: Bearer` -- Expects the API key in the `Authorization` header (e.g., `Authorization: Bearer iamafreeuser`).
 * `kuadrant\.io/groups` -- Extracts the group annotation from the matched secret and exposes it as `groups` in the response filter.
 * `secret\.kuadrant\.io/user-id` -- Extracts the user ID annotation and exposes it as `userid`.
