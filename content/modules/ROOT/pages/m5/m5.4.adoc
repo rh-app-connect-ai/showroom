@@ -11,7 +11,7 @@ Now that access is secured, you will add a **TokenRateLimitPolicy** to control h
 {empty} +
 
 === Step 1: Review and Apply the AuthPolicy
-. Open a new terminal tab in your dev space (keep the previous tab with the chat running so you can test later).
+. Open a new terminal tab in your dev space by clicking the "+" icon (keep the previous tab with the chat running so you can test later).
 +
 image::m5/devspace_terminal_new.png[Dev Spaces terminal - placeholder,width=80%]
 +
@@ -170,7 +170,7 @@ iamagold{user-username}
 +
 {empty} +
 
-. Stop the application by pressing `CTRL+C` in the terminal, then run it again:
+. Naviagte to the other terminal tab and stop the application by pressing `CTRL+C` in the terminal, then run it again:
 +
 [.copypaste]
 ****

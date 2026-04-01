@@ -94,7 +94,7 @@ Contact the workshop facilitator to ensure your namespace is properly provisione
 === Auth Policy Powered by Connectivity Link
 Now that you understand the concepts and the intended architecture, it's time to lock down the LLM endpoint. In this exercise you will create an **AuthPolicy** that is applied to the HTTPRoute(`ai-proxy-route`)  and enforces a key-based authentication scheme. This will ensure that only authorized users with a valid API key can access the LLM, and it will extract identity information that we can use for rate limiting in the next step.
 
-NOTE: We are using simple API key authentication for this workshop to keep things straightforward and simple, but _Connectivity Link_ supports a wide range of authentication methods, including JWT, OAuth2 introspection, and more.
+NOTE: We are using simple API key authentication for this workshop to keep things straightforward and simple, but _Connectivity Link_ supports a wide range of authentication methods, including JWT, OAuth2 and more.
 
 === Understanding the User Secrets
 

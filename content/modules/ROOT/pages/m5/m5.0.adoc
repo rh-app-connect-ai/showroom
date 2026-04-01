@@ -7,11 +7,11 @@ include::partial$style.adoc[]
 
 {banner-under-construction}
 
-In the previous labs, you unified chat platforms, ingested client data, and introduced an AI agent that resolves invoice issues through natural language -- all powered by _Apache Camel_, _Kafka_, and LLMs.
+In the previous modules, you unified chat platforms, ingested client data, and introduced an AI agent that resolves invoice issues through natural language -- all powered by _Apache Camel_, _Kafka_, and LLM APIs.
 
 
 
-But giving teams access to Large Language Models introduces a new challenge: **cost control**. AI costs are driven by token consumption, not simple API hits. Traditional rate limiting -- which just counts requests -- isn't enough to prevent abuse or runaway expenses.
+But giving teams access to Large Language Models introduces a new challenge: **cost control**. AI costs are driven by token consumption, not simple API hits. Traditional rate limiting -- which just counts requests -- can't tell the difference between a 10-token "say hello" prompt and a 10,000-token "summarize this document" prompt. Both count as one request, but one costs 100x more than the other. Without token-level visibility, one runaway prompt -- or one team with no guardrails -- can burn through your AI budget unchecked.
 
 In this lab, you'll place a **governance layer** in front of the LLM using _Red Hat Connectivity Link_ and implement two policies:
 
@@ -81,15 +81,26 @@ flowchart LR
 
 
 
-=== Introducing Red Hat Connectivity Link
+=== Why Connectivity Link?
 
-_Red Hat Connectivity Link_ is a _Kubernetes_-native solution for managing, securing, and controlling API traffic. Built on the link:https://kuadrant.io/[_Kuadrant_ project], it integrates with the _Gateway API_ to enforce policies at the gateway and HTTP Route level -- before requests ever reach the LLM backend. It works in a single cluster or across multiple clusters.
+_Red Hat Connectivity Link_ is built on the link:https://kuadrant.io/[_Kuadrant_ project] and the _Kubernetes Gateway API_ standard. What makes it different:
+
+* **Token-aware rate limiting** -- purpose-built for AI workloads. Limits are based on actual tokens consumed, not request counts.
+* **Zero code changes** -- policies attach to _Gateway API_ resources (Gateways, HTTPRoutes). Your AI agent and application code stay untouched.
+* **Kubernetes-native** -- policies are standard CRDs, applied with `oc apply`, stored in Git, reviewed in PRs. No separate management console or vendor control plane.
+* **Composable** -- AuthPolicy extracts identity, TokenRateLimitPolicy uses it for per-user budgets. Policies layer on top of each other declaratively.
 
 {empty} +
 
-=== Gateway API Architecture
+=== The Gateway API Model
 
-The _Kubernetes Gateway API_ standardizes how traffic routing is managed within Kubernetes clusters. Created as a more flexible alternative to the Ingress API, it handles ingress, load balancing, and traffic routing using a layered model:
+The _Kubernetes Gateway API_ is the standard for managing traffic routing in _Kubernetes_ -- a more flexible, layered replacement for the older Ingress API. _Connectivity Link_ builds on this model, which is what makes all of the above possible. Here's how the pieces fit together:
+
+* **GatewayClass + Gateway** -- owned by the platform team. Defines _how_ traffic enters the cluster. Already provisioned for you.
+* **HTTPRoute** -- owned by development team. Defines _where_ your traffic goes (in this case, the LLM backend).
+* **Policies** -- _Connectivity Link_ attaches AuthPolicy and TokenRateLimitPolicy to these resources. Governance is enforced at the infrastructure level -- no changes to your application code.
+
+This layered model means you can add authentication and token budgets to any service behind an HTTPRoute without touching the service itself.
 
 [.mermaid]
 [subs="attributes"]
@@ -113,17 +124,19 @@ flowchart LR
     style HTTP fill:#fff,stroke:#7986cb
 ----
 
+++++
+<p style="text-align: center; margin-top: -2rem; padding-right: 12rem; font-style: italic; color: #555">The Gateway API Model</p>
+++++
+
 [.mermaid-hints-simple]
 ****
-GC | GatewayClass | Defines the behavior and configuration of Gateways in a cluster. Specifies which controller implementation(istio, Openshift gateway controller ) will manage the Gateway. The GatewayClass also contains configurations like IP pools and resource limits. The infrastructure provider is responsible for defining and managing the GatewayClass   +
-GT | Gateway | The entry point to your cluster (e.g. a cloud load balancer or ClusterIP Service) that directs traffic to the right destinations. +
-HTTP | HTTPRoute | The routing rules for HTTP traffic -- it maps requests from the Gateway to your backend services(LLMs) based on URL paths, headers, or hosts.
+GC | GatewayClass | Owned by the platform team. Defines which controller implementation manages the Gateway and its configuration (IP pools, resource limits). +
+GT | Gateway | The entry point to your cluster -- a load balancer or service that directs traffic to the right destinations. +
+HTTP | HTTPRoute | Your routing rules -- maps requests from the Gateway to backend services (LLMs) based on URL paths, headers, or hosts.
 ****
-TIP: Hover over each component in the diagram to learn what it does.
+TIP: Hover over each component above in the diagram to learn what it does.
 
 {empty} +
-
-_Connectivity Link_ attaches its policies (AuthPolicy, TokenRateLimitPolicy) directly to these _Gateway API_ resources. Security and governance are enforced **at the infrastructure level** -- no changes to application code or the AI agent itself.
 
 [.mermaid]
 ----
@@ -158,6 +171,10 @@ flowchart LR
     style Pod1 fill:#336,color:#fff
     style Pod2 fill:#336,color:#fff
 ----
+{empty} +
+++++
+<p style="text-align: center; margin-top: -2rem; padding-right: 0rem; font-style: italic; color: #555">Connectivity Link policies attach to Gateway API resources (Gateways, HTTPRoutes)</p>
+++++
 
 
 
