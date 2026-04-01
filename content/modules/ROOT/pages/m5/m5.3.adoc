@@ -12,12 +12,12 @@ Now test that the AuthPolicy is working using the same chat interface from Phase
 
 Let's configure the chat application to use the API key for authentication. The chat interface is set up to read the API key from the `forage-agent-factory.properties` file. 
 
-. Run the following command from the dev spaces terminal to setup the files needed for this exercise:
-+
-[.copypaste]
-****
-step 24
-****
+// . Run the following command from the dev spaces terminal to setup the files needed for this exercise:
+// +
+// [.copypaste]
+// ****
+// step 24
+// ****
 
 . Navigate to the chat folder
 +
@@ -25,15 +25,13 @@ step 24
 ****
 cd chat
 ****
-
-
-
-
-{blank}
++
+{empty} +
 
 . Open the `forage-agent-factory.properties` file under workshop/lab/chat.
 +
 image::m5/properties_file.png[Properties file location - placeholder,width=80%]
++
 {empty} +
 
 . Locate the `forage.myagent.agent.base.url` property. This is the URL that the chat application will use to connect to the LLM. Since we are running the chat application from within the cluster, we will use the internal service address for the HTTPRoute. Replace the placeholder *REPLACE_WITH_HTTP_BASE_URL* with the following URL:
@@ -43,6 +41,7 @@ image::m5/properties_file.png[Properties file location - placeholder,width=80%]
 http://internal-ai-gateway-openshift-default.ai-gateway.svc.cluster.local/{user-username}/v1
 ****
 +
+{empty} +
 
 . Locate the `forage.myagent.agent.api.key` property and replace the placeholder *REPLACE_WITH_API_KEY* with the actual API key we created earlier using the auth policy.
 +
@@ -50,6 +49,9 @@ http://internal-ai-gateway-openshift-default.ai-gateway.svc.cluster.local/{user-
 ****
 iamafree{user-username}
 ****
++
+NOTE: The model name has already been pre-populated in the `forage-agent-factory.properties` file as `qwen3-14b`. This is the model that will be used for the chat interactions in this exercise.
++
 {empty} +
 
 . Run the chat application
@@ -58,10 +60,14 @@ iamafree{user-username}
 ****
 +++./run.sh+++
 ****
++
+{empty} +
 
 . Open the application in a new browser tab when prompted
 +
 image::m5/chat_app_launch.png[Chat application launch - placeholder,width=80%]
++
+{empty} +
 
 . You should see the chat interface as shown below. Send the below message  and see if you get a response.
 +
@@ -71,12 +77,7 @@ Explain Kubernetes in 20 words
 ****
 +
 image::m5/chat_image.png[Chat interface response - placeholder,width=80%]
-
-
-
-
-
-
++
 {empty} +
 
 === Negative Test Scenarios
@@ -85,6 +86,8 @@ Since we have already tested the authentication  with the correct API key, let's
 
 
 . Stop the application by pressing `CTRL+C` in the terminal
++
+{empty} +
 
 . Locate the `forage.myagent.agent.api.key` in forage-agent-factory.properties property and set the value to an invalid API key:
 +
@@ -92,6 +95,8 @@ Since we have already tested the authentication  with the correct API key, let's
 ****
 invalidkey
 ****
++
+{empty} +
 
 . Run the application again 
 +
@@ -99,33 +104,42 @@ invalidkey
 ****
 +++./run.sh+++
 ****
-
-. Send a message. The request should be **denied**.
 +
-image::m5/invalid_key_response.png[Response with invalid API key - placeholder,width=80%]   
+{empty} +
+
+. Send the same message. The request should be **denied**.
++
+[.copypaste]
+****
+Explain Kubernetes in 20 words
+****
++
+image::m5/invalid_key_response.png[Response with invalid API key - placeholder,width=80%]
++
+{empty} +   
 
 
 . Stop the application again by pressing `CTRL+C` in the terminal
++
+{empty} +
 
-. **Valid free-tier key** -- Set the free-tier API key in `forage-agent-factory.properties`:
+. Reset the free-tier API key in `forage-agent-factory.properties` as we will use the valid key for the next section on rate limiting.:
 +
 [.copypaste]
 ****
 iamafree{user-username}
 ****
 
-. Run the application again 
+. Run the application again and open the chat interface again if needed to prepare for the next section.
 +
 [.copypaste]
 ****
 +++./run.sh+++
 ****
-
-. Send a message. The request should be **allowed** -- you receive a response again from the LLM.
-
-
-
++
 {empty} +
+
+
 
 At this point, authentication and authorization are enforced. Only users with valid API keys belonging to the `free` or `gold` groups can access the LLM.
 

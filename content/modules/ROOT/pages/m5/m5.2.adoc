@@ -6,7 +6,7 @@ include::partial$style.adoc[]
 
 {banner-under-construction}
 
-=== Infrastructure Provisioned for This Phase
+=== Components Provisioned for This Phase
 
 The following resources have been set up for you so you can focus on the policy configuration:
 
@@ -49,7 +49,7 @@ internal-gateway   openshift-default   internal-gateway-openshift-default.ai-gat
 ++++
 {empty} +
 
-. Each user has HTTPRoute with the `ai-proxy-route` in their namespace `{user-username}-devspaces` that targets the LLM API. Run the following command to verify it is present
+. A dedicated HTTPRoute for you with the name `ai-proxy-route` in your namespace `{user-username}-devspaces` that targets the LLM API. Run the following command to verify it is present
 +
 [.copypaste]
 ****
@@ -92,16 +92,16 @@ Contact the workshop facilitator to ensure your namespace is properly provisione
 {empty} +
 
 === Auth Policy Powered by Connectivity Link
-Now that you understand the architecture, it's time to lock down the LLM endpoint. In this exercise you will create an **AuthPolicy** that is applied to the HTTPRoute(`ai-proxy-route`)  and enforces a key-based authentication scheme. This will ensure that only authorized users with a valid API key can access the LLM, and it will extract identity information that we can use for rate limiting in the next step.
+Now that you understand the concepts and the intended architecture, it's time to lock down the LLM endpoint. In this exercise you will create an **AuthPolicy** that is applied to the HTTPRoute(`ai-proxy-route`)  and enforces a key-based authentication scheme. This will ensure that only authorized users with a valid API key can access the LLM, and it will extract identity information that we can use for rate limiting in the next step.
 
 NOTE: We are using simple API key authentication for this workshop to keep things straightforward and simple, but _Connectivity Link_ supports a wide range of authentication methods, including JWT, OAuth2 introspection, and more.
 
 === Understanding the User Secrets
 
-Two API key secrets have been pre-created. Understanding their structure is important because both policies reference the labels and annotations on these secrets.
+Two API key secrets have already been *pre-created*. Understanding their structure is important because both policies reference the labels and annotations on these secrets.
 
 **Free-tier user:**
-[subs="attributes"]
+[source,yaml,subs="attributes"]
 ----
 apiVersion: v1
 kind: Secret
@@ -115,7 +115,7 @@ metadata:
     kuadrant.io/groups: free
     secret.kuadrant.io/user-id: {username}
 stringData:
-  api_key: iamafreeuser
+  api_key: iamafree{username}
 type: Opaque
 ----
 
@@ -136,7 +136,7 @@ Now that you understand the architecture and the setup, it's time to lock down t
 
 1. **API Key Authentication** -- Only requests with a valid Bearer token (matching a known secret) are allowed.
 2. **Group-based Authorization** -- Only users belonging to the `free` or `gold` groups can access the API.
-3. **Identity Extraction** -- The user's group and user ID are extracted from the secret's annotations and passed downstream for use by the TokenRateLimitPolicy.
+3. **Identity Extraction** -- The user's group and user ID are extracted from the secret's annotations and passed downstream for use by the TokenRateLimitPolicy that we will create in the next section.
 
 {empty} +
 

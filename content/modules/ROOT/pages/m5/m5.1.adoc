@@ -23,6 +23,8 @@ image::m4/dev-close-tabs.png[width=100%]
 1. Ensure your `Open Editors` is ticked [√] +
 1. Click the `Close all Editors` button.
 +
+NOTE: If you do not have your devspaces environment open, click link:{url-codeready}[Red Hat OpenShift Dev Spaces, window="_blank"] to open it now and start a new terminal. 
++
 {empty} +
 
 . Setup your working folder
@@ -31,7 +33,8 @@ image::m4/dev-close-tabs.png[width=100%]
 ****
 step 24
 ****
-
++
+{empty} +
 
 . Check your lab folder
 +

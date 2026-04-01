@@ -14,8 +14,10 @@ Now that access is secured, you will add a **TokenRateLimitPolicy** to control h
 . Open a new terminal tab in your dev space (keep the previous tab with the chat running so you can test later).
 +
 image::m5/devspace_terminal_new.png[Dev Spaces terminal - placeholder,width=80%]
++
+{empty} +
 
-. Examine the TokenRateLimitPolicy and *apply* it by pasting the following command in your terminal:
+. Examine the TokenRateLimitPolicy and *apply it by pasting* the following yaml in your terminal:
 +
 [.copypaste]
 ****
@@ -42,7 +44,7 @@ spec:
         - expression: auth.identity.userid
     gold:
       rates:
-        - limit: 200
+        - limit: 500
           window: 1m
       when:
         - predicate: |
@@ -60,7 +62,7 @@ Key fields in this policy:
 * `request.path == "/v1/chat/completions"` -- Only applies to requests hitting the chat completions path.
 * `auth.identity.groups` -- Matches users whose `groups` identity property (set by the AuthPolicy response filter) contains `free` or `gold`.
 * `auth.identity.userid` -- Rate limit counter is **per user** -- each user gets their own token budget.
-* `gold` -- **Gold tier** -- limited to **200 tokens per minute**, same structure as free but with a higher allowance.
+* `gold` -- **Gold tier** -- limited to **500 tokens per minute**, same structure as free but with a higher allowance.
 
 [IMPORTANT]
 ====
@@ -82,6 +84,8 @@ Notice how the TokenRateLimitPolicy depends on the AuthPolicy:
 ****
 oc describe tokenratelimitpolicy -n {user-username}-devspaces | grep -iE "Name:|target|free:|gold:|limit:|window:|type:|status:"
 ****
++
+{empty} +
 
 . You should see output confirming the AuthPolicy exists, is targeting the correct HTTPRoute, and is in an enforced state, similar to:
 ----
@@ -156,12 +160,14 @@ image::m5/trlp_free_rate_limited.png[Free-tier rate limited response - placehold
 
 {blank}
 
-. Update `forage-agent-factory.properties`:
+. Update `forage.myagent.agent.api.key` in `forage-agent-factory.properties` to use the gold-tier API key:
 +
 [.copypaste]
 ****
-forage.myagent.agent.api.key=iamagold{user-username}
+iamagold{user-username}
 ****
++
+{empty} +
 
 . Stop the application by pressing `CTRL+C` in the terminal, then run it again:
 +
@@ -169,6 +175,8 @@ forage.myagent.agent.api.key=iamagold{user-username}
 ****
 +++./run.sh+++
 ****
++
+{empty} +
 
 . Send the below messages to the LLM using the chat interface in quick succession say 3-4 times.
 +
@@ -176,9 +184,11 @@ forage.myagent.agent.api.key=iamagold{user-username}
 ****
 Explain Kubernetes in 50 words
 ****
++
+{empty} +
 
-. Notice that you can make more number of requests i.e. consume more tokens ( close to 200 tokens per minute) before being rate limited because the gold-tier user has a higher token allowance.
-
+. Notice that you can make more number of requests i.e. consume more tokens ( close to 500 tokens per minute) before being rate limited because the gold-tier user has a higher token allowance.
++
 {empty} +
 
 [NOTE]
@@ -190,7 +200,7 @@ Rate limits are tracked **per user** using the `userid` counter from the AuthPol
 
 [.verification]
 ****
-Did the free-tier user hit a 429 rate limit after ~50 tokens, while the gold-tier user could consume up to ~200 tokens per minute?
+Did the free-tier user hit a 429 rate limit after ~50 tokens, while the gold-tier user could consume more tokens per minute?
 
 [.success]
 Congratulations! You have successfully implemented tiered token-based rate limiting.
