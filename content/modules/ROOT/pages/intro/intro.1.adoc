@@ -11,7 +11,7 @@ include::partial$style.adoc[]
 
 If you're unfamilar with Apache Camel, in a nutshell, it is an integration framework to define data flows connecting sources to destinations, applying _EIPs_ (enterprise integration patterns) as transformational processes between the two ends.
 
-The image below illustrates typical integration flows connecting sources to detinations:
+The image below illustrates typical integration flows connecting sources to destinations:
 
 [.text-center]
 image::intro/camel-nutshell.jpg[width=60%]
@@ -46,7 +46,7 @@ Below is the stack of technologies you will interact with along the workshop. Co
 
 ** **Red Hat build of Apache Camel**: A versatile toolkit for streamlined application integration that simplifies and standardizes the practices of connecting diverse systems that runs in both Quarkus and Spring Boot runtimes.
 
-** **Red Hat streams for Apache Kafka**: Based on the Apache Kafka project, streams for Apache Kafka offers a distributed backbone that allows microservices and other applications to share data with extremely high throughput and extremely low latency.
+** **Red Hat Streams for Apache Kafka**: Based on the Apache Kafka project, streams for Apache Kafka offers a distributed backbone that allows microservices and other applications to share data with extremely high throughput and extremely low latency.
 +
 {blank}
 
