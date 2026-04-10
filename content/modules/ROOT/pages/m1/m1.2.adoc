@@ -189,7 +189,7 @@ NOTE: The database lives in a secure, air-tight environment — no inbound ports
 
 === What you will do
 
-Every Service Interconnect setup follows two stages: first you *build the network* — the secure mesh that connects your environments — then you *expose services* through it. Once the network is in place, adding a new service is just a matter of pairing a Listener with a Connector — no network changes needed.
+Every Service Interconnect setup follows two stages: first you *establish the network* — the secure mesh that connects your environments — then you *expose services* through it. Once the network is in place, adding a new service is just a matter of pairing a Listener with a Connector — no network changes needed.
 
 {empty} +
 
@@ -670,7 +670,7 @@ flowchart LR
 
 {empty} +
 
-==== Step 5: Configure and query the database
+==== Step 5: Verify the connection
 
 Now let's verify the connection works. First, store the database credentials in `application.properties` so they're available to all Camel routes:
 

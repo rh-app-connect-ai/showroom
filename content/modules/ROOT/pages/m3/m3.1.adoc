@@ -27,11 +27,11 @@ image::m3/dev-close-tabs.png[width=100%]
 +
 {empty} +
 
-. Setup your Lab 2 folder
+. Setup your Lab folder
 +
 [.copypaste]
 ****
-step 2
+step 4
 ****
 +
 [TIP]

@@ -31,7 +31,7 @@ NOTE: If you do not have your devspaces environment open, click link:{url-codere
 +
 [.copypaste]
 ****
-step 24
+step 8
 ****
 +
 {empty} +
@@ -44,12 +44,12 @@ After executing the commands above, have a look in your editor's tree view to co
 [.indent2]
 📁 workshop +
 &nbsp;&nbsp;📁 lab +
-&nbsp;&nbsp;&nbsp;&nbsp;📁 chat +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *agent.camel.yaml* +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>&nbsp;⚙&nbsp;&nbsp;</b></mark>] *forage-agent-factory.properties* +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: teal"><b>&nbsp;&lt;&gt;</b></mark>] *index.html* +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: green"><b>&nbsp;$&nbsp;&nbsp;</b></mark>] *run.sh* +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: #563d7c"><b>&nbsp;#&nbsp;&nbsp;</b></mark>] *style.css* +
+// &nbsp;&nbsp;&nbsp;&nbsp;📁 chat +
+pass:[<mark style="padding-left: 1rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *agent.camel.yaml* +
+pass:[<mark style="padding-left: 1rem; background-color: white; color: grey"><b>&nbsp;⚙&nbsp;&nbsp;</b></mark>] *application.properties* +
+pass:[<mark style="padding-left: 1rem; background-color: white; color: teal"><b>&nbsp;&lt;&gt;</b></mark>] *index.html* +
+pass:[<mark style="padding-left: 1rem; background-color: white; color: green"><b>&nbsp;$&nbsp;&nbsp;</b></mark>] *run.sh* +
+pass:[<mark style="padding-left: 1rem; background-color: white; color: #563d7c"><b>&nbsp;#&nbsp;&nbsp;</b></mark>] *style.css* +
 
 [.indent2]
 NOTE: Make sure the files are visible in your file explorer in the left panel of Dev Spaces.
