@@ -7,7 +7,7 @@ include::partial$style.adoc[]
 
 {banner-under-construction}
 
-You have a Camel route ready to query the database — but the database isn't reachable yet. Let's find out why, and enable the connection.
+Your `application.properties` includes database connectivity settings — but the database isn't reachable yet. Let's find out why, and enable the connection.
 
 {empty} +
 
@@ -39,7 +39,7 @@ flowchart LR
     style DB fill:#336,color:#fff
 ----
 
-Try it yourself — use `curl` as a simple way to test connectivity with the database:
+Try it yourself — use `curl` as a simple way to test connectivity to the database:
 
 {blank}
 
@@ -672,21 +672,7 @@ flowchart LR
 
 ==== Step 5: Verify the connection
 
-Now let's verify the connection works. First, store the database credentials in `application.properties` so they're available to all Camel routes:
-
-{blank}
-
-[.copypaste]
-****
-[.path]
-/credentials/im
-
-# Datasource credentials
-spring.datasource.username={username}
-spring.datasource.password=REPLACE
-****
-
-Save the file. Now query the database using Camel's `cmd` tool:
+Now let's verify the connection works. The database credentials are already configured in `application.properties`. Query the database using Camel's `cmd` tool:
 
 {blank}
 
@@ -705,7 +691,7 @@ camel cmd send \
 ====
 * `camel cmd send` — sends a message to a Camel endpoint from the command line
 * `--uri "sql:SELECT count(*) FROM invoices"` — runs a SQL query against the configured database
-* `--properties application.properties` — loads database connection settings (including the credentials you just added)
+* `--properties application.properties` — loads database connection settings
 * `--reply` — waits for and displays the response
 ====
 --
@@ -715,7 +701,7 @@ You should see output similar to:
 {blank}
 
 ++++
-<pre style="background-color: #181818; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #818181">2026-03-23 10:14:08.939  <span style="color:#A649A6">11530</span> ---   <span style="color:#10A9CD">sql://SELECT%20count(*)%20FROM%20invoice</span> : <span style="color:#0FBC7A">Reply received</span> <span style="color:#0FBC7A">(success)</span> <span style="color:#fff">(304ms)</span>
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #818181">2026-03-23 10:14:08.939  <span style="color:#A649A6">11530</span> ---   <span style="color:#10A9CD">sql://SELECT%20count(*)%20FROM%20invoice</span> : <span style="color:#0FBC7A">Reply received</span> <span style="color:#0FBC7A">(success)</span> <span style="color:#fff">(304ms)</span>
  <span style="color:#fff">Endpoint</span>  <span style="color:#fff">sql://SELECT%20count(*)%20FROM%20invoices</span>
  <span style="color:#fff">Exchange</span>  (DefaultExchange)  <span style="color:#6F416E">InOut</span>   <span style="color:#fff">E3D444D7E02ADCD-0000000000000000</span>
  <span style="color:#fff">Message</span>   (DefaultMessage)
@@ -738,7 +724,7 @@ Here's the full picture of what you've built:
 flowchart LR
     subgraph yoursLabel3 ["{username}-devspaces"]
         subgraph yours3 [" "]
-            Client[Camel Route]
+            Client[DB Client]
             SVC2((svc))
             subgraph S2 ["✅ Site(2)"]
                 Listener((Listener))
@@ -781,7 +767,7 @@ You have successfully:
 
 * *Established the network* — Created a Site and AccessGrant in your namespace, and an AccessToken in the database namespace to form an encrypted link
 * *Exposed the service* — Created a Listener that makes the remote database accessible locally through the network
-* *Verified connectivity* — Used a Camel route to query the database through the encrypted link
+* *Verified connectivity* — Used a Camel JBang command to query the database through the encrypted link
 
 The database lives in a secure, air-tight environment — the connection was initiated *from* the database side *to* yours through an encrypted Skupper link. No network policy changes, no VPNs, no elevated permissions required.
 
@@ -871,11 +857,11 @@ The same two-stage pattern you just learned applies here: Sites and links form t
 
 [.verification]
 ****
-Did the Camel route output show `[{count=1}]` confirming a successful database query?
+Did the command output show `[{count=1}]` confirming a successful database query?
 
 [.success]
 Well done — your database connectivity is ready. Continue to the next exercise.
 
 [.fail]
-Review your Service Interconnect resources and ensure the link status is `Ready` before running the Camel route again.
+Review your Service Interconnect resources and ensure the link status is `Ready` before running the command again.
 ****

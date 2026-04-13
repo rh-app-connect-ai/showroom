@@ -7,13 +7,13 @@ include::partial$style.adoc[]
 
 {banner-under-construction}
 
-Ingest data from external organisations, store it in a backend database, and generate PDF invoices — all orchestrated by Apache Camel with secure cross-cluster connectivity powered by {rhsi}.
+Ingest data from customers, store it in a backend database, and generate PDF invoices — all orchestrated by Apache Camel with secure cross-cluster connectivity powered by {rhsi}.
 
 {empty} +
 
 *The Business Need*
 
-External organisations send Purchase Orders (POs) in EDI format to {corp}. These orders need to be ingested, transformed, stored in a backend database, and rendered as PDF invoices for archival. The database resides on a separate infrastructure and is not directly accessible from OpenShift — a secure connectivity solution is required.
+Customers send Purchase Orders (POs) in EDI format to {corp}. These orders need to be ingested, transformed, stored in a backend database, and rendered as PDF invoices for archival. The database resides on a separate infrastructure and is not directly accessible from OpenShift — a secure connectivity solution is required.
 
 {empty} +
 
@@ -30,9 +30,7 @@ An Apache Camel integration exposes an API endpoint that receives incoming EDI P
 [.mermaid]
 ----
 flowchart LR
-    subgraph ext [External]
-        EO([External Organization])
-    end
+    Customer([Customer])
 
     subgraph ocp [OpenShift]
         API[API Endpoint]
@@ -44,7 +42,7 @@ flowchart LR
         DB[(Database)]
     end
 
-    EO -->|EDI Purchase Orders| API
+    Customer -->|EDI Purchase Orders| API
     API --> Camel
     Camel -->|XML data| SI
     SI{{Service Interconnect}} -.->|Secure Link| DB

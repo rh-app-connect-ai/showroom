@@ -11,24 +11,8 @@ Now that you understand the full ingestion flow, let's build it step by step. He
 
 {blank}
 
-[.mermaid]
-----
-flowchart LR
-    A((platform-http)) --> B(transform-x12) --> C2 --> D2
-
-    subgraph C2 ["To do: Enable"]
-        C[(sql)]
-    end
-
-    subgraph D2 ["To do: Enable"]
-        D(store-pdf-s3)
-    end
-
-    style C fill:#eee,stroke:#ccc,color:#aaa
-    style D fill:#eee,stroke:#ccc,color:#aaa
-    style C2 fill:#dde4f6,stroke:#6690e6,color:#335
-    style D2 fill:#dde4f6,stroke:#6690e6,color:#335
-----
+[.bordered]
+image::m1/kaoto-service-x12-route.png[width=90%]
 
 Notice that `sql` and `store-pdf-s3` are grayed out — they're disabled in the route. Camel will skip them when running. The idea is to start small: get the first steps working, verify the results, then enable the next ones as you progress.
 
@@ -37,6 +21,10 @@ Notice that `sql` and `store-pdf-s3` are grayed out — they're disabled in the 
 === EDI to XML transformation
 
 With the active steps (`platform-http` and `transform-x12`), the route receives a Purchase Order in EDI format and returns it as XML:
+
+TIP: Hover over the _Purchase Order_ and _Invoice_ nodes in the diagram below to see what the EDI and XML formats look like.
+
+{blank}
 
 [.mermaid]
 ----
@@ -150,119 +138,160 @@ Before running the route, let's personalise the data mapping so the XML output i
 
 The `transform-x12` step uses a Kaoto data mapper to convert EDI fields into XML. Let's open it to see how the mappings work, and personalise the Seller Address with your own location.
 
+Switch to the `transform-x12` route:
+
+. Click the *Routes* dropdown
+. Select `transform-x12`
+
 {empty} +
+
+[#kaoto-routes-transform]
+[.bordered]
+image::m1/kaoto-routes-transform.png[width=50%]
+
+[.overlay]
+****
+[.target]
+kaoto-routes-transform
+
+[.arrows]
+{x: 27, y: 22, rot: 220, size: 1} +
+{x: 21, y: 85, rot: 230, size: .9}
+
+[.numbers]
+{x: 42, y: -15, size: 1.5} +
+{x: 38, y: 57, size: 1.5}
+****
+
+{empty} +
+
+You should now see the `transform-x12` route:
+
+{blank}
+
+[.bordered]
+image::m1/kaoto-transform-x12-route.png[width=80%]
+
+Reading left to right, the route:
+
+* `unmarshal` — parses the raw EDI data into a structured format using the X12-850 schema
+* pass:[<code style="background-color: #4494E5; color: white;">&nbsp;To do: Update&nbsp;</code>] — contains the `kaoto-datamapper` step where the EDI-to-XML field mappings are defined
+* `setVariable` — extracts the invoice ID from the resulting XML for use downstream
+
+{empty} +
+
+==== *The Data Mapper view*
+
+This is what the data mapper looks like — *Source* on the left (where data comes from) and *Target* on the right (where data is mapped to):
+
+{blank}
+
+image::m1/kaoto-datamapper-overview.png[width=100%]
+
+{empty} +
+
+==== Open and explore the data mapping
 
 . *Open the data mapper*
 +
 --
-From your editor:
+Click the `kaoto-datamapper` step inside the pass:[<code style="background-color: #4494E5; color: white;">&nbsp;To do: Update&nbsp;</code>] container — this is where the EDI-to-XML field mappings are defined. Now:
 
-. Open the file `x12.camel.yaml` — Kaoto will render the visual route
-. Click the `transform-x12` step to expand it — you'll see the sub-route:
-+
-[.mermaid]
-----
-flowchart LR
-    A(transform-x12) --> B(unmarshal) --> C2 --> D(get invoiceid)
-
-    subgraph C2 ["To do: Update"]
-        C(kaoto-datamapper)
-    end
-
-    style C2 fill:#dde4f6,stroke:#6690e6,color:#335
-----
-+
 . Click the `kaoto-datamapper` step inside the pass:[<code style="background-color: #4494E5; color: white;">&nbsp;To do: Update&nbsp;</code>] container
 . Click the pass:a[<span {btn-stl-blue}>{map-wrench}  Configure</span>] button to open the data mapper
 --
 +
 {empty} +
++
+You should see the mapping with the EDI source fields on the left (X12_850) connected to the XML target fields on the right (Invoice):
++
+{blank}
++
+[.bordered]
+image::m1/kaoto-datamapper-mappings.png[width=90%]
++
+{empty} +
 
 . *Explore the mappings*
 +
-The data mapper shows how EDI fields are mapped to XML. On the right side (Target), scroll down to the *Seller > Address* section. You'll see that each address field is mapped using XPath expressions that extract values from the original EDI data.
+On the right side (Target), scroll down to the *Seller > Address* section. Each address field is mapped using XPath expressions that extract values from the original EDI data.
 +
 {empty} +
 
 . *Personalise the Seller information*
 +
-The Seller fields currently use XPath expressions to extract data from the EDI source (e.g. `/X12_850/Header/N1Loop[1]/N1/N1-02` for the Name). Let's replace them with your own details — enter the name and address of a place near you, or where you are right now. Overwrite the following fields in the *Target* with hardcoded values:
+In this invoice, *you* are the Seller. The Seller fields currently pull values from the EDI source using XPath expressions — let's replace them with your own location. Overwrite the following fields in the *Target* with hardcoded values:
 +
-... `Name`:
+--
+... `Name` — your company or building name, e.g. `"My Company Inc"` +
+... `Street` — street address +
+... `City` +
+... `State` +
+... `PostalCode`
+--
 +
+IMPORTANT: String values must be wrapped in double quotes (e.g. `"Atlanta"`). Without quotes, the data mapper treats the value as an XPath expression instead of a literal string.
++
+{blank}
++
+[TIP]
+--
+.Need an address? Use this one:
+[%collapsible]
+====
 [.copypaste]
 ****
 "Georgia World Congress Center"
 ****
-+
+
 {blank}
-+
-... `Street`:
-+
+
 [.copypaste]
 ****
 "285 Andrew Young International Blvd NW"
 ****
-+
+
 {blank}
-+
-... `City`:
-+
+
 [.copypaste]
 ****
 "Atlanta"
 ****
-+
+
 {blank}
-+
-... `State`:
-+
+
 [.copypaste]
 ****
 "Georgia"
 ****
-+
+
 {blank}
-+
-... `PostalCode`:
-+
+
 [.copypaste]
 ****
 "GA 30313"
 ****
+====
+--
++
+Your data mapper should now show your hardcoded values in the Seller fields:
 +
 {blank}
 +
-TIP: Feel free to use your own address instead — enter the street, city, state, and postal code of where you are right now.
+[.bordered]
+image::m1/kaoto-datamapper-personalized.png[width=90%]
 +
 {empty} +
 
 . *Run the route and test*
 +
-Save the file, then run the route:
+In the VS Code terminal inside Dev Spaces, run the route:
 +
 {blank}
 +
 [.copypaste]
 ****
-camel run \
---dev \
-ingest/* \
-application.properties
-****
-+
-Open a new terminal and send a sample EDI Purchase Order. We'll use an XPath query to extract just the Seller section from the response:
-+
-{blank}
-+
-[.copypaste]
-****
-curl -s \
--H "content-type: text" \
--d @ingest/edi \
-localhost:8080/ingest/x12 \
-| xmllint --xpath '//Seller' - \
-| bat -pP -lxml
+camel run * --dev
 ****
 +
 [TIP]
@@ -270,32 +299,78 @@ localhost:8080/ingest/x12 \
 .What does this command do?
 [%collapsible]
 ====
-* `curl -s` — sends the request in silent mode (no progress bar)
-* `-H "content-type: text"` — tells the server the payload is plain text (EDI format)
-* `-d @ingest/edi` — sends the contents of the `edi` file as the request body
-* `localhost:8080/ingest/x12` — the Camel route's HTTP endpoint
-* `xmllint --xpath '//Seller'` — extracts only the `<Seller>` element from the full XML using an XPath query
-* `bat -pP -lxml` — displays the output with XML syntax highlighting
+* `camel run` — runs a Camel integration using JBang
+* `*` — includes all source files in the current directory (routes, properties, supporting code)
+* `--dev` — enables dev mode: Camel watches for file changes and reloads the route automatically
 ====
 --
 +
-The Seller information should now show your personalised values:
+DevSpaces will detect that port 8080 is open and show a notification — click *Open In New Tab* to open the embedded Test Shop in your browser.
++
+{blank}
++
+[.bordered]
+image::m1/devspaces-port-notification.png[width=50%]
++
+In the Test Shop:
++
+{blank}
++
+[#testshop-order]
+[.bordered]
+image::m1/testshop-order.png[width=60%]
++
+[.overlay]
+****
+[.target]
+testshop-order
+
+[.numbers]
+{x: 82, y: 12, size: 1.5}
+{x: 35, y: 86, size: 1.5}
+{x: 63, y: 58, size: 1.5}
+****
++
+{blank}
++
+--
+. Add an item to the basket — note the total amount
+. Expand *EDI X12 850 Preview* to peek at the raw EDI message — no need to fully understand it, but you may spot the item name, quantity, and total amount in the data
+. Click *Place Order* — the shop sends the Purchase Order to your Camel route
+--
++
+Once the order is processed, Camel returns the transformed XML and the Test Shop displays it. Notice the Seller address no longer matches the original EDI data — it reflects the hardcoded values you set in the data mapper:
 +
 {blank}
 +
 ++++
-<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 13px; color: #f8f8f2">&lt;<span style="color:#f92672">Seller</span>&gt;
-  &lt;<span style="color:#f92672">Name</span>&gt;<span style="background-color: #49483e">Georgia World Congress Center</span>&lt;/<span style="color:#f92672">Name</span>&gt;
-  &lt;<span style="color:#f92672">Address</span>&gt;
-    &lt;<span style="color:#f92672">Street</span>&gt;<span style="background-color: #49483e">285 Andrew Young International Blvd NW</span>&lt;/<span style="color:#f92672">Street</span>&gt;
-    &lt;<span style="color:#f92672">City</span>&gt;<span style="background-color: #49483e">Atlanta</span>&lt;/<span style="color:#f92672">City</span>&gt;
-    &lt;<span style="color:#f92672">State</span>&gt;<span style="background-color: #49483e">Georgia</span>&lt;/<span style="color:#f92672">State</span>&gt;
-    &lt;<span style="color:#f92672">PostalCode</span>&gt;<span style="background-color: #49483e">GA 30313</span>&lt;/<span style="color:#f92672">PostalCode</span>&gt;
-  &lt;/<span style="color:#f92672">Address</span>&gt;
-  &lt;<span style="color:#f92672">TaxId</span>&gt;939988477&lt;/<span style="color:#f92672">TaxId</span>&gt;
-  &lt;<span style="color:#f92672">IBAN</span>&gt;GB50ACIE59715038217063&lt;/<span style="color:#f92672">IBAN</span>&gt;
-&lt;/<span style="color:#f92672">Seller</span>&gt;</pre>
+<pre style="background-color: #e8f0f8; padding: 14px 20px; line-height: 1.5; white-space: pre; font-family: monospace; font-size: 13px; color: #333; border-radius: 6px">&lt;<span style="color:#555">Seller</span>&gt;
+    &lt;<span style="color:#555">Name</span>&gt;<span style="background-color: #d4e4f4">Georgia World Congress Center</span>&lt;/<span style="color:#555">Name</span>&gt;
+    &lt;<span style="color:#555">Address</span>&gt;
+        &lt;<span style="color:#555">Street</span>&gt;<span style="background-color: #d4e4f4">285 Andrew Young International Blvd NW</span>&lt;/<span style="color:#555">Street</span>&gt;
+        &lt;<span style="color:#555">City</span>&gt;<span style="background-color: #d4e4f4">Atlanta</span>&lt;/<span style="color:#555">City</span>&gt;
+        &lt;<span style="color:#555">State</span>&gt;<span style="background-color: #d4e4f4">Georgia</span>&lt;/<span style="color:#555">State</span>&gt;
+        &lt;<span style="color:#555">PostalCode</span>&gt;<span style="background-color: #d4e4f4">GA 30313</span>&lt;/<span style="color:#555">PostalCode</span>&gt;
+    &lt;/<span style="color:#555">Address</span>&gt;
+    &lt;<span style="color:#555">TaxId</span>&gt;939988477&lt;/<span style="color:#555">TaxId</span>&gt;
+    &lt;<span style="color:#555">IBAN</span>/&gt;
+&lt;/<span style="color:#555">Seller</span>&gt;</pre>
 ++++
++
+Now click *Check Database* — since the `sql` step is still disabled in the route, the invoice data was never stored. You should see:
++
+{blank}
++
+++++
+<div style="display: flex; align-items: center; gap: 14px; padding: 8px 0">
+  <div style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-weight: 600; font-size: 14px; padding: 10px 22px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg> Check Database
+  </div>
+  <span style="display: inline-flex; align-items: center; gap: 6px; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 20px; white-space: nowrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> No record found (Invoice 19462522)</span>
+</div>
+++++
++
+This is expected — you'll enable the database step next.
 
 {empty} +
 
@@ -303,77 +378,62 @@ The Seller information should now show your personalised values:
 
 With the transformation working, it's time to enable the next step in the route — persisting the invoice data to the database.
 
-{blank}
+{empty} +
 
-[.mermaid]
-----
-flowchart LR
-    A((platform-http)) --> B(transform-x12) --> C2 --> D2
+. *Switch back to the main flow*
++
+Select pass:[<span style="display: inline-flex; align-items: center; gap: 6px; border: 1px solid #ccc; border-radius: 6px; padding: 4px 12px; font-family: monospace; font-size: 13px; background: #fff"><span style="font-size: 15px">&#x2630;</span> service-x12 <span style="background: #e8e8e8; border-radius: 10px; padding: 1px 8px; font-size: 11px">1/5</span> &#x25BE;</span>] from the *Routes* dropdown.
++
+{empty} +
 
-    subgraph C2 ["To do: Enable"]
-        C[(sql)]
-    end
-
-    subgraph D2 [" "]
-        D(store-pdf-s3)
-    end
-
-    style C fill:#eee,stroke:#ccc,color:#aaa
-    style D fill:#eee,stroke:#ccc,color:#aaa
-    style C2 fill:#dde4f6,stroke:#6690e6,color:#335
-    style D2 fill:#eee,stroke:#ccc,color:#aaa
-----
-
-In Kaoto, find the `sql` step and enable it. Since Camel is running in `--dev` mode, saving the file will automatically reload the route with the new step active.
-
-Send a Purchase Order to trigger the full flow — the route will now transform the EDI and insert the data into the database:
-
-{blank}
-
-[.copypaste]
-****
-curl -s \
--H "content-type: text" \
--d @ingest/edi \
-localhost:8080/ingest/x12
-****
-
-To verify the data was inserted, query the database using Camel's `cmd` tool:
-
-{blank}
-
-[.copypaste]
-****
-camel cmd send \
---uri "sql:select count(*) from invoices" \
---properties application.properties \
---reply
-****
-
-[TIP]
+. *Enable the `sql` step*
++
 --
-.What does this command do?
-[%collapsible]
-====
-* `camel cmd send` — sends a message to a Camel endpoint from the command line
-* `--endpoint "sql:select count(*) from invoices"` — runs a SQL query against the configured database
-* `--properties application.properties` — loads database connection settings
-* `--reply` — waits for and displays the response
-====
+Hover over the `sql` step — a toolbar appears above it. Click the *Enable step* button (the tick icon):
+
+{empty} +
+
+[#kaoto-enable-step]
+[.bordered]
+image::m1/kaoto-enable-step.png[width=50%]
+
+[.overlay]
+****
+[.target]
+kaoto-enable-step
+
+[.arrows]
+{x: 35, y: 15, rot: -130, size: 1}
+
+[.numbers]
+{x: 40, y: 68, size: 2.5}
+{x: 60, y: -18, size: 2.5}
+****
+
+Since Camel is running in `--dev` mode, the route will reload automatically with the new step active.
 --
++
+{empty} +
 
-You should see a row count confirming the insert:
+. *Place a new order*
++
+Go back to the Test Shop and place a new order. The route will now transform the EDI and insert the data into the database.
++
+{empty} +
 
+. *Check the database*
++
+This time, click *Check Database* — the invoice should now be stored:
++
 {blank}
-
++
 ++++
-<pre style="background-color: #181818; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #818181">2026-03-23 10:14:08.939  <span style="color:#A649A6">11530</span> ---   <span style="color:#10A9CD">sql://SELECT%20count(*)%20FROM%20invoice</span> : <span style="color:#0FBC7A">Reply received</span> <span style="color:#0FBC7A">(success)</span> <span style="color:#fff">(304ms)</span>
- <span style="color:#fff">Endpoint</span>  <span style="color:#fff">sql://SELECT%20count(*)%20FROM%20invoices</span>
- <span style="color:#fff">Exchange</span>  (DefaultExchange)  <span style="color:#6F416E">InOut</span>   <span style="color:#fff">E3D444D7E02ADCD-0000000000000000</span>
- <span style="color:#fff">Message</span>   (DefaultMessage)
- <span style="color:#fff">Header</span>    (Integer)             <span style="color:#fff">CamelSqlRowCount  1</span>
- <span style="color:#fff">Body</span>      (ArrayList) (size: 1 bytes: 11)
- <span style="background-color: yellow; color: black">[{count=1}]</span></pre>
+<div style="display: flex; align-items: center; gap: 14px; padding: 8px 0">
+  <div style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-weight: 600; font-size: 14px; padding: 10px 22px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg> Check Database
+  </div>
+  <span style="display: inline-flex; align-items: center; gap: 6px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 20px; white-space: nowrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Record found (Invoice 71960809)</span>
+</div>
 ++++
 
 {empty} +
@@ -382,73 +442,74 @@ You should see a row count confirming the insert:
 
 The last step in the route generates a PDF invoice from the XML and uploads it to S3 object storage.
 
+{empty} +
+
+. *Enable the `store-pdf-s3` step*
++
+Same as before — hover over the `store-pdf-s3` step and click the *Enable step* button (the tick icon). The route will reload automatically.
++
+{empty} +
++
+With all steps enabled, the full ingestion flow is now active:
++
 {blank}
-
-[.mermaid]
-----
-flowchart LR
-    A((platform-http)) --> B(transform-x12) --> C[(sql)] --> D2
-
-    subgraph D2 ["To do: Enable"]
-        D(store-pdf-s3)
-    end
-
-    style D fill:#eee,stroke:#ccc,color:#aaa
-    style D2 fill:#dde4f6,stroke:#6690e6,color:#335
-----
-
-In Kaoto, find the `store-pdf-s3` step and enable it. Save the file — Camel will reload the route automatically.
-
-Clicking the `store-pdf-s3` step reveals what happens inside:
-
-{blank}
-
-[.mermaid]
-----
-flowchart LR
-    A(store-pdf-s3) --> B(Template PDF) --> C(generate PDF) --> D(store PDF) --> E(get Link)
-----
-
-The sub-route applies an XSLT template to produce a PDF from the XML invoice, uploads it to S3 object storage, and returns a presigned link to the document.
-
-Send another Purchase Order to trigger the complete flow — the response will include a presigned link to the generated PDF:
-
-{blank}
-
-[.copypaste]
-****
-curl -s \
--H "content-type: text" \
--d @ingest/edi \
-localhost:8080/ingest/x12; \
-echo
-****
-
++
+[.bordered]
+image::m1/kaoto-service-x12-all-enabled.png[width=90%]
++
 [TIP]
 --
-.What does this command do?
+.What does `store-pdf-s3` do?
 [%collapsible]
 ====
-* `curl -s` — sends the request in silent mode (no progress bar)
-* `-H "content-type: text"` — tells the server the payload is plain text (EDI format)
-* `-d @edi` — sends the contents of the `edi` file as the request body
-* `localhost:8080/ingest/x12` — the Camel route's HTTP endpoint
-* `echo` — adds a newline after the response URL for readability
+Select it from the *Routes* dropdown to see its sub-route — it applies an XSLT template to produce a PDF from the XML invoice, uploads it to S3 object storage, and returns a presigned link to the document.
+
+[.bordered]
+image::m1/kaoto-store-pdf-s3-route.png[width=90%]
 ====
 --
++
+{empty} +
 
-You should see a URL similar to:
-
+. *Place a new order*
++
+Go back to the Test Shop and place another order. This time, the full flow runs — transformation, database insert, PDF generation, and S3 upload. The Test Shop will display a confirmation with a link to the generated invoice:
++
 {blank}
-
++
 ++++
-<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 13px; color: #5fdfdf; word-break: break-all">https://s3-openshift-storage.apps.cluster-xxxxx.dynamic.redhatworkshops.io/invoices/<span style="color:#fff">invoice_61356293.pdf</span>?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Date=...&amp;X-Amz-Expires=3600&amp;X-Amz-Signature=...</pre>
+<div style="background: #f8f8f8; border: 1px solid #e0e0e0; border-radius: 12px; max-width: 480px; font-family: sans-serif; overflow: hidden">
+  <div style="display: flex; align-items: center; gap: 8px; color: #3a7d44; font-weight: 700; font-size: 17px; padding: 16px 24px; border-bottom: 1px solid #e0e0e0">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+    Invoice Generated
+  </div>
+  <div style="padding: 24px; text-align: center">
+    <p style="color: #555; font-size: 15px; margin: 0 0 20px 0">Your order has been processed and an invoice is ready.</p>
+    <div style="display: inline-flex; align-items: center; gap: 8px; background: #3a7d44; color: white; font-weight: 700; font-size: 15px; padding: 12px 28px; border-radius: 8px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      View Invoice (PDF)
+    </div>
+    <div style="color: #aaa; font-size: 13px; font-family: monospace; margin-top: 10px">invoice_66507812.pdf</div>
+    <div style="margin-top: 16px">
+      <div style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-weight: 700; font-size: 15px; padding: 12px 28px; border-radius: 8px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+        Check Database
+      </div>
+    </div>
+  </div>
+</div>
 ++++
-
-Hold kbd:[Cmd] and click the link in your terminal to open the PDF in your browser. The Seller section should display the values you entered in the data mapper:
-
++
+{empty} +
++
+Click *View Invoice (PDF)* to open it in your browser. The Seller section should display the values you entered in the data mapper:
++
 {blank}
-
++
 ++++
 <div style="background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 20px 28px; max-width: 380px; font-family: sans-serif; color: #222; line-height: 1.6">
   <div style="display: flex; align-items: center; margin-bottom: 8px; margin-left: 38px">
@@ -462,6 +523,10 @@ Hold kbd:[Cmd] and click the link in your terminal to open the PDF in your brows
   </div>
 </div>
 ++++
+
+{empty} +
+
+When you're done, press kbd:[Ctrl+C] in the terminal to stop Camel.
 
 {empty} +
 

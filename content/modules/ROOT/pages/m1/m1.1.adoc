@@ -59,9 +59,7 @@ After executing the commands above, have a look in your editor's tree view to co
 [.indent2]
 📁 workshop +
 &nbsp;&nbsp;📁 lab +
-&nbsp;&nbsp;&nbsp;&nbsp;📁 query +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>&nbsp;⚙&nbsp;&nbsp;</b></mark>] *application.properties* +
-pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *db.camel.yaml* +
+pass:[<mark style="padding-left: 1rem; background-color: white; color: grey"><b>&nbsp;⚙&nbsp;&nbsp;</b></mark>] *application.properties*
 
 [.indent2]
 NOTE: Make sure the files are visible in your file explorer in the left panel of _VSCode_.
@@ -69,40 +67,9 @@ NOTE: Make sure the files are visible in your file explorer in the left panel of
 +
 {empty} +
 
-. Understand the Camel route
+. Review the configuration
 +
-The `db.camel.yaml` file contains a simple Camel route designed to query the backend database. The database lives in a secure, air-tight environment and is not reachable yet — but once you enable connectivity in the next exercise, you'll run this route to confirm the connection works:
-+
-[cols="1a,1a"]
-|===
-| *Diagram* | *Camel Route (YAML)*
-
-|
-[.mermaid]
-----
-flowchart LR
-    T(timer) --> SQL(sql:SELECT) --> L(log)
-----
-
-|
-[source,yaml]
-....
-- route:
-    id: query-invoices
-    from:
-      uri: timer:queryInvoices
-      parameters:
-        repeatCount: 1
-      steps:
-        - to:
-            uri: sql:SELECT count(*) FROM invoices
-        - log:
-            message: "${body}"
-....
-
-|===
-+
-The route fires once (`repeatCount: 1`), runs a `SELECT count(*)` query against the `invoices` table, and logs the result.
+The `application.properties` file includes database connectivity settings that you'll use later in the exercise to confirm access to the database.
 +
 {empty} +
 
