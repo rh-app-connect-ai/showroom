@@ -212,10 +212,23 @@ details[open] .triangle::before {
 <script>
 (function() {
   var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#ee0000"/><text x="16" y="23" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="20" fill="white">S</text></svg>';
+  var dataUri = 'data:image/svg+xml,' + encodeURIComponent(svg);
+
+  // Set favicon on this document
   var link = document.querySelector('link[rel="icon"]');
   if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
   link.type = 'image/svg+xml';
-  link.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
+  link.href = dataUri;
+
+  // If inside an iframe, also set favicon on the top-level document
+  try {
+    if (window.top !== window.self) {
+      var topLink = window.top.document.querySelector('link[rel="icon"]');
+      if (!topLink) { topLink = window.top.document.createElement('link'); topLink.rel = 'icon'; window.top.document.head.appendChild(topLink); }
+      topLink.type = 'image/svg+xml';
+      topLink.href = dataUri;
+    }
+  } catch(e) { /* cross-origin iframe — cannot access top */ }
 })();
 </script>
 
