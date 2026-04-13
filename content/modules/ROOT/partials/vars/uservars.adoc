@@ -1,5 +1,14 @@
-// User-specific variables — rendered as spans, replaced by JS at runtime
+// User-specific variables
+// In local dev: username is set by the playbook (plain text)
+// In production: username is not set, so we define fallbacks here
+ifndef::username[]
 :username: pass:[<span class="uservar">username</span>]
+:username-url: SHOWROOM_USERNAME
+:_uservar-mode:
+endif::[]
+ifndef::_uservar-mode[]
+:username-url: {username}
+endif::[]
 
 // Old Solution Explorer safety net
 :user-username: {username}
