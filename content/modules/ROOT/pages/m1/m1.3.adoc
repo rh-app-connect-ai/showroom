@@ -389,7 +389,8 @@ Select pass:[<span style="display: inline-flex; align-items: center; gap: 6px; b
 . *Enable the `sql` step*
 +
 --
-Hover over the `sql` step — a toolbar appears above it. Click the *Enable step* button (the tick icon):
+. Hover over the `sql` step — a toolbar appears above it
+. Click the *Enable step* button (the tick icon)
 
 {empty} +
 
