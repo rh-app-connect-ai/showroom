@@ -2,74 +2,53 @@
 :page-time: 2
 include::partial$style.adoc[]
 
-[id="rocketchat-chat"]
-== Rocket.Chat platform onboarding
+[id="flow"]
+== Preview of the integration flow
 
 {banner-under-construction}
 
-TIP: If you're unfamiliar with link:https://www.rocket.chat/[_Rocket.Chat_,window="_blank"], it is an open-source communications platform with high data protection standards. It enables real-time conversations between colleagues, other companies, or your customers across web, desktop, or mobile devices.
+=== Process overview
 
-{empty} +
+The diagram below illustrates the processing flow you're about to create:
 
-=== Join your Rocket.Chat room.
+[.text-center]
+image::m2/processing-flow.jpg[width=80%]
 
-{blank}
+There are 3 processing steps in use:
 
-. Open _Rockat.Chat's_  web client:
-+
-Click on the link below to open the Login page in _Rocket.Chat_ (opens a new tab).
-+
---
-- link:{url-rocketchat}[Rocket.Chat Login page,window="_blank"]
---
-+
-{empty} +
-
-. You will be prompted to enter your credentials, as shown below:
-+
-image::m2/rchat-login-credentials.png[width=60%]
-+
-{blank}
-+
 ====
-. Enter the following:
-+
-* **Email or username**
-+
-[.copypaste]
-****
-{user-username}
-****
-+
-* **Password**
-+
-[.copypaste]
-****
-[.path]
-/credentials/im
+* *A source _Kamelet_* +
+Consumes events from _Matrix_.
 
-[.default]
-password
+* *A data mapping* +
+Transforms _Matrix_ events to _Rocket.Chat_ events (in JSON format).
 
-REPLACE
-****
-+
-{empty} +
-+
-. Then, click **_"Login"_**
+* *A sink _Kamelet_* +
+Produces events to _Rocket.Chat_.
 ====
-+
-{empty} +
-
-. When you login, you'll see your home page in _Rocket.Chat_, and your room listed in the left panel of your screen, as shown below:
-+
-image::m2/rchat-room.png[width=60%]
 
 {empty} +
 
-[.verification]
-****
-Were you able to join the _Rocket.Chat_ room successfully?
-****
+=== Prototyping workflow
+
+NOTE: This workshop has been designed with the prototyping workflow in mind.
+
+The prototyping phase is very important as it allows the developer to quickly iterate with fast trial and error runs. Fast iterations translate into fast learning, not only for those new to Camel, but also for experienced developers finding their way by trying out different approaches to solve a problem.
+
+The image below ilustrates the process:
+
+[.text-center]
+image::m2/workflow-camel-user.png[width=80%]
+
+First, developers use a local environment for rapid inner-loop development cycles. This approach accelerates prototyping and code validation. Once the foundational elements are in place, the application is deployed to an OpenShift environment to validate containerized execution. Any necessary adjustments can then revert to the fast inner-loop cycle.
+
+{empty} +
+
+=== Get ready!
+
+You've reached the end of Part 1. Complete Lab 1 by choosing the next tile (part 2) on your main tutorial dashboard:
+
+[.text-center]
+image::m2/continue-part-2.png[width=80%]
 
 {empty} +

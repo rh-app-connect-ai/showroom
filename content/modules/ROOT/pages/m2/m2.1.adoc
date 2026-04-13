@@ -2,26 +2,97 @@
 :page-time: 2
 include::partial$style.adoc[]
 
-[id="scenario-intro"]
-== Data flow overview
+[id="matrix-chat"]
+== Matrix platform onboarding
 
 {banner-under-construction}
 
-The picture below illustrates the data flow traversing our Camel instance:
-
-[.text-center]
-image::m2/data-flow.png[width=80%]
-
-The above process bridges chat messages from _Matrix_ to _Rocket.Chat_.
-
-* _Matrix_ is an open standard and communication protocol for real-time decentralised communication. It works seamlessly between different service providers.
-
-* _Rocket.Chat_ is also an open-source communications platform with high data protection standards. It enables real-time conversations between colleagues, other companies, or your customers across web, desktop, or mobile devices.
+TIP: If you're unfamiliar with link:https://matrix.org/[_Matrix_,window="_blank"], it is an open standard and communication protocol for real-time decentralised communication. It works seamlessly between different service providers.
 
 {empty} +
 
-They are both deployed in _OpenShift_ with convenient web access, making them ideal for students to use in this workshop.
+=== Join your Matrix room.
 
-The tasks to complete in this lab will guide you on how to onboard to both messaging systems.
+{blank}
+
+. Open _Matrix's_ web client
++
+Click on the link below to open the Login page in _Matrix_ (opens a new tab).
++
+--
+- link:{url-element}[Matrix Login page,window="_blank"]
+--
++
+{blank}
++
+You'll be presented with a Login page.
++
+{empty} +
+
+. Login with your credentials
++
+You will be prompted to enter your credentials, as shown below:
++
+image::m2/matrix-login-credentials.jpg[width=70%]
++
+{blank}
++
+====
+. Enter the following:
++
+* **Username**
++
+[.copypaste]
+****
+{user-username}
+****
++
+* **Password**
++
+[.copypaste]
+****
+[.path]
+/credentials/im
+
+[.default]
+password
+
+REPLACE
+****
++
+{empty} +
++
+. Then, click **_"Sign in"_**
+====
++
+{empty} +
++
+You will be asked to confirm your identity. Enter your password to do so, as shown below:
++
+image::m2/matrix-login-confirm.jpg[width=60%]
++
+{blank}
++
+Confirm by clicking on _"Continue"_.
++
+{empty} +
++
+Finally, you'll notice, looking at your _Matrix_ screen, a pending invitation to join your room. +
+Follow the steps below to accept your invitation:
++
+image::m2/matrix-room-accept-invite.jpg[width=70%]
++
+--
+. Click on your room.
+. And, click on _"Accept"_.
+--
+
+{empty} +
+
+
+[.verification]
+****
+Were you able to join the Matrix room successfully?
+****
 
 {empty} +

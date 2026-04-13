@@ -2,45 +2,39 @@
 :page-time: 2
 include::partial$style.adoc[]
 
-[id="matrix-chat"]
-== Matrix platform onboarding
+[id="rocketchat-chat"]
+== Rocket.Chat platform onboarding
 
 {banner-under-construction}
 
-TIP: If you're unfamiliar with link:https://matrix.org/[_Matrix_,window="_blank"], it is an open standard and communication protocol for real-time decentralised communication. It works seamlessly between different service providers.
+TIP: If you're unfamiliar with link:https://www.rocket.chat/[_Rocket.Chat_,window="_blank"], it is an open-source communications platform with high data protection standards. It enables real-time conversations between colleagues, other companies, or your customers across web, desktop, or mobile devices.
 
 {empty} +
 
-=== Join your Matrix room.
+=== Join your Rocket.Chat room.
 
 {blank}
 
-. Open _Matrix's_ web client
+. Open _Rockat.Chat's_  web client:
 +
-Click on the link below to open the Login page in _Matrix_ (opens a new tab).
+Click on the link below to open the Login page in _Rocket.Chat_ (opens a new tab).
 +
 --
-- link:{url-element}[Matrix Login page,window="_blank"]
+- link:{url-rocketchat}[Rocket.Chat Login page,window="_blank"]
 --
-+
-{blank}
-+
-You'll be presented with a Login page.
 +
 {empty} +
 
-. Login with your credentials
+. You will be prompted to enter your credentials, as shown below:
 +
-You will be prompted to enter your credentials, as shown below:
-+
-image::m2/matrix-login-credentials.jpg[width=70%]
+image::m2/rchat-login-credentials.png[width=60%]
 +
 {blank}
 +
 ====
 . Enter the following:
 +
-* **Username**
+* **Email or username**
 +
 [.copypaste]
 ****
@@ -62,37 +56,20 @@ REPLACE
 +
 {empty} +
 +
-. Then, click **_"Sign in"_**
+. Then, click **_"Login"_**
 ====
 +
 {empty} +
+
+. When you login, you'll see your home page in _Rocket.Chat_, and your room listed in the left panel of your screen, as shown below:
 +
-You will be asked to confirm your identity. Enter your password to do so, as shown below:
-+
-image::m2/matrix-login-confirm.jpg[width=60%]
-+
-{blank}
-+
-Confirm by clicking on _"Continue"_.
-+
-{empty} +
-+
-Finally, you'll notice, looking at your _Matrix_ screen, a pending invitation to join your room. +
-Follow the steps below to accept your invitation:
-+
-image::m2/matrix-room-accept-invite.jpg[width=70%]
-+
---
-. Click on your room.
-. And, click on _"Accept"_.
---
+image::m2/rchat-room.png[width=60%]
 
 {empty} +
-
 
 [.verification]
 ****
-Were you able to join the Matrix room successfully?
+Were you able to join the _Rocket.Chat_ room successfully?
 ****
 
 {empty} +
