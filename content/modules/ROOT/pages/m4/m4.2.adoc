@@ -102,7 +102,7 @@ The `dummy response` step is a placeholder — it always returns "Hello World". 
 +
 [.copypaste]
 ****
-agent
+myagent
 ****
 +
 Save the file. Because you're running in dev mode, Camel hot-reloads automatically. Watch the terminal — the logs should confirm the agent is running:

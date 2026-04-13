@@ -31,7 +31,7 @@ NOTE: If you do not have your devspaces environment open, click link:{url-codere
 +
 [.copypaste]
 ****
-step 8
+step 9
 ****
 +
 {empty} +

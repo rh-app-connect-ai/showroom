@@ -5,4 +5,4 @@
 :url-element: https://element-matrix.{openshift_cluster_ingress_domain}
 :url-rocketchat: https://rocketchat-rocketchat.{openshift_cluster_ingress_domain}
 :url-codeready: http://devspaces.{openshift_cluster_ingress_domain}/
-:url-devconsole: {openshift_cluster_console_url}/topology/ns/{namespace}
+:url-devconsole: {openshift_cluster_console_url}/topology/ns/{username}-devspaces
