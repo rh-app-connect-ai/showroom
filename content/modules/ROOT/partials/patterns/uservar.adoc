@@ -36,6 +36,21 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   });
 
+  // Fix hrefs that contain uservar spans — the span HTML is embedded
+  // literally in the href attribute (not parsed as HTML by the browser).
+  // Match both raw and URL-encoded forms of the span markup.
+  document.querySelectorAll('a').forEach(function(a) {
+    var href = a.getAttribute('href');
+    if (!href) return;
+    var fixed = href.replace(/<span class="uservar">([^<]*)<\/span>/g, function(m, key) {
+      return cookies[key] !== undefined ? cookies[key] : key;
+    });
+    fixed = fixed.replace(/%3Cspan%20class%3D%22uservar%22%3E([^%]*)%3C%2Fspan%3E/gi, function(m, key) {
+      return cookies[key] !== undefined ? cookies[key] : key;
+    });
+    if (fixed !== href) a.setAttribute('href', fixed);
+  });
+
   // Logout: redirect to docs-proxy /logout endpoint, which clears
   // the httponly _oauth_proxy and username cookies server-side,
   // then redirects back to docs-proxy to trigger a fresh OAuth flow.
