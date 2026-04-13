@@ -224,8 +224,8 @@ details[open] .triangle::before {
 
 :experimental:
 
-include::./vars/urls.adoc[]
 include::./vars/uservars.adoc[]
+include::./vars/urls.adoc[]
 include::./vars/icons.adoc[]
 include::./vars/sidebar.adoc[]
 // Hidden element carrying the {username} value so the uservar JS can
