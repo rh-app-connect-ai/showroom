@@ -209,6 +209,16 @@ details[open] .triangle::before {
 
 </style>
 
+<script>
+(function() {
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#ee0000"/><text x="16" y="23" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="20" fill="white">S</text></svg>';
+  var link = document.querySelector('link[rel="icon"]');
+  if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+  link.type = 'image/svg+xml';
+  link.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
+})();
+</script>
+
 ++++
 
 
