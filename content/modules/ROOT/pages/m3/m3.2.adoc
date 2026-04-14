@@ -7,30 +7,35 @@ include::partial$style.adoc[]
 
 {banner-under-construction}
 
-To connect _Matrix_ and _Rocket.Chat_ through _Kafka_, you need two data flows:
+Bridging _Matrix_ and _Rocket.Chat_ bidirectionally requires four flows (as covered in the introduction). The path that carries customer messages to the support agent alone needs two:
 
-{empty} +
+* *Flow 1* — Matrix to Kafka _(pre-configured)_
+* *Flow 2* — Kafka to Rocket.Chat ✏️ _(you'll build this one)_
+
+NOTE: All four flows follow the same pattern — once you've built one, the others are nearly identical. To keep the lab short, you'll only build flow 2 by hand; the remaining three will be made available and enabled at the end.
 
 [.mermaid]
 ----
 flowchart LR
-    M([Matrix]) -->|"flow 1"| K([Kafka])
-    K -->|"flow 2"| RC([Rocket.Chat])
+    MX -->|"flow 1"| K --> F2 --> RC
 
-    style M fill:#e8f5e9,stroke:#66bb6a
-    style K fill:#fff3e0,stroke:#fb8c00
-    style RC fill:#e8f5e9,stroke:#66bb6a
+    MX@{ img: "../_images/common/element-icon.svg", label: "Matrix", pos: "b", h: 100, w: 80, constraint: "on" }
+    K@{ img: "../_images/common/kafka-icon.svg", label: "Kafka", pos: "b", h: 100, w: 80, constraint: "on" }
+    RC@{ img: "../_images/m4/rocketchat-icon.svg", label: "Rocket.Chat", pos: "b", h: 100, w: 100, constraint: "on" }
+
+    F2["✏️ flow 2"]
+
+    style MX fill:none,stroke:none
+    style K fill:none,stroke:none
+    style RC fill:none,stroke:none
+    style F2 fill:#fff3e0,stroke:#fb8c00,stroke-width:2px,color:#e65100,font-size:14px
 
     linkStyle 0 stroke:#ccc,stroke-width:1px
-    linkStyle 1 stroke:#d32f2f,stroke-width:3px
+    linkStyle 1 stroke:#d32f2f,stroke-width:2px
+    linkStyle 2 stroke:#d32f2f,stroke-width:2px
 ----
 
-[.text-center]
-✏️ You are here: *flow 2 — Kafka to Rocket.Chat*
-
-{empty} +
-
-You'll start with the second flow — the listener side. By setting it up first, the receiving end will be ready. When you wire up the _Matrix_ to _Kafka_ flow in the next section, you'll immediately see messages flowing end-to-end.
+You'll build the listener side — the flow that picks up events from _Kafka_ and delivers them to _Rocket.Chat_. Once it's in place, any message that lands in the _Kafka_ topic will reach the support agent automatically.
 
 {empty} +
 
@@ -44,8 +49,32 @@ The flow is already prepared — you just need to fill in three areas:
 
 The picture below highlights the focus areas:
 
-image::m3/flow-k2r-todo.jpg[width=80%]
+// image::m3/flow-k2r-todo.jpg[width=80%]
 
+{empty} +
+
+[#flow-k2r-todo-new]
+[.bordered]
+image::m3/flow-k2r-todo-new.png[width=90%]
+
+[.overlay]
+****
+[.target]
+flow-k2r-todo-new
+
+[.arrows]
+{x: 10, y: 72, rot: 0, size: 1, color: "red"}
+{x: 33, y: 26, rot: 220, size: 1, color: "red"}
+{x: 61.5, y: 68, rot: 0, size: 1, color: "red"}
+
+[.numbers]
+{x: 10, y: 117, size: 1.2, color: "red"} +
+{x: 40.5, y: -8, size: 1.2, color: "red"} +
+{x: 61.5, y: 117, size: 1.2, color: "red"}
+****
+
+
+{empty} +
 {empty} +
 
 [NOTE]
@@ -57,10 +86,13 @@ All systems publish to and listen from a single _Kafka_ topic. This means a mess
 [.mermaid]
 ----
 flowchart LR
-    RC(["Rocket.Chat"]) -- "message" --> K(["Kafka topic"]) -- "❌ same event" --> RC
+    RC -->|"message"| K -->|"❌ same event"| RC
 
-    style K fill:#fff3e0,stroke:#fb8c00
-    style RC fill:#e8f5e9,stroke:#66bb6a
+    RC@{ img: "../_images/m4/rocketchat-icon.svg", label: "Rocket.Chat", pos: "b", h: 100, w: 100, constraint: "on" }
+    K@{ img: "../_images/common/kafka-icon.svg", label: "Kafka topic", pos: "b", h: 100, w: 80, constraint: "on" }
+
+    style RC fill:none,stroke:none
+    style K fill:none,stroke:none
 
     linkStyle 0 stroke:#66bb6a,stroke-width:2px
     linkStyle 1 stroke:#d32f2f,stroke-width:2px,stroke-dasharray:5
@@ -91,10 +123,13 @@ The first step of the flow is where you define _Kafka_ as the source from where 
 
 NOTE: Your _OpenShift_ namespace already contains an _Streams for Apache Kafka_ cluster (_Kafka_) ready for you to use.
 
-1. Hover the pass:[<span style="color: #B0380C;">&#x2757; To do: Kafka</span>] step and click the floating {btn-replace} button.
-1. Find and select the _Kafka_ component.
-1. Select the `All` configuration tab
+1. Hover the pass:[<span style="color: #B0380C;">&#x2757; To do: Kafka</span>] step and click the floating {nbsp}{btn-replace}{nbsp} button (replace step).
+1. Type `Kafka` in the {ui-filter} to find it, then select the _Kafka_ component.
+1. Click the _Kafka_ step to open the configuration panel.
+1. Select the `All` configuration tab.
 1. Configure the following 2 properties:
++
+TIP: The `All` tab has many properties. Use the {ui-filter} at the top to quickly find each one.
 +
 `Topic`:
 +
@@ -114,6 +149,8 @@ myroom
 my-cluster-kafka-bootstrap:9092
 ****
 +
+TIP: Click anywhere outside the configuration panel to close it.
++
 {empty} +
 
 === Define the filter
@@ -128,7 +165,9 @@ The filter prevents this by checking where the event came from.
 
 1. Click the bar pass:[<code style="background-color: #B0380C; color: white;">&nbsp;To do: Filter&nbsp;</code>]
 +
-You should see the `JQ` expression language selected by default.
+Ensure the `Required` tab is selected. You should see the `JQ` expression language selected by default.
++
+{blank}
 +
 1. Copy and paste the following expression:
 +
@@ -139,7 +178,7 @@ You should see the `JQ` expression language selected by default.
 pass:[.source | test("rocketchat")]
 ****
 +
-NOTE: The expression picks the `source` field from the _Kafka_ event and checks if it originates from _Rocket.Chat_. Events from _Rocket.Chat_ are filtered out to prevent loopback.
+NOTE: The expression picks the `source` field from the _Kafka_ event and checks if it originates from _Rocket.Chat_. Events from _Rocket.Chat_ are filtered out to prevent loopbacks.
 +
 {empty} +
 
@@ -154,37 +193,49 @@ The data arriving from _Kafka_ uses a common schema. You need to map it to the f
 --
 From Kaoto:
 
-. Click the kbd:[+] button inside the pass:[<code style="background-color: #4494E5; color: white;">&nbsp;To do: Mapping&nbsp;</code>] step
-. Type `mapper` in the filter to find the _Kaoto DataMapper_
+. Click the kbd:[+] button inside the pass:[<code style="background-color: #4494E5; color: white;">&nbsp;To do: Map...&nbsp;</code>] step
+. Type `mapper` in the {ui-filter} to find the _Kaoto DataMapper_
 . Click the _Kaoto DataMapper_ tile
 . Click the mapper to open the configuration panel
 . Click the pass:a[<span {btn-stl-blue}>{map-wrench}  Configure</span>] button
 --
 +
 {empty} +
++
+This is the Data Mapper view — *Source* on the left (where data comes from) and *Target* on the right (where data is mapped to):
++
+image::m1/kaoto-datamapper-overview.png[width=90%]
++
+{empty} +
 
 . Next, define the inputs and outputs
 +
 --
-From the DataMapper editor:
+From the DataMapper editor, define the source (left) and target (right):
 
-. Define the source:
-.. On **Parameters** click the button kbd:[+] to add new parameter
-.. Enter `common` and click the checkmark button kbd:[{map-tick}]
-.. Click kbd:[{map-att}] (Attach schema), next click
-pass:a[<span {btn-stl-blue-outline}>{map-upload} Upload schema file(s)</span>] and then pick at the top of your screen: `support/schemas/*common.json*`.
-.. Click pass:a[<span {btn-stl-blue}>Attach</span>] to complete the action.
-+
-{blank}
-+
-. Define the target
-.. On the right hand side of the DataMapper screen: +
-Click kbd:[{map-att}] (Attach schema), next click
-pass:a[<span {btn-stl-blue-outline}>{map-upload} Upload schema file(s)</span>] and then pick at the top of your screen: `support/schemas/*rocketchat-out.json*`.
-.. Click pass:a[<span {btn-stl-blue}>Attach</span>] to complete the action.
+[cols="1a,1a", options="header"]
+|===
+| Source (left panel)
+| Target (right panel)
+
+|
+. On **Body** click kbd:[{map-att}] (Attach schema)
+. Click pass:a[<span {btn-stl-blue-outline}>{map-upload} Upload schema file(s)</span>]
+. Enter `common` in the {ui-filter}
+. Tick `support/schemas/*common.json*`, click pass:[<code style="background-color: #4494E5; color: white;">OK</code>]
+. Click pass:a[<span {btn-stl-blue}>Attach</span>]
+
+|
+. Click kbd:[{map-att}] (Attach schema)
+. Click pass:a[<span {btn-stl-blue-outline}>{map-upload} Upload schema file(s)</span>]
+. Enter `rocket` in the {ui-filter}
+. Tick `support/schemas/*rocketchat-out.json*`, click pass:[<code style="background-color: #4494E5; color: white;">OK</code>]
+. Click pass:a[<span {btn-stl-blue}>Attach</span>]
+
+|===
+--
 +
 {empty} +
---
 
 . Define the data mapping rules
 +
@@ -203,6 +254,17 @@ room11
 "REPLACE"
 ****
 +
+[TIP]
+--
+.How do I paste the value?
+[%collapsible]
+====
+Click `⠇` and select **Add selector expression**, as shown below:
+
+image::m3/mapper-add-expression.jpg[width=70%]
+====
+--
++
 {blank}
 +
 ... `string[@key = text]`:
@@ -217,6 +279,12 @@ The mapping rendering should be similar to:
 [.bordered]
 image::m3/mapping-kafka-rocketchat.png[width=80%]
 +
+{empty} +
+
+To return to the canvas, click the *Design* tab:
+
+image::common/kaoto-design-tab.png[width=50%]
+
 {empty} +
 
 Your completed flow should look like this:
@@ -259,13 +327,20 @@ You should see the process in `Running` status:
 
 {empty} +
 
-Once the process is running, send a test message to _Kafka_:
+Before sending a test message, make sure _Rocket.Chat_ is open and you're in your designated room. If you haven't logged in yet, follow the instructions in xref:m2/m2.2.adoc[Rocket.Chat platform onboarding].
+
+Once ready, send a test message to _Kafka_:
 
 {blank}
 
 [.copypaste]
 ****
-camel cmd send k2r --body '{"user":"test","channel":"room2","source": "test","text": "test message"}'
++++camel cmd send k2r --body \
+'{
+  "user":   "test",
+  "source": "test",
+  "text":   "test message"
+}'+++
 ****
 
 [TIP]
@@ -275,7 +350,7 @@ camel cmd send k2r --body '{"user":"test","channel":"room2","source": "test","te
 ====
 * `camel cmd send` — sends a message to a running Camel process
 * `k2r` — the name of the target process
-* `--body '{...}'` — the JSON payload simulating a Kafka event with `user`, `channel`, `source`, and `text` fields
+* `--body '{...}'` — a JSON payload simulating a Kafka event. Only `user`, `source`, and `text` are needed — the target channel is hardcoded in the mapping
 ====
 --
 
@@ -285,15 +360,32 @@ Open your _Rocket.Chat_ room and check for the incoming message. You should see 
 
 {empty} +
 
-:fig-avatar: C
-:fig-sender: camel-bot
+:fig-avatar: U
+:fig-sender: {username}
 :fig-time: 3:42 PM
 :fig-msg: pass:[<b>test@test:</b> test message]
 include::_figures/rc-message.adoc[]
 
 {empty} +
 
-NOTE: Once you've confirmed the message, stop the background process by running `camel stop`. You can verify nothing is running with `camel get`.
+Once you've confirmed the message, stop the background process:
+
+{blank}
+
+[.copypaste]
+****
+camel stop
+****
+
+[TIP]
+--
+.What does this command do?
+[%collapsible]
+====
+* `camel stop` — stops all running Camel processes started with _Camel JBang_
+* You can verify nothing is running with `camel get`
+====
+--
 
 {empty} +
 

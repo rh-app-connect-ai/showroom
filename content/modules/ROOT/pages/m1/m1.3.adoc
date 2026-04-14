@@ -282,6 +282,12 @@ Your data mapper should now show your hardcoded values in the Seller fields:
 image::m1/kaoto-datamapper-personalized.png[width=90%]
 +
 {empty} +
++
+To return to the canvas, click the *Design* tab:
++
+image::common/kaoto-design-tab.png[width=50%]
++
+{empty} +
 
 . *Run the route and test*
 +
@@ -377,6 +383,10 @@ This is expected — you'll enable the database step next.
 === Enable the SQL step
 
 With the transformation working, it's time to enable the next step in the route — persisting the invoice data to the database.
+
+Ensure you are in the *Design* view:
+
+image::common/kaoto-design-tab.png[width=50%]
 
 {empty} +
 

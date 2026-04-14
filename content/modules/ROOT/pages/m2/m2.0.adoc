@@ -42,7 +42,7 @@ The interesting part is that each side uses a *different* messaging platform:
 ====
 --
 
-{blank}
+In the upcoming modules you'll use Apache Camel and Kafka to build the integrations that bridge both platforms — so that a message sent from one side appears seamlessly on the other.
 
 [.mermaid]
 ----
@@ -57,10 +57,6 @@ flowchart LR
     style MX fill:none,stroke:none
     style RC fill:none,stroke:none
 ----
-
-{empty} +
-
-In the upcoming modules you'll use Apache Camel and Kafka to build the integrations that bridge both platforms — so that a message sent from one side appears seamlessly on the other.
 
 Both platforms are deployed in OpenShift with web access, so you can interact with them directly from your browser. The next pages will guide you through logging in to each one, so you're ready when the integration work begins.
 

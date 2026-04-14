@@ -43,6 +43,8 @@
   </g> \
 </svg>]
 
+:ui-filter: pass:[<span style="display:inline-block; border:2px solid #1565c0; border-radius:4px; padding:2px 8px; font-size:13px; color:#666; vertical-align:middle;">&#x1F50D; Filter</span>]
+
 :btn-stl-blue: pass:[style="display:inline-block; padding:10px 22px; background:#0366CB; color:white; font:normal 14px Arial,sans-serif; border-radius:40px; cursor:default; user-select:none; text-decoration:none;"]
 
 :btn-stl-blue-outline: pass:[style="display:inline-block; padding:10px 22px; border:2px solid #0366CB; background:white; color:#0366CB; font:normal 14px Arial,sans-serif; border-radius:40px; cursor:default; user-select:none; text-decoration:none;"]

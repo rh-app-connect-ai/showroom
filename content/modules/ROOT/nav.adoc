@@ -19,7 +19,7 @@
 ** xref:m2/m2.0.adoc[Introduction]
 ** xref:m2/m2.1.adoc[Matrix platform onboarding]
 ** xref:m2/m2.2.adoc[Rocket.Chat platform onboarding]
-** xref:m2/m2.3.adoc[Preview of the integration flow]
+** xref:m2/m2.3.adoc[What's next]
 
 * xref:m3/m3.0.adoc[Lab 3 - Multi-channel Hub]
 ** xref:m3/m3.0.adoc[Introduction]

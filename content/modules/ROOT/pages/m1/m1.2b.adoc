@@ -1,5 +1,5 @@
 :imagesdir: ../../assets/images
-:page-time: 1
+:page-time: 3
 include::partial$style.adoc[]
 
 [id="lab3-ingestion-flow"]

@@ -2,7 +2,7 @@
 :page-time: 1
 include::partial$style.adoc[]
 
-[id="setup-lab3"]
+[id="setup-lab1"]
 == Setup the Lab working folder
 
 {banner-under-construction}

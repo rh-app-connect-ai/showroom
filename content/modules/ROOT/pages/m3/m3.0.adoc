@@ -1,69 +1,69 @@
 :imagesdir: ../../assets/images
+:page-time: 2
 include::partial$style.adoc[]
 
-[id='lab2-matrix-kafka-rocketchat']
-== Lab 2 - Kafka as the Backbone
+[id='lab3-introduction']
+== Introduction
 
 {banner-under-construction}
 
-Open the architecture by decoupling the messaging systems using streaming capabilities with Streams for Apache Kafka.
+Build the integration flows that connect Matrix and Rocket.Chat through Apache Kafka — creating a decoupled, event-driven architecture ready to welcome new systems.
 
+{empty} +
 
-Prerequisites: +
+Recommended: +
 --
-* Ensure you have previously completed the following tiles:
+* For the best experience, complete the following modules first to follow the storyline:
 +
-image::m3/prereq.png[width=100%]
+image::m3/prereq.png[width=70%]
 
 {empty} +
 --
 
-*Overview*
+=== Quick reminder
 
-Lab 1 and 2 enabled _Matrix_/_Rocket.Chat_ conversations. However their connectivity was tightly coupled with dedicated data translations between both platforms. On this third lab we want to break them away to open up the architecture in order to welcome additional systems and services.
+Customers reach out about their Purchase Orders through *Matrix*, while support agents respond from *Rocket.Chat*. The goal is to bridge both platforms so messages flow seamlessly between them.
 
-The picture below illustrates an asynchronous decoupled architecture, via a streaming platform (_Kafka_). This approach increases the number of data flows from two to four.
+{empty} +
 
-TIP: At first it seems unnecessary to double the number of data flows, but the benefits outweighs complexity, we gain an easily extensible architecture. In later labs you'll see new additions to the architecture.
+=== Why Kafka in the middle?
+
+Rather than connecting Matrix and Rocket.Chat directly to each other, we place *Kafka* between them as a streaming backbone. This decouples the two platforms — neither needs to know about the other. Each system simply publishes and consumes messages through Kafka.
+
+Why does this matter? Because it opens the architecture. Any new system — a helpdesk tool, a notification service, an AI agent — can plug into the same Kafka topics without touching the existing flows.
+
+{blank}
 
 [.text-center]
 image::m3/data-flow.png[width=90%]
 
 {empty} +
 
-In terms of implementation effort for this lab, your main task is to split each of your current data flows (from Lab-2) in two different parts:
+=== A common data model
 
-- The _Matrix_ to _Rocket.Chat_ process into:
-. _Matrix_ to _Kafka_
-. _Kafka_ to _Rocket.Chat_
-+
-{empty} +
-- The _Rocket.Chat_ to _Matrix_ process into:
-. _Rocket.Chat_ to _Kafka_
-. _Kafka_ to _Matrix_
+For this to work cleanly, we adopt a *standard data model* as the common language on Kafka. Instead of translating directly between platform-specific formats (Matrix to Rocket.Chat), each flow transforms in two steps:
 
-{empty} +
+* *Inbound*: platform-specific format → standard data model (into Kafka)
+* *Outbound*: standard data model → platform-specific format (from Kafka)
 
-One fundamental architecture consideration is that if we want an easy to plugin platform where other communication systems or services need to plugin with ease, we should adopt a standard data model. It would establish a common interface for systems planning to integrate with the platform.
+This means every system integrates with *one* common interface, not with every other system individually.
 
-This implies that instead of applying platform specific data transformations (eg. _Matrix_ data model to _Rocket.Chat_ data model), we apply the following data transformations:
-
-- System specific to standard data model (e.g. _Matrix_/_Rocket.Chat_ to _Kafka_)
-- Standard data model to system specific (e.g. _Kafka_ to _Matrix_/_Rocket.Chat_)
-
-{empty} +
-
-The illustration below describes data exchanges via _Kafka_:
+{blank}
 
 [.text-center]
 image::m3/standard-data-model.png[width=90%]
 
 {empty} +
 
-Technical goals and milestones:
+=== Four flows, one pattern
 
-* Evolve the solution into an event-driven architecture.
-* Adopt a standard interface
-* Switch bindings to plug platform resources.
+To bridge Matrix and Rocket.Chat bidirectionally through Kafka, we need four distinct flows:
+
+* Matrix → Kafka
+* Kafka → Rocket.Chat
+* Rocket.Chat → Kafka
+* Kafka → Matrix
+
+TIP: This may seem like more work than a direct connection, but the pattern is the same across all four. In this lab we'll focus on building *one* of them — the rest follow the same approach and will be enabled at the end.
 
 {empty} +

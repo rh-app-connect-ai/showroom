@@ -159,14 +159,19 @@ window.addEventListener('DOMContentLoaded', function() {
       document.getElementById('steps-start').setAttribute('href', firstLink);
 
       // Collect page titles from all nav links matching the module prefix
+      // When the same href appears twice (parent * and child **), use the child's text
       var pageTitles = [];
       var seen = {};
       var allNavLinks = document.querySelectorAll('a.nav-link');
       for (var i = 0; i < allNavLinks.length; i++) {
         var href = allNavLinks[i].getAttribute('href');
-        if (href && href.indexOf(prefix) !== -1 && !seen[href]) {
-          seen[href] = true;
-          pageTitles.push(allNavLinks[i].textContent.trim());
+        if (href && href.indexOf(prefix) !== -1) {
+          if (seen[href] !== undefined) {
+            pageTitles[seen[href]] = allNavLinks[i].textContent.trim();
+          } else {
+            seen[href] = pageTitles.length;
+            pageTitles.push(allNavLinks[i].textContent.trim());
+          }
         }
       }
 

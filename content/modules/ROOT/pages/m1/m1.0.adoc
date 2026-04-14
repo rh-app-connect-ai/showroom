@@ -1,9 +1,9 @@
 :imagesdir: ../../assets/images
-:page-time: 3
+:page-time: 2
 include::partial$style.adoc[]
 
-[id='lab1-ingest-service']
-== Lab 1 - Ingest Service
+[id='lab1-introduction']
+== Introduction
 
 {banner-under-construction}
 
