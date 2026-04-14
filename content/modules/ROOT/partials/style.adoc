@@ -49,6 +49,13 @@ summary  {
     border-radius: 4px;
 }
 
+/* Scale Mermaid diagrams: [.mermaid-w50] through [.mermaid-w90] */
+.mermaid-w50 svg { max-width: 100% !important; width: 50%; }
+.mermaid-w60 svg { max-width: 100% !important; width: 60%; }
+.mermaid-w70 svg { max-width: 100% !important; width: 70%; }
+.mermaid-w80 svg { max-width: 100% !important; width: 80%; }
+.mermaid-w90 svg { max-width: 100% !important; width: 90%; }
+
 /* Center Mermaid diagrams with [.text-center] role */
 .mermaid.text-center svg {
     display: block;
