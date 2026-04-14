@@ -3,7 +3,7 @@
 include::partial$style.adoc[]
 
 [id="deploy-kafka-to-rocketchat"]
-== Deploy to OpenShift
+== Deploy to OpenShift [.small]#(parked)#
 
 {banner-under-construction}
 

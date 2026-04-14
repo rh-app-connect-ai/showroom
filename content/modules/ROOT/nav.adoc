@@ -23,9 +23,9 @@
 ** xref:m3/m3.0.adoc[Introduction]
 ** xref:m3/m3.1.adoc[Setup the Lab working folder]
 ** xref:m3/m3.2.adoc[Kafka to Rocket.Chat]
-** xref:m3/m3.3.adoc[Deploy to OpenShift]
-** xref:m3/m3.4.adoc[Enable all flows]
-** xref:m3/m3.5.adoc[Deploy and test]
+** xref:m3/m3.3.adoc[Deploy to OpenShift (parked)]
+** xref:m3/m3.4.adoc[Go live on OpenShift]
+** xref:m3/m3.5.adoc[Deploy and test (parked)]
 
 * xref:m4/m4.0.adoc[Lab 4 - AI Customer Support]
 ** xref:m4/m4.0.adoc[Introduction]
