@@ -49,12 +49,15 @@ summary  {
     border-radius: 4px;
 }
 
-/* Scale Mermaid diagrams: [.mermaid-w50] through [.mermaid-w90] */
-.mermaid-w50 svg { max-width: 100% !important; width: 50%; }
-.mermaid-w60 svg { max-width: 100% !important; width: 60%; }
-.mermaid-w70 svg { max-width: 100% !important; width: 70%; }
-.mermaid-w80 svg { max-width: 100% !important; width: 80%; }
-.mermaid-w90 svg { max-width: 100% !important; width: 90%; }
+/* Scale Mermaid diagrams: [.mermaid-w20] through [.mermaid-w90] */
+.mermaid-w20 svg { width: 20% !important; max-width: 20% !important; }
+.mermaid-w30 svg { width: 30% !important; max-width: 30% !important; }
+.mermaid-w40 svg { width: 40% !important; max-width: 40% !important; }
+.mermaid-w50 svg { width: 50% !important; max-width: 50% !important; }
+.mermaid-w60 svg { width: 60% !important; max-width: 60% !important; }
+.mermaid-w70 svg { width: 70% !important; max-width: 70% !important; }
+.mermaid-w80 svg { width: 80% !important; max-width: 80% !important; }
+.mermaid-w90 svg { width: 90% !important; max-width: 90% !important; }
 
 /* Center Mermaid diagrams with [.text-center] role */
 .mermaid.text-center svg {

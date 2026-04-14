@@ -11,7 +11,7 @@ You've completed the _Kafka_ to _Rocket.Chat_ flow. To save time, all four flows
 
 The diagram below shows the four flows enabling bidirectional communication between customer and support agent:
 
-[.mermaid.mermaid-w50]
+[.mermaid.mermaid-w40]
 ----
 flowchart LR
     MX -->|"flow 1"| K -->|"flow 2"| RC

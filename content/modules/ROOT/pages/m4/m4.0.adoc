@@ -13,7 +13,7 @@ Use an AI agent to orchestrate backend actions based on natural language chat �
 
 *The Business Need*
 
-When a customer flags a mistake on their invoice, support agents traditionally have to manually navigate multiple backend databases and file systems to correct the issue. This is slow, error-prone, and frustrating for both agents and customers. They need a faster, frictionless way to resolve these tickets.
+When a customer reaches out about a purchase order — whether to update details, return items, or resolve a discrepancy — support agents traditionally have to manually navigate multiple backend databases and file systems to address the request. This is slow, error-prone, and frustrating for both agents and customers. They need a faster, frictionless way to handle these cases.
 
 {empty} +
 
@@ -36,6 +36,7 @@ flowchart LR
     subgraph Tools [Backend Tools]
         DB[(Database)]
         S3[(S3 / ODF)]
+        HD[HelpDesk]
     end
 
     Camel -->|"⑤ response"| RC
@@ -71,6 +72,7 @@ flowchart LR
     subgraph Tools [Backend Tools]
         DB[(Database)]
         S3[(S3 / ODF)]
+        HD[HelpDesk]
     end
 
     Camel -->|"⑤ response"| RC

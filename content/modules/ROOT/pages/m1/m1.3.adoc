@@ -37,7 +37,7 @@ flowchart LR
   <div style="color:#aaa; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px">XML Invoice (output)</div>
   <pre style="background:#363630 !important; color:white !important; font-family:monospace; font-size:12px; line-height:1.5; margin:0; white-space:pre-wrap; padding:12px 16px; border-radius:4px">&lt;<span style="color:#ff6188">Invoice</span>&gt;
   &lt;<span style="color:#ff6188">InvoiceId</span>&gt;INV-0042&lt;/<span style="color:#ff6188">InvoiceId</span>&gt;
-  &lt;<span style="color:#ff6188">OrderRef</span>&gt;61356293&lt;/<span style="color:#ff6188">OrderRef</span>&gt;
+  &lt;<span style="color:#ff6188">OrderRef</span>&gt;61356291&lt;/<span style="color:#ff6188">OrderRef</span>&gt;
   &lt;<span style="color:#ff6188">Date</span>&gt;2012-09-06&lt;/<span style="color:#ff6188">Date</span>&gt;
   &lt;<span style="color:#ff6188">Buyer</span>&gt;
     &lt;<span style="color:#ff6188">Name</span>&gt;Rodriguez-Stevens&lt;/<span style="color:#ff6188">Name</span>&gt;
@@ -67,7 +67,7 @@ flowchart LR
   <pre style="background:#363630 !important; color:white !important; font-family:monospace; font-size:12px; line-height:1.5; margin:0; white-space:pre-wrap; padding:12px 16px; border-radius:4px"><span style="color:#ff6188">ISA</span>*00*          *00*          *01*939988477    *01*949849105    *120906*1200*U*00401*000000001*0*P*:~
 <span style="color:#ff6188">GS</span>*PO*939988477*949849105*20120906*1200*1*X*004010~
 <span style="color:#ff6188">ST</span>*850*0001~
-<span style="color:#ff6188">BEG</span>*00*SA*61356293**20120906~
+<span style="color:#ff6188">BEG</span>*00*SA*61356291**20120906~
 <span style="color:#ff6188">N1</span>*BY*Rodriguez-Stevens*91*939988477~
 <span style="color:#ff6188">N3</span>*2280 Angela Plain~
 <span style="color:#ff6188">N4</span>*Hortonshire*MS*93248~

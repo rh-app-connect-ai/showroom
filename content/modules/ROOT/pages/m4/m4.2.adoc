@@ -7,30 +7,102 @@ include::partial$style.adoc[]
 
 {banner-under-construction}
 
-Here's the Camel route you'll be working with. It listens for messages from Rocket.Chat, extracts the text, and sends a response back:
+=== Open the Camel route
 
-{blank}
+In your editor's file explorer, click on the following file — Kaoto will automatically open it and render the route as a visual diagram.
 
-[.mermaid]
-----
-flowchart LR
-    A(RocketChat) --> B(get text) --> C(set system prompt) --> D2 --> E(to rocketchat)
+--
+[.indent2]
+📁 workshop +
+&nbsp;&nbsp;📁 lab +
+pass:[<mark style="padding-left: 1rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *agent.camel.yaml* +
+--
 
-    subgraph D2 ["To do: Agent"]
-        D(dummy response)
-    end
-
-    style C fill:#eee,stroke:#ccc,color:#aaa
-    style D2 fill:#dde4f6,stroke:#6690e6,color:#335
-----
-
-The `set system prompt` step is disabled — there's no AI agent yet, so no prompt is needed. In its place, the `dummy response` step simply returns "Hello World" to Rocket.Chat. Any message sent to the bot triggers this flow and gets back the placeholder reply.
-
-Your task will be to replace the `dummy response` with a MaaS-powered AI agent, and enable the system prompt that guides its behaviour.
+Kaoto will open the file and display all the route definitions it contains. The file includes several routes, but the one we want to focus on is the main agentic flow.
 
 {empty} +
 
-=== Run the starting point
+You may find the routes displayed vertically. For better readability, switch to horizontal layout by clicking the middle button at the bottom of the canvas:
+
+[.bordered]
+image::m1/kaoto-horizontal-layout.png[width=50%]
+
+{empty} +
+
+The file contains several routes. To focus on the main agentic flow:
+
+. Click the *Routes* dropdown in the upper-left toolbar
+. Select `rocketchat-to-agent` from the list
++
+{empty} +
++
+[#kaoto-routes-m4]
+[.bordered]
+image::m4/kaoto-routes-dropdown.png[width=50%]
+
+[.overlay]
+****
+[.target]
+kaoto-routes-m4
+
+[.arrows]
+{x: 26, y: 25, rot: 210, size: .8}
+{x: 29, y: 66, rot: 230, size: .8}
+
+[.numbers]
+{x: 35, y: -7, size: 1.5}
+{x: 44, y: 40, size: 1.5}
+****
+
+{empty} +
+
+To center the route in the canvas, click the *Reset View* button at the bottom:
+
+{blank}
+
+[.bordered]
+image::m1/kaoto-reset-view.png[width=50%]
+
+TIP: Use the mouse wheel to zoom in and out of the canvas, and click and drag to pan around the view.
+
+{empty} +
+
+You should now see the route you'll be working with — the starting point for the customer support flow:
+
+{blank}
+
+[#kaoto-agent-route]
+[.bordered]
+image::m4/kaoto-agent-route.png[width=90%]
+
+[.overlay]
+****
+[.target]
+kaoto-agent-route
+
+[.arrows]
+{x: 35.5, y: 72, rot: 0, size: 1, color: "red"}
+{x: 52.5, y: 72, rot: 0, size: 1, color: "red"}
+
+[.numbers]
+{x: 35.5, y: 117, size: 1.2, color: "red"}
+{x: 52.5, y: 117, size: 1.2, color: "red"}
+****
+
+{empty} +
+
+Reading left to right, the route listens for messages from _Rocket.Chat_ and extracts the text — but the flow is incomplete. The `set system prompt` step is disabled, and the pass:[<code style="background-color: #dde4f6; color: #335;">To do: Agent</code>] block contains only a `dummy response` that returns "Hello World" regardless of what the user says.
+
+Your task will be to complete this flow:
+
+. Enable the `set system prompt` step — this will instruct the AI agent how to behave
+. Replace the `dummy response` with a MaaS-powered AI agent, and progressively equip it with tools to handle real customer requests
+
+{empty} +
+
+=== Start the dev loop
+
+From this point on, you'll work in a rapid development cycle — _Camel JBang_ runs in dev mode, which means every change you make to the route is instantly picked up and applied. You can modify the flow, save the file, and immediately observe the new behaviour without restarting.
 
 Start by running the Camel route as-is to see the placeholder behaviour in action:
 
@@ -38,11 +110,9 @@ Start by running the Camel route as-is to see the placeholder behaviour in actio
 
 [.copypaste]
 ****
-camel forage run \
-  agent/* \
-  application.properties \
-  --dep=mvn:io.kaoto.forage:forage-memory-message-window:1.1-SNAPSHOT \
-  --dev
+camel run * \
+--dev \
+--local-kamelet-dir ../support/kamelets
 ****
 
 [TIP]
@@ -50,15 +120,29 @@ camel forage run \
 .What does this command do?
 [%collapsible]
 ====
-* `camel forage run` — runs the Camel route using the Forage agent runtime
-* `agent/*` — loads all files from the `agent/` folder (route, tools, templates)
-* `application.properties` — loads the model configuration and credentials
-* `--dep=mvn:io.kaoto.forage:forage-memory-message-window:1.1-SNAPSHOT` — adds the message-window memory dependency at runtime
+* `camel run *` — runs all Camel route files in the current directory
 * `--dev` — dev mode, automatically reloads when you save changes to any source file
+* `--local-kamelet-dir ../support/kamelets` — loads custom Kamelets from the support folder
 ====
 --
 
-Once the route is running, switch to your _Rocket.Chat_ window and select the `ai-support` channel matching your user number (e.g. `ai-support3` for `user3`). Type a simple message:
+Wait for _Camel_ to fully start — you should see `Running` in the terminal.
+
+Switch to your _Rocket.Chat_ window.
+
+TIP: If you haven't logged in yet, follow the xref:m2/m2.2.adoc[Rocket.Chat platform onboarding] instructions.
+
+In the left sidebar, find and select the `ai-support` channel that matches your user number:
+
+[subs=attributes]
+++++
+<div style="display: inline-flex; align-items: center; gap: 8px; background: #2f343d; border-radius: 4px; padding: 6px 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 8px 0;">
+  <span style="width: 32px; height: 32px; background: #6c757d; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">A</span>
+  <span style="color: #ccc; font-size: 15px;">&#x2317; <b>ai-support<script>document.currentScript.parentElement.appendChild(document.createTextNode('{user-username}'.replace(/\D/g,'')))</script></b></span>
+</div>
+++++
+
+Then type a simple message:
 
 {blank}
 
@@ -72,7 +156,7 @@ The Camel bot picks up the message and responds with `Hello World` — confirmin
 {blank}
 
 :fig-time: 5:05 PM
-:fig-user-msg: hi
+:fig-user-msg: Hi
 :fig-bot-msg: Hello World
 include::_figures/rc-interaction.adoc[]
 
@@ -80,13 +164,13 @@ include::_figures/rc-interaction.adoc[]
 
 === Wire the AI agent
 
-Now replace the dummy response with a real AI agent. Open `agent.camel.yaml` in _Kaoto_ and follow the steps below:
+Now replace the dummy response with a real AI agent. Head back to the _Kaoto_ canvas and follow the steps below:
 
 {empty} +
 
 . *Enable the system prompt*
 +
-The `set system prompt` step is currently disabled — it's greyed out because there was no AI agent to use it. Now that you're about to add one, enable it: hover the step and click the {btn-enable} button (next to the {btn-replace} button).
+The `set system prompt` step is currently disabled — it's greyed out because there was no AI agent to use it. Now that you're about to add one, enable it: hover the step and click the {btn-enable} button (next to the {nbsp}{btn-replace}{nbsp} button).
 +
 {empty} +
 
@@ -95,17 +179,20 @@ The `set system prompt` step is currently disabled — it's greyed out because t
 The `dummy response` step is a placeholder — it always returns "Hello World". Replace it with the _LangChain4j Agent_ component that connects to MaaS.
 +
 
-1. Hover the `dummy response` step and click the floating {btn-replace} button.
-1. Find and select the _LangChain4j Agent_ component.
-1. Select the `All` configuration tab.
+1. Hover the `dummy response` step and click the floating {nbsp}{btn-replace}{nbsp} button.
+1. Type `lang` in the {ui-filter} to find the _LangChain4j Agent_ component, then select it.
+1. Click the _LangChain4j Agent_ step to open the configuration panel.
+1. Select the `Required` configuration tab.
 1. Set the `Agent Id` to:
++
+{blank}
 +
 [.copypaste]
 ****
 myagent
 ****
 +
-Save the file. Because you're running in dev mode, Camel hot-reloads automatically. Watch the terminal — the logs should confirm the agent is running:
+Because you're running in dev mode, _Camel_ hot-reloads automatically. Watch the terminal — the logs should confirm the agent is running:
 +
 {blank}
 +
@@ -116,66 +203,70 @@ Save the file. Because you're running in dev mode, Camel hot-reloads automatical
 2026-03-24 18:14:11.115  <span style="color:#A649A6">INFO</span> <span style="color:#10A9CD">camel.support.RouteWatcherReloadStrategy</span> :     Started <span style="color:#0FBC7A">get-pdf</span> (direct://get-pdf-url)
 2026-03-24 18:14:11.116  <span style="color:#A649A6">INFO</span> <span style="color:#10A9CD">camel.support.RouteWatcherReloadStrategy</span> :     Started <span style="color:#0FBC7A">to-rocketchat</span> (direct://to-rocketchat)</pre>
 ++++
++
+{empty} +
 
-Here's the updated flow — the system prompt is now active and the AI agent has replaced the dummy response:
-
+. *Check the updated flow*
++
+The system prompt is now active and the AI agent has replaced the dummy response. Your route should look like this:
++
 {blank}
++
+[.bordered]
+image::m4/kaoto-agent-route-complete.png[width=90%]
++
+{empty} +
 
-[.mermaid]
-----
-flowchart LR
-    A(RocketChat) --> B(get text) --> C(set system prompt) --> D2 --> E(to rocketchat)
-
-    subgraph D2 ["Done: Agent"]
-        D(LangChain4j Agent)
-    end
-
-    style D2 fill:#e8f5e9,stroke:#66bb6a,color:#1b5e20
-----
-
-The agent is live. Switch back to your _Rocket.Chat_ window and test it:
-
+. *Interact with the agent*
++
+Switch back to your _Rocket.Chat_ window and type:
++
 {blank}
-
++
 [.copypaste]
 ****
 Hi again
 ****
-
-This time the AI agent processes your message — it sends it to the LLM via MaaS, which reasons about it and returns a natural language response. You should see something like:
-
++
+The AI agent processes your message — it sends it to the LLM via MaaS, which reasons about it and returns a natural language response. You should see something like:
++
 {blank}
-
++
 :fig-time: 5:06 PM
 :fig-user-msg: Hi again
 :fig-bot-msg: Hello! How can I assist you today?
 include::_figures/rc-interaction.adoc[]
-
-The AI agent is connected and responding — but it's not very smart yet. Try asking it something specific:
-
++
+{empty} +
++
+The agent is responding — but can it do real work? +
+Try asking for something specific:
++
 {blank}
-
++
 [.copypaste]
 ****
-Can you show me invoice 61356293
+Can you show me invoice 61356291
 ****
-
++
 The bot responds with something like:
-
++
 {blank}
-
++
 :fig-time: 5:07 PM
-:fig-user-msg: Can you show me invoice 61356293
+:fig-user-msg: Can you show me invoice 61356291
 :fig-bot-msg: I'm sorry, I don't have the capability to retrieve that PDF right now.
 include::_figures/rc-interaction.adoc[]
-
-The agent knows what it _should_ do — the system prompt describes its role and capabilities — but it doesn't have the tools to act on it. It's like a support agent who knows the process but can't access the systems.
-
++
+The agent knows what it _should_ do — the system prompt describes its role and capabilities — but the tools are not yet visible to the agent, so it can't act on any request.
++
 [TIP]
 --
 .Why did the bot respond that way?
 [%collapsible]
 ====
+In short, the tools exist in the project but the agent can't see them yet.
+
 The `system.message` file contains the system prompt that guides the AI agent's behaviour. One of its rules explicitly instructs the model to decline when it lacks the right tool:
 
 ----
@@ -185,7 +276,7 @@ The `system.message` file contains the system prompt that guides the AI agent's 
   capability to retrieve that PDF right now."
 ----
 
-The model follows this constraint because it can see which tools are available. Right now it has none — so it politely refuses. Once you register the tools, the model will use them instead.
+Once you register the tools, the agent will discover and use them automatically.
 ====
 --
 
@@ -193,44 +284,54 @@ The model follows this constraint because it can see which tools are available. 
 
 === Hook the tools
 
-The route already includes a predefined tool (`get_invoice_pdf`) — but the agent doesn't know about it yet. Camel uses _tags_ to match agents with their tools: when an agent's tag matches a tool's tag, the tool becomes available.
+The project includes a number of tools that integrate with the necessary backends — but the agent doesn't know about them yet. Camel uses _tags_ to match agents with their tools: when an agent's tag matches a tool's tag, the tool becomes available.
 
 . *Configure the agent's tags*
 +
 
 1. Click the `LangChain4j Agent` step to open its configuration.
 1. Select the `All` configuration tab.
-1. Set the `Tags` property to:
+1. Type `tags` in the {ui-filter} to find the `Tags` property, then set it to:
++
+{blank}
 +
 [.copypaste]
 ****
 all
 ****
 +
-Save the file. Camel hot-reloads and the agent now has access to the tool. Try it — go back to _Rocket.Chat_ and ask:
+_Camel_ hot-reloads and the agent now discovers the tools.
++
+{empty} +
 
+. *Try it out*
++
+Go back to _Rocket.Chat_ and ask:
++
 {blank}
-
++
 [.copypaste]
 ****
 What about now?
 ****
-
++
 This time the LLM discovers the tool, calls it, and responds with the invoice:
-
++
 {blank}
-
++
 :fig-time: 6:47 PM
 :fig-user-msg: What about now?
-:fig-bot-msg: Here is the PDF for Invoice 61356293.
-:fig-attach-title: Invoice 61356293 PDF ▾
+:fig-bot-msg: Here is the PDF for Invoice 61356291.
+:fig-attach-title: Invoice 61356291 PDF ▾
 :fig-attach-desc: Click to view or download
 include::_figures/rc-interaction-attach.adoc[]
-
++
+{empty} +
++
 The agent found the `get_invoice_pdf` tool, called it to generate a pre-signed S3 URL, and returned the link to the support agent — all from a single natural language request. Clicking the link opens the PDF in a new tab:
-
++
 {blank}
-
++
 include::_figures/invoice-pdf.adoc[]
 
 {empty} +
@@ -271,8 +372,8 @@ Either way, the bot responds with the updated PDF link:
 {blank}
 
 :fig-time: 6:50 PM
-:fig-bot-msg: Here is the updated PDF for Invoice 61356293.
-:fig-attach-title: Invoice 61356293 PDF ▾
+:fig-bot-msg: Here is the updated PDF for Invoice 61356291.
+:fig-attach-title: Invoice 61356291 PDF ▾
 :fig-attach-desc: Click to view or download
 include::_figures/rc-bot-attach.adoc[]
 

@@ -1,5 +1,5 @@
 :imagesdir: ../../assets/images
-:page-time: 8
+:page-time: 1
 include::partial$style.adoc[]
 
 [id="deploy-test"]
