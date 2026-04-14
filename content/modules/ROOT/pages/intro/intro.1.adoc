@@ -2,59 +2,136 @@
 :page-time: 1
 include::partial$style.adoc[]
 
-[id="tech-overview"]
-== Technologies overview
+[id="workshop-journey"]
+== The Workshop Journey
 
-{banner-work-in-progress}
-
-{banner-under-construction}
-
-If you're unfamilar with Apache Camel, in a nutshell, it is an integration framework to define data flows connecting sources to destinations, applying _EIPs_ (enterprise integration patterns) as transformational processes between the two ends.
-
-The image below illustrates typical integration flows connecting sources to destinations:
-
-[.text-center]
-image::intro/camel-nutshell.jpg[width=60%]
+You'll play the role of an integration developer at a customer support provider. Through the workshop labs you will put together a platform that connects applications across network boundaries, bridges chat systems, plugs in AI for customer support, and adds governance on top — all using Apache Camel as the integration backbone.
 
 {empty} +
 
-=== Building blocks in Camel
+=== Application Connectivity Meets AI
 
-_Apache Camel_ is unique in how you construct data flows and how you extend it by creating customized building blocks.
+Integration and AI used to be separate concerns. You had your data flows on one side and your AI models on the other. That's changing. In this workshop they come together in a single platform.
 
-To help you get familiarized with the different constructs you can use in Camel, the figure below shows a simplified view of how they relate to each other.
+Apache Camel handles the integration work — moving data between systems, applying transformations, and orchestrating flows. Service Interconnect gives you secure connectivity to databases that live outside your cluster. Kafka decouples chat platforms into an event-driven architecture. Model-as-a-Service (MaaS) puts an LLM at the disposal of your Camel flows. And Connectivity Link sits in front of the LLM to enforce authentication and rate-limit token consumption.
 
-[.text-center]
-image::intro/camel-abstraction-levels.jpg[width=60%]
-
-- A pipe is made out of Kamelets
-- A Kamelet is the encapsulation of a Camel route
-- A Camel route is made out of steps
-- A step is tipically a Camel component (but also includes the use of EIPs or calls to other routes or Kamelets).
+You will work with all of these as you progress through the labs.
 
 {empty} +
 
-The workshop will center its attention around those most commonly used: *_Camel routes_* and *_Kamelets_*.
+=== The Business Scenario
+
+Your company provides outsourced customer support for product distributors. Clients send purchase orders; your company ingests them, transforms the data, stores it, and generates invoices. When a customer spots a problem with their order, they contact support through a chat platform. The agent investigates, fixes the issue, and regenerates the invoice.
+
+The catch: the systems involved don't talk to each other. The database sits on separate infrastructure. The chat platforms are disconnected. Agents resolve issues by hand, switching between tools. There's no AI in the loop, and no controls around AI even if there were.
+
+Each lab in this workshop tackles one of those gaps.
 
 {empty} +
 
-=== Full technology stack
+=== What You Will Build
+
+The labs follow a story. Each phase solves a problem that sets up the next one.
+
+[.mermaid]
+----
+flowchart LR
+    A["Ingest purchase\norders"] -->|"customer spots\na problem"| B["Multi-channel\ncommunication"]
+    B -->|"agent needs\nhelp resolving"| C["AI-assisted\nsupport"]
+    C -->|"AI usage must\nbe controlled"| D["Govern AI\nconsumption"]
+
+    style A fill:#e8f5e9,stroke:#66bb6a,color:#000
+    style B fill:#e3f2fd,stroke:#42a5f5,color:#000
+    style C fill:#fff3e0,stroke:#fb8c00,color:#000
+    style D fill:#fce4ec,stroke:#ef5350,color:#000
+----
+
+{empty} +
+
+==== Secure Data Ingestion
+
+External organisations send purchase orders in EDI format. A Camel flow picks them up, transforms the EDI into XML, and stores the data in a backend database. The database lives on separate infrastructure, so Service Interconnect provides a secure link to it without exposing anything to the public network. The flow also renders PDF invoices and pushes them to S3 storage.
+
+{empty} +
+
+==== Multi-Channel Communication Hub
+
+A customer who placed an order reviews their invoice and spots a mistake. They reach out to support — but the customer is on Matrix and the support team works in Rocket.Chat. Using Camel and Kafka, you connect both platforms so that messages from one show up in the other. Agents can respond from their own tool without caring which platform the customer is on.
+
+{empty} +
+
+==== AI-assisted Issue Resolution
+
+The support agent now needs to look up the order, fix it in the database, and regenerate the invoice. That's a lot of manual steps across different systems. Instead, the agent talks to an AI bot right inside Rocket.Chat. Agentic Camel sends the request to an LLM via MaaS, which decides what to do — query the database, update the record, regenerate the PDF — and reports back to the agent. The whole thing happens in a chat conversation.
+
+{empty} +
+
+==== Governing AI Consumption
+
+Once AI is part of the workflow, you need controls. Who can call the LLM? How much can they consume? Connectivity Link sits in front of the AI service and enforces authentication policies and token-based rate limits. A free-tier user gets a small token budget; a gold-tier user gets more. No changes needed in the AI agent — governance is handled at the gateway level.
+
+{empty} +
+
+=== The Big Picture
+
+Here is the full picture — all the pieces wired together.
+
+[.mermaid]
+----
+flowchart LR
+    subgraph p1 ["Secure Data Ingestion"]
+        EO([External\nOrg]) -->|EDI| Ingest[Camel\nIngest]
+        Ingest --> SI{{Service\nInterconnect}}
+        SI -.-> DB[(Database)]
+        Ingest --> S3[(S3 / ODF)]
+    end
+
+    subgraph p2 ["Communication Hub"]
+        Matrix[Matrix] <-->|Camel| Kafka[[Kafka]] <-->|Camel| RC[Rocket.Chat]
+    end
+
+    subgraph p3 ["AI Support"]
+        Bot[Agentic\nCamel]
+        subgraph p4 ["Governed AI"]
+            CL{{Connectivity\nLink}} --> MaaS[MaaS / LLM]
+        end
+        Bot --> CL
+    end
+
+    RC --> Bot
+    Bot -.->|queries| DB
+
+    style p1 fill:#e8f5e9,stroke:#66bb6a
+    style p2 fill:#e3f2fd,stroke:#42a5f5
+    style p3 fill:#fff3e0,stroke:#fb8c00
+    style p4 fill:#fce4ec,stroke:#ef5350
+----
+
+Each lab includes its own detailed architecture diagram. This one just shows how the pieces fit together end to end.
+
+{empty} +
+
+=== Full Technology Stack
 
 Below is the stack of technologies you will interact with along the workshop. Combined, they unlock the potential for agile, scalable integration solutions, enabling seamless orchestration of containerized workflows, resilient data persistence across pipelines, and rapid deployment of event-driven microservices to modernize hybrid cloud architectures with minimal complexity.
 
-* **Red Hat Application Foundations**: A set of components engineered to help build, deploy, and operate applications. Among others, it includes the products below you will use in the workshop:
+* https://www.redhat.com/en/products/application-foundations[Red Hat Application Foundations,window=_blank]: A set of components engineered to help build, deploy, and operate applications. Among others, it includes the products below you will use in the workshop:
 
-** **Red Hat build of Apache Camel**: A versatile toolkit for streamlined application integration that simplifies and standardizes the practices of connecting diverse systems that runs in both Quarkus and Spring Boot runtimes.
+** https://developers.redhat.com/products/red-hat-build-of-apache-camel[Red Hat build of Apache Camel,window=_blank]: A versatile toolkit for streamlined application integration that simplifies and standardizes the practices of connecting diverse systems that runs in both Quarkus and Spring Boot runtimes.
 
-** **Red Hat Streams for Apache Kafka**: Based on the Apache Kafka project, streams for Apache Kafka offers a distributed backbone that allows microservices and other applications to share data with extremely high throughput and extremely low latency.
+** https://developers.redhat.com/products/streams-for-apache-kafka[Red Hat Streams for Apache Kafka,window=_blank]: Based on the Apache Kafka project, streams for Apache Kafka offers a distributed backbone that allows microservices and other applications to share data with extremely high throughput and extremely low latency.
 +
 {blank}
 
-* **Red Hat Dev Spaces**: A collaborative Kubernetes-native development solution that delivers OpenShift workspaces and in-browser IDE for rapid cloud application development.
+* https://developers.redhat.com/products/openshift-dev-spaces[Red Hat OpenShift Dev Spaces,window=_blank]: A collaborative Kubernetes-native development solution that delivers OpenShift workspaces and in-browser IDE for rapid cloud application development.
 
-* **Red Hat OpenShift**: A unified application development platform that lets you build, modernize, and deploy applications at scale on your choice of hybrid cloud infrastructure.
+* https://www.redhat.com/en/technologies/cloud-computing/openshift[Red Hat OpenShift,window=_blank]: A unified application development platform that lets you build, modernize, and deploy applications at scale on your choice of hybrid cloud infrastructure.
 
-* **Red Hat OpenShift Data Foundation**: Persistent software-defined storage and essential data services integrated with and optimized for Red Hat OpenShift.
+* https://www.redhat.com/en/technologies/cloud-computing/openshift-data-foundation[Red Hat OpenShift Data Foundation,window=_blank]: Persistent software-defined storage and essential data services integrated with and optimized for Red Hat OpenShift.
+
+* https://www.redhat.com/en/technologies/cloud-computing/connectivity-link[Red Hat Connectivity Link,window=_blank]: A secure and scalable solution for connecting applications across network boundaries, enabling seamless communication between services running in different environments.
+
+* https://www.redhat.com/en/technologies/cloud-computing/service-interconnect[Red Hat Service Interconnect,window=_blank]: A secure connectivity solution that allows applications running in OpenShift to access databases and other services that reside outside the cluster without exposing them to the public network.
 
 {empty} +
 
