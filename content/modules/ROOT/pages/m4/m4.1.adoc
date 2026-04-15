@@ -66,6 +66,8 @@ pass:[<mark style="padding-left: 1rem; background-color: white; color: #b07219">
 pass:[<mark style="padding-left: 1rem; background-color: white; color: grey"><b>&nbsp;≡&nbsp;&nbsp;</b></mark>] *system.message* +
 pass:[<mark style="padding-left: 1rem; background-color: white; color: grey"><b>&nbsp;≡&nbsp;&nbsp;</b></mark>] *template-pdf.xsl* +
 
+{empty} +
+
 [.indent2]
 NOTE: The `application.properties` file contains pre-configured settings for your environment — including AI model configuration and endpoint connectivity (database, S3 storage, and HelpDesk). It's ready to use, so you can focus on building the agentic flow.
 
