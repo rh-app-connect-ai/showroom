@@ -30,11 +30,11 @@ flowchart LR
 
     Customer -->|EDI Purchase Orders| API
     API --> Camel
-    Camel -->|XML data| SI
+    Camel -->|① XML data| SI
     SI{{Service Interconnect}} -.->|Secure Link| DB
     DB -.-> SI
     SI --> Camel
-    Camel -->|PDF Invoices| S3
+    Camel -->|② PDF Invoices| S3
 ----
 
 {empty} +
@@ -159,25 +159,7 @@ flowchart LR
 
 === Quick overview of Kaoto
 
-Most of the processing flows you'll edit during this workshop use *Kaoto*, the visual integration designer for Apache Camel. Kaoto is a VS Code extension that renders Camel definitions graphically so you can design and configure routes without editing YAML by hand.
-
-NOTE: The Kaoto extension is already pre-installed in your Dev Spaces environment.
-
-image::m1/vs-code-kaoto.jpg[width=40%]
-
-
-Among other tasks, Kaoto helps you to:
-
-* Define Camel routes
-* Define Kamelets
-* Define data transformations
-* Apply EIPs (Enterprise Integration Patterns)
-
-{empty} +
-
-Here's what the Kaoto canvas looks like — each step in the route is rendered as a visual node that you can click to configure:
-
-image::m1/kaoto-overview.jpg[width=100%]
+include::../_shared/kaoto-intro.adoc[]
 
 {empty} +
 

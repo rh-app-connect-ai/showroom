@@ -18,9 +18,17 @@ In your editor's file explorer, click on the following file — Kaoto will autom
 pass:[<mark style="padding-left: 1rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *agent.camel.yaml* +
 --
 
-Kaoto will open the file and display all the route definitions it contains. The file includes several routes, but the one we want to focus on is the main agentic flow.
+[TIP]
+--
+.New to Kaoto?
+[%collapsible]
+====
+include::../_shared/kaoto-intro.adoc[]
+====
+--
 
-{empty} +
+
+Kaoto will open the file and display all the route definitions it contains. The file includes several routes, but the one we want to focus on is the main agentic flow.
 
 You may find the routes displayed vertically. For better readability, switch to horizontal layout by clicking the middle button at the bottom of the canvas:
 
@@ -249,6 +257,12 @@ Try asking for something specific:
 Can you show me invoice 61356291
 ****
 +
+NOTE: Your lab comes with a sample invoice (`61356291`) ready to use. This is the one referenced in the command above.
++
+TIP: You can also try fetching invoices you generated during the Ingestion lab — feel free to use any invoice number from your earlier exercises.
++
+{empty} +
++
 The bot responds with something like:
 +
 {blank}
@@ -271,9 +285,9 @@ The `system.message` file contains the system prompt that guides the AI agent's 
 
 ----
 # CRITICAL CONSTRAINTS
-* **NO TOOL, NO URL:** If `get_invoice_pdf` is missing from your
-  current toolset, respond EXACTLY: "I'm sorry, I don't have the
-  capability to retrieve that PDF right now."
+* **NO TOOL, NO URL:** If there is no tool fit for the job (missing),
+  you MUST return Pattern 2 with the text: "I'm sorry, I don't have 
+  the capability to retrieve that PDF right now."
 ----
 
 Once you register the tools, the agent will discover and use them automatically.
@@ -328,35 +342,37 @@ include::_figures/rc-interaction-attach.adoc[]
 +
 {empty} +
 +
-The agent found the `get_invoice_pdf` tool, called it to generate a pre-signed S3 URL, and returned the link to the support agent — all from a single natural language request. Clicking the link opens the PDF in a new tab:
+The bot found the right tool to retrieve the invoice PDF, called it to generate a pre-signed S3 URL, and returned the link to the support agent — all from a single natural language request. Clicking the link opens the PDF in a new tab.
 +
-{blank}
-+
+.See the sample invoice
+[%collapsible]
+=====
 include::_figures/invoice-pdf.adoc[]
+=====
 
 {empty} +
 
 === Amend the invoice
 
-The agent can do more than just retrieve data — it can act on it. Imagine the customer has changed their mind and wants to return one of the items. Ask the AI assistant to amend the invoice:
+The ai-bot can do more than just retrieve data — it can act on it. Imagine the customer has changed their mind and wants to return one of the items. Ask the AI assistant to amend the invoice:
 
 {blank}
 
 [.copypaste]
 ****
-The customer has changed his mind and wants to return one of the items purchased. Could you please amend the invoice?
+The customer would like to return stemless wine glasses, could you please adjust the invoice?
 ****
 
-The agent inspects the invoice, identifies the matching item, triggers the necessary tools to update the database, and responds with a summary of the changes:
+The agentic system inspects the invoice, identifies the matching item, triggers the necessary tools to update the database, and responds with a summary of the changes:
 
 {blank}
 
 :fig-time: 6:49 PM
-:fig-user-msg: The customer has changed his mind and wants to return one of the items purchased. Could you please amend the invoice?
-:fig-bot-msg: The database records have been updated. The customer returned one item, so the quantity of the item has been reduced from 3 to 2. The net worth, VAT amount, and gross worth have been recalculated accordingly. Would you like to see the new PDF invoice?
+:fig-user-msg: The customer would like to return stemless wine glasses, could you please adjust the invoice?
+:fig-bot-msg: The database records have been updated. The stemless wine glasses item (Item 4) has been removed, and the summary values have been recalculated. Would you like to see the new PDF invoice?
 include::_figures/rc-interaction.adoc[]
 
-The agent acted autonomously — it inspected the invoice, identified the item, updated the quantity in the database, recalculated the totals, and confirmed the changes. All from a single natural language request.
+The agentic system acted autonomously — it inspected the invoice, identified the item, updated the quantity in the database, recalculated the totals, and confirmed the changes. All from a single natural language request.
 
 Notice the bot's response — it may suggest viewing the updated invoice (LLMs are unpredictable, so the exact wording varies). If it does, simply reply `yes`. If it doesn't, ask to see the amended invoice:
 
@@ -377,13 +393,17 @@ Either way, the bot responds with the updated PDF link:
 :fig-attach-desc: Click to view or download
 include::_figures/rc-bot-attach.adoc[]
 
-Click the link to open the updated PDF. Taking our previous invoice sample as reference, the amended document would look approximately like this:
+Click the link to open the updated PDF.
 
-{blank}
+.See the amended invoice
+[%collapsible]
+====
+Taking our previous invoice sample as reference, the amended document would look approximately like this:
 
 include::_figures/invoice-pdf-amended.adoc[]
+====
 
-Inspect the document and verify the modifications are correct — the item quantity should reflect the return, and the totals should be recalculated accordingly.
+Inspect the document and verify the modifications are correct — the stemless wine glasses (item 4) should be removed, and the totals recalculated accordingly.
 
 {empty} +
 
@@ -407,23 +427,35 @@ The agent gathers the context from the conversation, creates a ticket in the Hel
 :fig-bot-msg: A ticket has been created with ID 1025. Would you like to share this ticket with the customer?
 include::_figures/rc-interaction.adoc[]
 
-At this point, the bot may behave in different ways — LLMs are unpredictable. Here's what to expect and how to respond:
+{empty} +
+
+IMPORTANT: Before going any further, make sure you have already onboarded to _Matrix_ and accepted the room invitation — the ticket will be shared with the customer there. Remember, _Matrix_ represents the customer side, while _Rocket.Chat_ is where the support agent works. If you haven't done this yet, follow the xref:m2/m2.1.adoc[Matrix platform onboarding] instructions.
+
+The interaction above illustrates a simple request and response — but because LLMs are non-deterministic, the bot may have responded differently. Here's what to expect and how to handle each case:
 
 * **The bot asks to share the ticket** (as shown above) — reply with:
++
+{blank}
 +
 [.copypaste]
 ****
 Yes, please share it with the customer.
 ****
++
+{blank}
 
 * **The bot shares the ticket automatically** without asking — no action needed, skip ahead.
 
 * **The bot doesn't mention sharing at all** — ask it explicitly:
 +
+{blank}
++
 [.copypaste]
 ****
 Could you share the ticket with the customer?
 ****
++
+{empty} +
 
 Either way, the final outcome is the same — the bot shares the ticket and the customer receives a link to the HelpDesk system:
 
@@ -446,6 +478,8 @@ You should see a message like this:
 :fig-msg: pass:[&#x1F4C4; Ticket <span style="color: #6D28D9; font-weight: bold;">#1025</span> created.<br>(Click to open in HelpDesk)]
 include::_figures/matrix-message.adoc[]
 
+{empty} +
+
 === Verify the ticket from the customer's perspective
 
 Now put yourself in the customer's shoes. The customer received a message in _Matrix_ with a link to the _Globex HelpDesk_ ticketing system. Click the ticket link in the _Matrix_ window.
@@ -456,7 +490,7 @@ A new tab opens with the _Globex HelpDesk_ login page:
 
 include::_figures/helpdesk-login.adoc[]
 
-Log in using the same credentials as _Rocket.Chat_ and _Matrix_:
+Log in using the credentials below:
 
 * *Username*:
 +

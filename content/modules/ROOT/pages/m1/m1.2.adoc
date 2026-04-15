@@ -701,7 +701,7 @@ You should see output similar to:
 {blank}
 
 ++++
-<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #818181">2026-03-23 10:14:08.939  <span style="color:#A649A6">11530</span> ---   <span style="color:#10A9CD">sql://SELECT%20count(*)%20FROM%20invoice</span> : <span style="color:#0FBC7A">Reply received</span> <span style="color:#0FBC7A">(success)</span> <span style="color:#fff">(304ms)</span>
+<pre id="sql-count-output" style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #818181">2026-03-23 10:14:08.939  <span style="color:#A649A6">11530</span> ---   <span style="color:#10A9CD">sql://SELECT%20count(*)%20FROM%20invoice</span> : <span style="color:#0FBC7A">Reply received</span> <span style="color:#0FBC7A">(success)</span> <span style="color:#fff">(304ms)</span>
  <span style="color:#fff">Endpoint</span>  <span style="color:#fff">sql://SELECT%20count(*)%20FROM%20invoices</span>
  <span style="color:#fff">Exchange</span>  (DefaultExchange)  <span style="color:#6F416E">InOut</span>   <span style="color:#fff">E3D444D7E02ADCD-0000000000000000</span>
  <span style="color:#fff">Message</span>   (DefaultMessage)
@@ -709,6 +709,17 @@ You should see output similar to:
  <span style="color:#fff">Body</span>      (ArrayList) (size: 1 bytes: 11)
  <span style="background-color: yellow; color: black">[{count=1}]</span></pre>
 ++++
+
+[.overlay]
+****
+[.target]
+sql-count-output
+
+[.arrows]
+{x: 11, y: 90, rot: -45, size: .8, color: "red"}
+****
+
+NOTE: The count is `1` because your lab environment comes with a sample invoice already loaded in the database.
 
 {empty} +
 

@@ -44,11 +44,11 @@ flowchart LR
 
     Customer -->|EDI Purchase Orders| API
     API --> Camel
-    Camel -->|XML data| SI
+    Camel -->|"① XML data"| SI
     SI{{Service Interconnect}} -.->|Secure Link| DB
     DB -.-> SI
     SI --> Camel
-    Camel -->|PDF Invoices| S3
+    Camel -->|"② PDF Invoices"| S3
 ----
 
 {empty} +

@@ -39,6 +39,26 @@ You'll build the listener side — the flow that picks up events from _Kafka_ an
 
 {empty} +
 
+
+=== Open the Camel route
+
+Find in your directory tree the following resource:
+
+* `k2r.camel.yaml`
++
+Click to open it in _Kaoto_.
++
+[TIP]
+--
+.New to Kaoto?
+[%collapsible]
+====
+include::../_shared/kaoto-intro.adoc[]
+====
+--
+
+{empty} +
+
 The flow is already prepared — you just need to fill in three areas:
 
 . Define _Kafka_ as the source system
@@ -100,20 +120,6 @@ flowchart LR
 
 The filter you'll define prevents this by checking the `source` field in each event and blocking those that originate from _Rocket.Chat_.
 --
-
-{empty} +
-
-=== Open the Camel route
-
-Find in your directory tree the following resource:
-
-* `k2r.camel.yaml`
-+
-Click to open it in _Kaoto_.
-+
-{empty} +
-
-Then, follow the instructions below to complete its definition:
 
 {empty} +
 
