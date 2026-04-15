@@ -3,7 +3,7 @@
 include::partial$style.adoc[]
 
 [id='lab4-agentic-flow']
-== Developing the Agent
+== Developing the AI assistant
 
 {banner-under-construction}
 
@@ -184,6 +184,8 @@ The Camel bot picks up the message and responds with `Hello World` — confirmin
 :fig-bot-msg: Hello World
 include::_figures/rc-interaction.adoc[]
 
+This is expected — the route is still using the hardcoded dummy response. In the next steps, you'll replace it with a real AI agent that can reason and respond naturally.
+
 {empty} +
 
 === Wire the AI agent
@@ -288,14 +290,14 @@ The bot responds with something like:
 :fig-bot-msg: I'm sorry, I don't have the capability to retrieve that PDF right now.
 include::_figures/rc-interaction.adoc[]
 +
-The agent knows what it _should_ do — the system prompt describes its role and capabilities — but the tools are not yet visible to the agent, so it can't act on any request.
+The bot knows what it _should_ do — the system prompt describes its role and capabilities — but the tools are not yet visible to the agent, so it can't act on any request.
 +
 [TIP]
 --
 .Why did the bot respond that way?
 [%collapsible]
 ====
-In short, the tools exist in the project but the agent can't see them yet.
+In short, the tools exist in the project but the AI agent can't see them yet.
 
 The `system.message` file contains the system prompt that guides the AI agent's behaviour. One of its rules explicitly instructs the model to decline when it lacks the right tool:
 
@@ -315,6 +317,23 @@ Once you register the tools, the agent will discover and use them automatically.
 === Hook the tools
 
 The project includes a number of tools that integrate with the necessary backends — but the agent doesn't know about them yet. Camel uses _tags_ to match agents with their tools: when an agent's tag matches a tool's tag, the tool becomes available.
+
+[TIP]
+--
+.How are tools defined in Apache Camel?
+[%collapsible]
+====
+In Camel, a tool is just a regular route that starts with the `langchain4j-tools` component. The route describes what the tool does — the agent discovers it automatically via tags and invokes it when needed.
+
+For example, here's one of the project's tool routes — it retrieves the PDF URL for a given invoice:
+
+image::m4/kaoto-tool-route.png[width=50%]
+
+The route starts with the `langchain4j-tools` source, processes the request through a series of steps, and returns the result to the LLM. No special wiring is needed — once the tags match, the agent can call the tool.
+====
+--
+
+{empty} +
 
 . *Configure the agent's tags*
 +
@@ -419,6 +438,8 @@ Taking our previous invoice sample as reference, the amended document would look
 include::_figures/invoice-pdf-amended.adoc[]
 ====
 
+NOTE: Notice the red *Amended* tag in the upper-right corner of the invoice — this indicates the document has been modified from the original.
+
 Inspect the document and verify the modifications are correct — the stemless wine glasses (item 4) should be removed, and the totals recalculated accordingly.
 
 {empty} +
@@ -434,7 +455,7 @@ A customer support process rarely ends with a single action. Returning an item i
 Could you please raise a ticket? Include the details explained, and ask the right departments to refund the customer accordingly.
 ****
 
-The agent gathers the context from the conversation, creates a ticket in the HelpDesk system, and responds with a confirmation:
+The agentic system gathers the context from the conversation, creates a ticket in the HelpDesk system, and responds with a confirmation:
 
 {blank}
 
@@ -460,8 +481,6 @@ Yes, please share it with the customer.
 +
 {blank}
 
-* **The bot shares the ticket automatically** without asking — no action needed, skip ahead.
-
 * **The bot doesn't mention sharing at all** — ask it explicitly:
 +
 {blank}
@@ -470,6 +489,10 @@ Yes, please share it with the customer.
 ****
 Could you share the ticket with the customer?
 ****
++
+{blank}
++
+* **The bot shares the ticket automatically** without asking — no action needed, skip ahead.
 +
 {empty} +
 
@@ -528,6 +551,8 @@ password
 REPLACE
 ****
 
+{empty} +
+
 Once logged in, the _Globex HelpDesk_ displays the list of open tickets. You should see the ticket the AI agent just created:
 
 {blank}
@@ -540,7 +565,7 @@ Click the ticket to inspect its details. The AI agent composed the ticket body f
 
 include::_figures/helpdesk-ticket-detail.adoc[]
 
-The full circle is complete: the agent retrieved an invoice, amended it, raised a ticket with all the relevant details, and shared it with the customer across messaging platforms. All from natural conversation.
+The full circle is complete: the AI assistant retrieved an invoice, amended it, raised a ticket with all the relevant details, and shared it with the customer across messaging platforms. All from natural conversation.
 
 {empty} +
 
@@ -552,7 +577,7 @@ Can you see the ticket details and the link to the updated invoice in the _Globe
 Well done — you've built an agentic flow that can retrieve, reason about, and modify data, raise tickets, and coordinate across departments through natural conversation.
 
 [.fail]
-Review your steps — make sure the agent has tools enabled (`Tags` = `all`) and the system prompt is active. Check the _Matrix_ window for the correct room.
+Review your steps — make sure the agentic flow has tools enabled (`Tags` = `all`) and the system prompt is active. Check the _Matrix_ window for the correct room.
 ****
 
 {empty} +

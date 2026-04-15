@@ -1,5 +1,7 @@
 ++++
-<div style="width: 500px; aspect-ratio: 1 / 1.414; background: #fff; border: 1px solid #ccc; box-shadow: 2px 2px 8px rgba(0,0,0,0.15); font-family: 'Times New Roman', serif; padding: 30px 35px; font-size: 12px; color: #333; line-height: 1.5;">
+<div style="width: 500px; aspect-ratio: 1 / 1.414; background: #fff; border: 1px solid #ccc; box-shadow: 2px 2px 8px rgba(0,0,0,0.15); font-family: 'Times New Roman', serif; padding: 30px 35px; font-size: 12px; color: #333; line-height: 1.5; position: relative; overflow: hidden;">
+
+  <div style="position: absolute; top: 14px; right: -35px; background: #e74c3c; color: #fff; font-family: Arial, sans-serif; font-size: 13px; font-weight: bold; padding: 4px 45px; transform: rotate(35deg); box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 1;">Amended</div>
 
   <div style="font-size: 16px; font-weight: bold; color: #1a3c6e;">Invoice no: 61356291</div>
   <div style="margin-top: 4px; color: #8b6914;">Date of issue: <span style="margin-left: 40px;">09/06/2012</span></div>
