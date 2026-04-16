@@ -1,0 +1,369 @@
+:imagesdir: ../../assets/images
+include::partial$style.adoc[]
+
+
+== Demo — Intro
+
+{empty} +
+
+=== Phase 1 — Order Ingestion
+
+[.mermaid.mermaid-w50]
+----
+flowchart LR
+    C --> PO --> ING
+
+    C@{ img: "../_images/test/customer-icon.svg", label: "Customer", pos: "b", h: 80, w: 80, constraint: "on" }
+    PO@{ img: "../_images/test/po-icon.svg", label: "Purchase Order", pos: "b", h: 80, w: 70, constraint: "on" }
+    ING@{ img: "../_images/test/integration-icon.svg", label: "Ingest", pos: "b", h: 80, w: 80, constraint: "on" }
+
+    style C fill:none,stroke:none
+    style PO fill:none,stroke:none
+    style ING fill:none,stroke:none
+----
+
+{empty} +
+
+=== Phase 2 — Support Session
+
+[.mermaid.mermaid-w50]
+----
+flowchart LR
+    CUST <--> CHAT <--> AGT
+
+    CUST@{ img: "../_images/test/customer-icon.svg", label: "Customer", pos: "b", h: 80, w: 80, constraint: "on" }
+    CHAT@{ img: "../_images/test/chat-icon.svg", label: "Conversation", pos: "b", h: 80, w: 80, constraint: "on" }
+    AGT@{ img: "../_images/test/agent-icon.svg", label: "Support Agent", pos: "b", h: 80, w: 80, constraint: "on" }
+
+    style CUST fill:none,stroke:none
+    style CHAT fill:none,stroke:none
+    style AGT fill:none,stroke:none
+----
+
+{empty} +
+
+=== Phase 3 — AI Support
+
+[.mermaid.mermaid-w50]
+----
+flowchart LR
+    AGT <--> CHAT <--> AI
+
+    AGT@{ img: "../_images/test/agent-icon.svg", label: "Support Agent", pos: "b", h: 80, w: 80, constraint: "on" }
+    CHAT@{ img: "../_images/test/chat-icon.svg", label: "Conversation", pos: "b", h: 80, w: 80, constraint: "on" }
+    AI@{ img: "../_images/test/ai-icon.svg", label: "AI Assistant", pos: "b", h: 80, w: 80, constraint: "on" }
+
+    style AGT fill:none,stroke:none
+    style CHAT fill:none,stroke:none
+    style AI fill:none,stroke:none
+----
+
+{empty} +
+
+=== Phase 4 — AI Guardrails
+
+[.mermaid.mermaid-w50]
+----
+flowchart LR
+    AGT <--> AI <--> GR
+
+    AGT@{ img: "../_images/test/agent-icon.svg", label: "Support Agent", pos: "b", h: 80, w: 80, constraint: "on" }
+    AI@{ img: "../_images/test/ai-icon.svg", label: "AI Assistant", pos: "b", h: 80, w: 80, constraint: "on" }
+    GR@{ img: "../_images/test/guardrail-icon.svg", label: "Guardrails", pos: "b", h: 80, w: 80, constraint: "on" }
+
+    style AGT fill:none,stroke:none
+    style AI fill:none,stroke:none
+    style GR fill:none,stroke:none
+----
+
+{empty} +
+
+== Demo — Phase 1: Order Ingestion
+
+{empty} +
+
+[.mermaid]
+----
+flowchart LR
+    C -->|"purchase"| Shop
+    Shop -->|"EDI message"| INT
+    INT -->|"②"| REC -.-x|"❌ unreachable"| DB
+    INT -->|"③"| INV --> S3
+
+    REC@{ img: "../_images/test/record-icon.svg", label: "Record", pos: "b", h: 60, w: 80, constraint: "on" }
+
+    C@{ img: "../_images/test/customer-icon.svg", label: "Customer", pos: "b", h: 80, w: 80, constraint: "on" }
+    Shop@{ img: "../_images/test/shop-icon.svg", label: "Shop", pos: "b", h: 80, w: 80, constraint: "on" }
+    INV@{ img: "../_images/test/invoice-icon.svg", label: "Invoice", pos: "b", h: 80, w: 70, constraint: "on" }
+    S3@{ img: "../_images/test/s3-icon.svg", label: "S3 Storage", pos: "b", h: 80, w: 80, constraint: "on" }
+    DB@{ img: "../_images/test/database-icon.svg", label: "Database", pos: "b", h: 80, w: 80, constraint: "on" }
+
+    subgraph INT["⚙️ Integration&nbsp;"]
+        S["① Transform EDI data\n② Insert DB record\n③ Generate invoice"]
+    end
+
+    style C fill:none,stroke:none
+    style Shop fill:none,stroke:none
+    style INV fill:none,stroke:none
+    style S3 fill:none,stroke:none
+    style REC fill:none,stroke:none
+    style DB fill:none,stroke:none
+    style INT fill:none,stroke:none,color:#EE0000,font-weight:bold
+    style S fill:#fce4e4,stroke:#EE0000,color:#333
+----
+
+{empty} +
+
+== Connecting the Database
+
+[.mermaid]
+[subs="attributes"]
+----
+flowchart LR
+    subgraph yoursLabel [OpenShift -&nbsp;]
+        subgraph yours [" "]
+            Client
+            SI1{{"Service\nInterconnect"}}
+        end
+    end
+
+    Client --> SI1
+
+    SI1 -.-|"🔒 secure link"| SI2
+
+    subgraph sharedLabel ["Remote Environment&#160;"]
+        subgraph shared [" "]
+            SI2{{"Service\nInterconnect"}}
+            SVC((svc))
+            SVC --- DB
+        end
+    end
+
+    SI2 --> SVC
+
+    Client@{ img: "../_images/test/client-icon.svg", label: "DB Client", pos: "b", h: 70, w: 80, constraint: "on" }
+    DB@{ img: "../_images/test/database-icon.svg", label: "Database", pos: "b", h: 80, w: 80, constraint: "on" }
+
+    style yoursLabel fill:none,stroke:none,color:#EE0000,font-weight:bold
+    style sharedLabel fill:none,stroke:none,color:#EE0000,font-weight:bold
+    style yours fill:#fce4e4,stroke:#EE0000
+    style shared fill:#fce4e4,stroke:#EE0000
+    style Client fill:none,stroke:none
+    style DB fill:none,stroke:none
+    style SI1 fill:#f8b4b4,stroke:#EE0000,color:#333
+    style SI2 fill:#f8b4b4,stroke:#EE0000,color:#333
+    style SVC fill:#fce4e4,stroke:#EE0000,color:#333
+----
+
+{empty} +
+
+== Demo — Phase 2: Support Session
+
+{empty} +
+
+=== Support Session
+
+[.mermaid.mermaid-w50]
+----
+flowchart LR
+    CUST <--> CHAT <--> AGT
+
+    CUST@{ img: "../_images/test/customer-icon.svg", label: "Customer", pos: "b", h: 80, w: 80, constraint: "on" }
+    CHAT@{ img: "../_images/test/chat-icon.svg", label: "Conversation", pos: "b", h: 80, w: 80, constraint: "on" }
+    AGT@{ img: "../_images/test/agent-icon.svg", label: "Support Agent", pos: "b", h: 80, w: 80, constraint: "on" }
+
+    style CUST fill:none,stroke:none
+    style CHAT fill:none,stroke:none
+    style AGT fill:none,stroke:none
+----
+
+{empty} +
+
+=== Message Hub
+
+[.mermaid]
+----
+flowchart LR
+    CUST <--> MX
+    MX <--> KF
+    KF <--> RC
+    RC <--> AGT
+
+    CUST@{ img: "../_images/test/customer-icon.svg", label: "Customer", pos: "b", h: 80, w: 80, constraint: "on" }
+    MX@{ img: "../_images/common/element-icon.svg", label: "Matrix", pos: "b", h: 80, w: 80, constraint: "on" }
+    KF@{ img: "../_images/common/kafka-icon.svg", label: "Kafka", pos: "b", h: 80, w: 80, constraint: "on" }
+    RC@{ img: "../_images/m4/rocketchat-icon.svg", label: "Rocket.Chat", pos: "b", h: 80, w: 80, constraint: "on" }
+    AGT@{ img: "../_images/test/agent-icon.svg", label: "Support Agent", pos: "b", h: 80, w: 80, constraint: "on" }
+
+    style CUST fill:none,stroke:none
+    style MX fill:none,stroke:none
+    style KF fill:none,stroke:none
+    style RC fill:none,stroke:none
+    style AGT fill:none,stroke:none
+----
+
+{empty} +
+
+=== Open Architecture
+
+[.mermaid]
+----
+flowchart TB
+    subgraph TOP [" "]
+        direction LR
+        SP0[ ]:::hidden ~~~ CUST <--> MX
+        MX <--> KF
+        KF <--> RC
+        RC <--> AGT
+    end
+
+    subgraph BOTS [" "]
+        direction LR
+        subgraph BOT1 [" "]
+            P1
+        end
+        subgraph BOT2 [" "]
+            P2
+        end
+    end
+
+    TOP <--> P1
+    TOP <--> P2
+
+    CUST@{ img: "../_images/test/customer-icon.svg", label: "Customer", pos: "b", h: 80, w: 80, constraint: "on" }
+    MX@{ img: "../_images/common/element-icon.svg", label: "Matrix", pos: "b", h: 80, w: 80, constraint: "on" }
+    KF@{ img: "../_images/common/kafka-icon.svg", label: "Kafka", pos: "b", h: 80, w: 80, constraint: "on" }
+    RC@{ img: "../_images/m4/rocketchat-icon.svg", label: "Rocket.Chat", pos: "b", h: 80, w: 80, constraint: "on" }
+    AGT@{ img: "../_images/test/agent-icon.svg", label: "Support Agent", pos: "b", h: 80, w: 80, constraint: "on" }
+    P1@{ img: "../_images/test/platform-icon.svg", label: "Platform A", pos: "b", h: 80, w: 80, constraint: "on" }
+    P2@{ img: "../_images/test/platform-icon.svg", label: "Platform B", pos: "b", h: 80, w: 80, constraint: "on" }
+
+    style CUST fill:none,stroke:none
+    style MX fill:none,stroke:none
+    style KF fill:none,stroke:none
+    style RC fill:none,stroke:none
+    style AGT fill:none,stroke:none
+    style P1 fill:none,stroke:none
+    style P2 fill:none,stroke:none
+    style TOP fill:none,stroke:none
+    style BOTS fill:none,stroke:none
+    style BOT1 fill:none,stroke:none
+    style BOT2 fill:none,stroke:none
+    classDef hidden fill:none,stroke:none,width:1px,height:1px
+    style SP0 fill:none,stroke:none
+----
+
+{empty} +
+
+=== The flows
+
+[.mermaid.mermaid-w60]
+----
+flowchart LR
+    MX -->|"flow 1"| K -->|"flow 2"| RC
+    RC -->|"flow 3"| K -->|"flow 4"| MX
+
+    MX@{ img: "../_images/common/element-icon.svg", label: "Matrix", pos: "b", h: 100, w: 80, constraint: "on" }
+    K@{ img: "../_images/common/kafka-icon.svg", label: "Kafka", pos: "b", h: 100, w: 80, constraint: "on" }
+    RC@{ img: "../_images/m4/rocketchat-icon.svg", label: "Rocket.Chat", pos: "b", h: 100, w: 100, constraint: "on" }
+
+    style MX fill:none,stroke:none
+    style K fill:none,stroke:none
+    style RC fill:none,stroke:none
+
+    linkStyle 0 stroke:#66bb6a,stroke-width:2px
+    linkStyle 1 stroke:#66bb6a,stroke-width:2px
+    linkStyle 2 stroke:#ef5350,stroke-width:2px
+    linkStyle 3 stroke:#ef5350,stroke-width:2px
+----
+
+== Demo — Phase 3: AI Support
+
+{empty} +
+
+=== AI Support
+
+[.mermaid]
+----
+flowchart LR
+    INTLabel2 <--> ToolsInner2
+    INTLabel2 <--> MaaSLabel2
+
+    Agent2 <--> RC2
+    RC2 <--> INTLabel2
+
+    subgraph INTLabel2 ["⚙️ Agentic Integration&nbsp;"]
+        INT2["<div style='text-align:left'>① AI reasoning<br/>② Tool calling<br/>③ Integrations</div>"]
+    end
+
+    subgraph ToolsLabel2 ["Backend Tools&nbsp;"]
+        subgraph ToolsInner2 [" "]
+            direction LR
+            DB2 ~~~ S32 ~~~ HD2
+        end
+    end
+
+    subgraph MaaSLabel2 [" "]
+        MaaS2
+    end
+
+    Agent2@{ img: "../_images/test/agent-icon.svg", label: "Support Agent", pos: "b", h: 80, w: 80, constraint: "on" }
+    RC2@{ img: "../_images/m4/rocketchat-icon.svg", label: "Rocket.Chat", pos: "b", h: 80, w: 80, constraint: "on" }
+    MaaS2@{ img: "../_images/test/brain-icon.svg", label: "AI Model", pos: "b", h: 80, w: 80, constraint: "on" }
+    DB2@{ img: "../_images/test/database-icon.svg", label: "Database", pos: "b", h: 70, w: 70, constraint: "on" }
+    S32@{ img: "../_images/test/s3-icon.svg", label: "S3 / ODF", pos: "b", h: 70, w: 70, constraint: "on" }
+    HD2@{ img: "../_images/test/helpdesk-icon.svg", label: "HelpDesk", pos: "b", h: 70, w: 70, constraint: "on" }
+
+    style Agent2 fill:none,stroke:none
+    style RC2 fill:none,stroke:none
+    style MaaS2 fill:none,stroke:none
+    style DB2 fill:none,stroke:none
+    style S32 fill:none,stroke:none
+    style HD2 fill:none,stroke:none
+    style INTLabel2 fill:none,stroke:none,color:#EE0000,font-weight:bold
+    style INT2 fill:#fce4e4,stroke:#EE0000,color:#333
+    style MaaSLabel2 fill:none,stroke:none
+    style ToolsLabel2 fill:none,stroke:none,color:#EE0000,font-weight:bold
+    style ToolsInner2 fill:#fce4e4,stroke:#EE0000
+----
+
+'''
+
+== Diagram Styling Notes
+
+=== Color Palette (Red Hat themed)
+
+* **Primary red**: `#EE0000` — used for icon strokes, accents, subgraph labels, highlights
+* **Light red background**: `#fce4e4` — used for inner boxes (e.g. Integration steps)
+* **Darker red accents**: `#cc0000` / `#ff4444` — used for shading on solid fills (e.g. database cylinder)
+* **Light grey background**: `#f5f5f5` — used for icon fills (invoice, record, S3)
+* **Grey details**: `#bbb` / `#ccc` / `#e0e0e0` — used for secondary lines and shading
+
+=== SVG Icon Conventions
+
+* All icons stored in `assets/images/test/` (self-contained for drafting)
+* All icon strokes use `#EE0000` for consistency
+* Icons referenced via `@{ img: "../_images/test/<name>.svg" }` in Mermaid
+* Node boxes hidden with `style <id> fill:none,stroke:none`
+* Labels placed below icons with `pos: "b"`
+* Standard size: `h: 80, w: 80` (adjust per icon aspect ratio)
+
+=== Subgraph Tricks
+
+* **Label outside, box inside**: make the outer subgraph invisible (`fill:none,stroke:none`) and style the inner node as the visible box
+* **Bold label clipping**: Mermaid miscalculates bold text width — add a trailing `&amp;nbsp;` to the label (e.g. `["OpenShift &amp;nbsp;"]`). More reliable than trailing spaces which may be trimmed
+* **Numbered edge labels**: use circled numbers (`①②③`) to link diagram paths to a numbered list inside a subgraph
+
+=== Available Icons
+
+[cols="1,2", options="header"]
+|===
+| File | Description
+| `customer-icon.svg` | Red person silhouette
+| `shop-icon.svg` | Red shopping trolley
+| `integration-icon.svg` | Red interlocking gears
+| `record-icon.svg` | Table with highlighted new row
+| `database-icon.svg` | Red database cylinder
+| `invoice-icon.svg` | Document with fold corner
+| `s3-icon.svg` | Storage bucket with S3 label
+|===
