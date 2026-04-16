@@ -39,14 +39,31 @@ flowchart LR
     style DB fill:#336,color:#fff
 ----
 
-Try it yourself — use `curl` as a simple way to test connectivity to the database:
+Try it yourself — run a simple query against the database:
 
 {blank}
 
+// [.copypaste]
+// ****
+// curl postgres.shared-database.svc:5432 \
+// -v --connect-timeout 3
+// ****
+
+// [TIP]
+// --
+// .What does this command do?
+// [%collapsible]
+// ====
+// * `postgres.shared-database.svc:5432` — target service, namespace, and PostgreSQL port
+// * `-v` — verbose, shows the connection attempt
+// * `--connect-timeout 3` — gives up after 3 seconds instead of hanging
+// ====
+// --
+
 [.copypaste]
 ****
-curl postgres.shared-database.svc:5432 \
--v --connect-timeout 3
+sql postgres.shared-database.svc:5432 \
+"SELECT count(*) FROM invoices"
 ****
 
 [TIP]
@@ -54,9 +71,9 @@ curl postgres.shared-database.svc:5432 \
 .What does this command do?
 [%collapsible]
 ====
-* `postgres.shared-database.svc:5432` — target service, namespace, and PostgreSQL port
-* `-v` — verbose, shows the connection attempt
-* `--connect-timeout 3` — gives up after 3 seconds instead of hanging
+* `sql` — a lab helper script that connects to a PostgreSQL database and runs a query
+* `postgres.shared-database.svc:5432` — the database service, namespace, and PostgreSQL port
+* `"SELECT count(*) FROM invoices"` — counts the number of records in the database
 ====
 --
 
@@ -64,11 +81,17 @@ The connection will time out — the database is not directly accessible from yo
 
 {blank}
 
+// ++++
+// <pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">*   Trying 172.31.163.169:5432...
+// * Connection timed out after 3001 milliseconds
+// * Closing connection 0
+// curl: (28) Connection timed out after 3001 milliseconds</pre>
+// ++++
+
 ++++
-<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">*   Trying 172.31.163.169:5432...
-* Connection timed out after 3001 milliseconds
-* Closing connection 0
-curl: (28) Connection timed out after 3001 milliseconds</pre>
+<pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white"><span style="color:rgb(243, 243, 47)">Connecting to postgres.shared-database.svc:5432 (timeout: 5s)...</span>
+
+<span style="color: #f4796d">ERROR: Cannot connect to postgres.shared-database.svc:5432</span></pre>
 ++++
 
 {empty} +
@@ -135,13 +158,12 @@ flowchart LR
             SVC2((svc))
             subgraph S2 ["Site(2)"]
                 Listener((Listener))
-                Grant[AccessGrant]
+                Grant["🪪 AccessGrant"]
             end
         end
     end
 
     Client --> SVC2 --> Listener
-
     S2 ~~~ S1
     S2 -.-|"🔒 secure link"| S1
 
@@ -149,7 +171,7 @@ flowchart LR
         subgraph shared [" "]
             subgraph S1 ["Site(1)"]
                 Connector((Connector))
-                Token[AccessToken]
+                Token["🔑 AccessToken"]
             end
             SVC((svc))
             SVC --- DB[(PostgreSQL)]
@@ -672,16 +694,52 @@ flowchart LR
 
 ==== Step 5: Verify the connection
 
-Now let's verify the connection works. The database credentials are already configured in `application.properties`. Query the database using Camel's `cmd` tool:
+// Now let's verify the connection works. The database credentials are already configured in `application.properties`. Query the database using Camel's `cmd` tool:
+
+// {blank}
+
+// [.copypaste]
+// ****
+// camel cmd send \
+// --uri "sql:SELECT count(*) FROM invoices" \
+// --properties application.properties \
+// --reply
+// ****
+
+// [TIP]
+// --
+// .What does this command do?
+// [%collapsible]
+// ====
+// * `camel cmd send` — sends a message to a Camel endpoint from the command line
+// * `--uri "sql:SELECT count(*) FROM invoices"` — runs a SQL query against the configured database
+// * `--properties application.properties` — loads database connection settings
+// * `--reply` — waits for and displays the response
+// ====
+// --
+
+// You should see output similar to:
+
+// {blank}
+
+// ++++
+// <pre id="sql-count-output" style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #818181">2026-03-23 10:14:08.939  <span style="color:#A649A6">11530</span> ---   <span style="color:#10A9CD">sql://SELECT%20count(*)%20FROM%20invoice</span> : <span style="color:#0FBC7A">Reply received</span> <span style="color:#0FBC7A">(success)</span> <span style="color:#fff">(304ms)</span>
+//  <span style="color:#fff">Endpoint</span>  <span style="color:#fff">sql://SELECT%20count(*)%20FROM%20invoices</span>
+//  <span style="color:#fff">Exchange</span>  (DefaultExchange)  <span style="color:#6F416E">InOut</span>   <span style="color:#fff">E3D444D7E02ADCD-0000000000000000</span>
+//  <span style="color:#fff">Message</span>   (DefaultMessage)
+//  <span style="color:#fff">Header</span>    (Integer)             <span style="color:#fff">CamelSqlRowCount  1</span>
+//  <span style="color:#fff">Body</span>      (ArrayList) (size: 1 bytes: 11)
+//  <span style="background-color: yellow; color: black">[{count=1}]</span></pre>
+// ++++
+
+Now let's verify the connection works. Run the same query as before, but this time targeting the local service — thanks to _Service Interconnect_, the database is now reachable from your namespace:
 
 {blank}
 
 [.copypaste]
 ****
-camel cmd send \
---uri "sql:SELECT count(*) FROM invoices" \
---properties application.properties \
---reply
+sql postgres:5432 \
+"SELECT count(*) FROM invoices"
 ****
 
 [TIP]
@@ -689,10 +747,9 @@ camel cmd send \
 .What does this command do?
 [%collapsible]
 ====
-* `camel cmd send` — sends a message to a Camel endpoint from the command line
-* `--uri "sql:SELECT count(*) FROM invoices"` — runs a SQL query against the configured database
-* `--properties application.properties` — loads database connection settings
-* `--reply` — waits for and displays the response
+* `sql` — a lab helper script that connects to a PostgreSQL database and runs a query
+* `postgres:5432` — the database service exposed locally by _Service Interconnect_
+* `"SELECT count(*) FROM invoices"` — counts the number of records in the database
 ====
 --
 
@@ -701,13 +758,12 @@ You should see output similar to:
 {blank}
 
 ++++
-<pre id="sql-count-output" style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #818181">2026-03-23 10:14:08.939  <span style="color:#A649A6">11530</span> ---   <span style="color:#10A9CD">sql://SELECT%20count(*)%20FROM%20invoice</span> : <span style="color:#0FBC7A">Reply received</span> <span style="color:#0FBC7A">(success)</span> <span style="color:#fff">(304ms)</span>
- <span style="color:#fff">Endpoint</span>  <span style="color:#fff">sql://SELECT%20count(*)%20FROM%20invoices</span>
- <span style="color:#fff">Exchange</span>  (DefaultExchange)  <span style="color:#6F416E">InOut</span>   <span style="color:#fff">E3D444D7E02ADCD-0000000000000000</span>
- <span style="color:#fff">Message</span>   (DefaultMessage)
- <span style="color:#fff">Header</span>    (Integer)             <span style="color:#fff">CamelSqlRowCount  1</span>
- <span style="color:#fff">Body</span>      (ArrayList) (size: 1 bytes: 11)
- <span style="background-color: yellow; color: black">[{count=1}]</span></pre>
+<pre id="sql-count-output" style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white"><span style="color:rgb(243, 243, 47)">Connecting to postgres:5432 (timeout: 5s)...</span>
+<span style="color: #0FBC7A">count</span>
+<span style="color: #0FBC7A">-----</span>
+<span style="color: #0FBC7A">1</span>
+
+<span style="color: #0FBC7A">(1 row(s))</span></pre>
 ++++
 
 [.overlay]
@@ -716,10 +772,10 @@ You should see output similar to:
 sql-count-output
 
 [.arrows]
-{x: 11, y: 90, rot: -45, size: .8, color: "red"}
+{x: 9, y: 88, rot: -45, size: .8, color: "red"}
 ****
 
-NOTE: The count is `1` because your lab environment comes with a sample invoice already loaded in the database.
+NOTE: The count is `1` because your lab environment comes with a sample entry already loaded in the database.
 
 {empty} +
 
@@ -739,7 +795,7 @@ flowchart LR
             SVC2((svc))
             subgraph S2 ["✅ Site(2)"]
                 Listener((Listener))
-                Grant[AccessGrant]
+                Grant["🪪 AccessGrant"]
             end
         end
     end
@@ -752,7 +808,7 @@ flowchart LR
         subgraph shared3 [" "]
             subgraph S1 ["✅ Site(1)"]
                 Connector((Connector))
-                Token[AccessToken]
+                Token["🔑 AccessToken"]
             end
             SVC((svc))
             SVC --- DB[(PostgreSQL)]
