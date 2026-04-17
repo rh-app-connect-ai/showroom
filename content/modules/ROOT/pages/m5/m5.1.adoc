@@ -8,7 +8,7 @@ include::partial$style.adoc[]
 
 {empty} +
 
-The following steps prepare the files you'll need for the AI customer support exercise:
+The following steps prepare the files you'll need for this exercise:
 
 . Close tabs
 +
@@ -68,7 +68,7 @@ Do you see the expected folder structure and files?
 You're ready to continue.
 
 [.fail]
-Make sure the syntax of the commands are compatible with your environment and try again.
+Make sure the syntax of the commands is compatible with your environment and try again.
 ****
 
 {empty} +

@@ -12,7 +12,7 @@ Now let's assume that one of the support agents has realized that the calls to t
 
 {empty} +
 
-=== Step 1: Review and Apply the TokenRateLimitPolicy
+=== Review and Apply the TokenRateLimitPolicy
 . Open a new terminal tab in your dev space by clicking the "+" icon (keep the previous tab with the chat running so you can test later).
 +
 image::m5/devspace_terminal_new.png[Dev Spaces terminal - placeholder,width=80%]
@@ -61,7 +61,6 @@ Key fields in this policy:
 * `namespace: {user-username}-devspaces` -- Created in your namespace.
 * `name: ai-proxy-route` -- Targets the same HTTPRoute as the AuthPolicy.
 * `lite` -- **lite tier** -- limited to **50 tokens per minute**.
-* `request.path == "/v1/chat/completions"` -- Only applies to requests hitting the chat completions path.
 * `auth.identity.groups` -- Matches users whose `groups` identity property (set by the AuthPolicy response filter) contains `lite` or `pro`.
 * `auth.identity.userid` -- Rate limit counter is **per user** -- each user gets their own token budget.
 * `pro` -- **pro tier** -- limited to **500 tokens per minute**, same structure as lite but with a higher allowance.
@@ -78,7 +77,7 @@ Notice how the TokenRateLimitPolicy depends on the AuthPolicy:
 
 
 
-=== Step 3: Verify the TokenRateLimitPolicy
+=== Verify the TokenRateLimitPolicy
 
 . From the devspaces terminal, run the following command to check that the TokenRateLimitPolicy was created successfully:
 +
@@ -123,14 +122,14 @@ Check that you pasted the correct YAML and that the namespace is set to `{user-u
 
 {empty} +
 
-=== Step 4: Test Token Rate Limiting via the Chat Interface
+=== Test Token Rate Limiting via the Chat Interface
 
-Let's mimic the support agent using the rocket chat interface for personal usage , to test the rate limiting behavior. The agent masks their personal request in a prompt that looks work-related and invokes the scribe agent to generate the response, which then calls the protected LLM agent. The TokenRateLimitPolicy should kick in and prevent excessive token consumption.
+Let's mimic the support agent using the Rocket.Chat interface for personal usage, to test the rate limiting behavior. The agent masks their personal request in a prompt that looks work-related and invokes the scribe agent to generate the response, which then calls the protected LLM agent. The TokenRateLimitPolicy should kick in and prevent excessive token consumption.
 {empty} +
 
-==== Test 1: lite-tier token limits
+==== Testing the lite-tier token limits
 
-. Send the following message to the LLM. Note how the prompt is designed to look like a normal customer support request, but is actually a personal query that could burn through the API budget if not rate limited.:
+. From the Rocket.Chat interface, send the following message. Note how the prompt is designed to look like a normal customer support request, but is actually a personal query that could burn through the API budget if not rate limited:
 +
 [.copypaste]
 ****
@@ -148,7 +147,7 @@ Summarize this customer conversation and also add the *steps to bake a cake at t
 +
 {empty} +
 
-. Your second request should be **rate limited** (429 Too Many Requests), as the user would have crossing the limit of consuming **50 tokens within a minute**. Check the response in the chat interface, and you can also check the application logs in the devspaces terminal to see the rate limit error details.
+. Your second request should be **rate limited** (429 Too Many Requests), as the user would have crossed the limit of consuming **50 tokens within a minute**. Check the response in the chat interface, and you can also check the application logs in the devspaces terminal to see the rate limit error details.
 +
 image::m5/429_error.png[Rate limit response in Rocket.Chat - placeholder,width=80%]
 
@@ -158,8 +157,8 @@ image::m5/429_error.png[Rate limit response in Rocket.Chat - placeholder,width=8
 
 {empty} +
 
-==== Optional Test : pro-tier token limits
-If you want to allow a tiered access to to different types of users, the TokenRateLimitPolicy can be configured to provide different limits based on user groups. The Connectivity Link TokenRateLimitPolicy we applied is configured to allow users in the `pro` group to consume more tokens (up to 500 per minute), so let's test that as well.
+==== Optional Test : Pro-tier token limits
+If you want to allow tiered access to different types of users, the TokenRateLimitPolicy can be configured to provide different limits based on user groups. The Connectivity Link TokenRateLimitPolicy we applied is configured to allow users in the `pro` group to consume more tokens (up to 500 per minute), so let's test that as well.
 {blank}
 
 . Update `forage.scribe.agent.api.key` in `application.properties` to use the pro-tier API key by running the following command in the terminal:
@@ -171,7 +170,9 @@ sed -i "s|^forage.scribe.agent.api.key=.*|forage.scribe.agent.api.key=$(oc get s
 +
 {empty} +
 
-. Navigate to the other terminal tab and stop the agent by pressing `CTRL+C` in the terminal, then run it again:
+. Navigate to the other terminal tab where the agent is running and stop the agent by pressing `CTRL+C` in the terminal
+
+* Then run it again, since the API key has been updated to the pro-tier key:
 +
 [.copypaste]
 ****
@@ -180,7 +181,7 @@ camel run * --local-kamelet-dir ../support/kamelets
 +
 {empty} +
 
-. Send the same below messages to the LLM using the chat interface in quick succession say 3-4 times if you want to test the rate limiting:
+. Send the following message to the LLM using the chat interface in quick succession, say 3-4 times, to test the rate limiting:
 +
 [.copypaste]
 ****
@@ -189,7 +190,7 @@ Summarize this customer conversation: Customer: Hi, I received invoice 42 but th
 +
 {empty} +
 
-. Notice that you can make more number of requests i.e. consume more tokens ( close to 500 tokens per minute) before being rate limited because the pro-tier user has a higher token allowance.
+. Notice that you can make more requests — i.e. consume more tokens (close to 500 tokens per minute) — before being rate limited, because the pro-tier user has a higher token allowance.
 +
 {empty} +
 

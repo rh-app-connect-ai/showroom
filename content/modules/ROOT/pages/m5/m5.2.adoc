@@ -44,18 +44,18 @@ oc get gateway internal-ai-gateway -n ai-gateway
 +
 ++++
 <pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre; overflow-x: auto; font-family: monospace; font-size: 14px; color: white">NAME               CLASS               ADDRESS                                                           PROGRAMMED   AGE
-internal-gateway   openshift-default   internal-gateway-openshift-default.ai-gateway.svc.cluster.local   True         14h</pre>
+internal-ai-gateway   openshift-default   internal-ai-gateway-openshift-default.ai-gateway.svc.cluster.local   True         14h</pre>
 ++++
 {empty} +
 
-. A dedicated HTTPRoute for you with the name `ai-proxy-route` in your namespace `{user-username}-devspaces` that targets the LLM API. The HTTPRoute is a gateway api resource that is attached to the gateway and defines the routing rules. In our exercise, we will use this HTTPRoute to apply our authentication and rate limiting policies. *Run the following command to verify the HTTPRoute is present*
+. A dedicated HTTPRoute named `ai-proxy-route` has been created in your namespace `{user-username}-devspaces`, targeting the LLM API. This is the Gateway API resource you'll attach authentication and rate limiting policies to. Run the following command to verify it is present:
 +
 [.copypaste]
 ****
 oc describe httproute -n {user-username}-devspaces | grep -E "Name:|Backend|Hostnames"
 ****
 +
-This command lists the HTTPRoute details including the backend reference to the LLM API and the gateway it is attached to (which is the `internal-gateway` that you verified earlier). 
+This command lists the HTTPRoute details including the backend reference to the LLM API and the gateway it is attached to (which is the `internal-ai-gateway` that you verified earlier). 
 +
 {empty} +
 
@@ -79,7 +79,7 @@ This command lists the HTTPRoute details including the backend reference to the 
 
 [.verification]
 ****
-Were you able to list the `internal-ai-gateway` Gateway and `ai-proxy-route` HTTPRoute ?
+Were you able to list the `internal-ai-gateway` Gateway and `ai-proxy-route` HTTPRoute?
 
 [.success]
 Your environment is ready. Proceed to Next step.
@@ -91,7 +91,7 @@ Contact the workshop facilitator to ensure your namespace is properly provisione
 {empty} +
 
 === Auth Policy Powered by Connectivity Link
-Now that you understand the concepts and the intended architecture, it's time to lock down the LLM endpoint. In this exercise you will create an **AuthPolicy** that is applied to the HTTPRoute(`ai-proxy-route`)  and enforces a key-based authentication scheme. This will ensure that only authorized users with a valid API key can access the LLM, and it will extract identity information that we can use for rate limiting in the next step.
+Now that you understand the concepts and the intended architecture, it's time to lock down the LLM endpoint. In this exercise you will create an **AuthPolicy** that is applied to the HTTPRoute (`ai-proxy-route`)  and enforces a key-based authentication scheme. This will ensure that only authorized users with a valid API key can access the LLM, and it will extract identity information that we can use for rate limiting in the next step.
 
 NOTE: We are using simple API key authentication for this workshop to keep things straightforward and simple, but _Connectivity Link_ supports a wide range of authentication methods, including JWT, OAuth2 and more.
 
@@ -105,16 +105,16 @@ Two API key secrets have already been *pre-created*. Understanding their structu
 apiVersion: v1
 kind: Secret
 metadata:
-  name: trlp-tutorial-api-key-lite-{username}
+  name: trlp-tutorial-api-key-lite-{user-username}
   namespace: kuadrant-system
   labels:
     authorino.kuadrant.io/managed-by: authorino
-    app: my-llm-{username}
+    app: my-llm-{user-username}
   annotations:
     kuadrant.io/groups: lite
-    secret.kuadrant.io/user-id: {username}
+    secret.kuadrant.io/user-id: {user-username}
 stringData:
-  api_key: iamalite{username}-randomstring
+  api_key: iamalite{user-username}-randomstring
 type: Opaque
 ----
 
@@ -125,7 +125,7 @@ Key fields in this secret:
 * `kuadrant.io/groups: lite` -- Group membership -- determines which rate limit tier applies.
 * `secret.kuadrant.io/user-id: {user-username}` -- Unique user ID -- used as a counter key for per-user rate limiting.
 
-The **pro-tier** secret follows the same structure but with `kuadrant.io/groups: pro`,`api_key: iamaprouser`.
+The **pro-tier** secret follows the same structure but with `kuadrant.io/groups: pro`, `api_key: iamaprouser`.
 
 {empty} +
 
@@ -139,7 +139,7 @@ The **pro-tier** secret follows the same structure but with `kuadrant.io/groups:
 
 {empty} +
 
-=== Step 1: Review and Apply the AuthPolicy
+=== Review and Apply the AuthPolicy
 
 Examine the AuthPolicy and *apply* it by pasting the following command in your terminal:
 
@@ -221,7 +221,7 @@ Key fields in this policy:
 
 {empty} +
 
-=== Step 2: Verify the AuthPolicy
+=== Verify the AuthPolicy
 
 {blank}
 
