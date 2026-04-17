@@ -165,7 +165,7 @@ If you want to allow tiered access to different types of users, the TokenRateLim
 +
 [.copypaste]
 ****
-sed -i "s|^forage.scribe.agent.api.key=.*|forage.scribe.agent.api.key=$(oc get secret lab-config -o jsonpath='{.data.config}' | base64 -d | grep kuadrant_pro_api_key | cut -d= -f2)|" application.properties
+sed -i "s|^forage.scribe.agent.api.key=.*|forage.scribe.agent.api.key=$(oc get secret lab-config -o jsonpath='{.data.config}' | base64 -d | sed -n 's/kuadrant_pro_api_key=//p')|" application.properties
 ****
 +
 {empty} +
