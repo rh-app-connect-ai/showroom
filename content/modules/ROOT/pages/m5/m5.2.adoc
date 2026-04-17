@@ -176,6 +176,10 @@ spec:
                   selector: auth.identity.metadata.annotations.kuadrant\.io/groups
                 userid:
                   selector: auth.identity.metadata.annotations.secret\.kuadrant\.io/user-id
+        headers:
+          authorization:
+            plain:
+              selector: auth.identity.metadata.annotations.secret\.kuadrant\.io/upstream-token
       unauthenticated:
         headers:
           "content-type":
