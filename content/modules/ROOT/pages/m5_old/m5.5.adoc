@@ -7,7 +7,7 @@ include::partial$style.adoc[]
 
 
 
-Congratulations! You have completed the final phase of the workshop, adding a governance layer on top of the AI agent.
+Congratulations! You have completed the final phase of the workshop, adding a governance layer on top of the AI agent you built across the previous phases.
 
 === Key Takeaways
 

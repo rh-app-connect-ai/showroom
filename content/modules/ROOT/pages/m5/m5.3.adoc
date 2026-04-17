@@ -4,13 +4,13 @@ include::partial$style.adoc[]
 
 == Test Authentication via the Chat Interface
 
-{banner-under-construction}
 
-Now test that the AuthPolicy is working using the same chat interface from Phase 3.
+
+Now test that the AuthPolicy is working using the same rocket.chat interface from the previous section.
 
 === Configuring the API Key
 
-Let's configure the chat application to use the API key for authentication. The chat interface is set up to read the API key from the `forage-agent-factory.properties` file. 
+Let's configure the chat application to use the API key for authentication. The chat interface is set up to read the API key from the `application.properties` file. 
 
 // . Run the following command from the dev spaces terminal to setup the files needed for this exercise:
 // +
@@ -19,82 +19,119 @@ Let's configure the chat application to use the API key for authentication. The 
 // step 24
 // ****
 
-. Navigate to the chat folder
+. Make sure your are in the lab folder in the terminal
 +
 [.copypaste]
 ****
-cd chat
+pwd
 ****
 +
 {empty} +
 
-. Open the `forage-agent-factory.properties` file under workshop/lab/chat.
+. The output should confirm that you are in the `lab` folder.
 +
-image::m5/properties_file.png[Properties file location - placeholder,width=80%]
+****
+/projects/workshop/lab
+****
 +
 {empty} +
 
-. Locate the `forage.myagent.agent.base.url` property. This is the URL that the chat application will use to connect to the LLM. Since we are running the chat application from within the cluster, we will use the internal service address for the HTTPRoute. Replace the placeholder *REPLACE_WITH_HTTP_BASE_URL* with the following URL:
+. Open the `application.properties` file under workshop/lab/.
++
+image::m5/app_properties_location.png[Properties file location - placeholder,width=80%]
++
+{empty} +
+
+. Locate the `forage.scribe.agent.base.url` property in line 46 in the `application.properties` file. This is the URL that the chat application will use to connect to the LLM. Since we are running the rocket chat application from within the cluster, we can use the internal service address for the HTTPRoute. This value has been pre-populated for you. 
++
+{empty} +
+
+. Locate the `forage.scribe.agent.api.key` property in line 47. It should have an *EMPTY* value. Since the property is currently empty, the chat application will not be able to authenticate with the LLM API, and any requests will be denied. Let's test the negative scenario first to confirm that unauthenticated requests are rejected.
++
+NOTE: The model name (line 45) has already been pre-populated in the `application.properties` file as `qwen3-14b`. This is the model that will be used for the chat interactions in this exercise.
++
+{empty} +
+
+. Run the camel agent application
 +
 [.copypaste]
 ****
-http://internal-ai-gateway-openshift-default.ai-gateway.svc.cluster.local/{user-username}/v1
+camel run * --local-kamelet-dir ../support/kamelets
 ****
 +
 {empty} +
 
-. Locate the `forage.myagent.agent.api.key` property and replace the placeholder *REPLACE_WITH_API_KEY* with the actual API key we created earlier using the auth policy.
+. Open _Rocket.Chat's_  web client:
++
+Click on the link below to open the Login page in _Rocket.Chat_ if you don't have it open already.
++
+--
+- link:{url-rocketchat}[Rocket.Chat Login page,window="_blank"]
+--
++
+{empty} +
+
+. In the left sidebar, find and select the `ai-support` channel that matches your user number:
+
+[subs=attributes]
+++++
+<div style="display: inline-flex; align-items: center; gap: 8px; background: #2f343d; border-radius: 4px; padding: 6px 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 8px 0;">
+  <span style="width: 32px; height: 32px; background: #6c757d; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">A</span>
+  <span style="color: #ccc; font-size: 15px;">&#x2317; <b>ai-support<span id="rc-channel-num"></span></b></span>
+</div>
+<script>
+(function() {
+  var el = document.getElementById('rc-channel-num');
+  function resolve() {
+    var name = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*=\s*([^;]*).*$)|^.*$/, '$1');
+    if (!name) {
+      var uv = document.querySelector('.uservar');
+      if (uv) name = uv.textContent;
+    }
+    var num = (name || '').replace(/\D/g, '');
+    el.textContent = num || 'N';
+  }
+  if (document.readyState === 'complete') resolve();
+  else window.addEventListener('load', resolve);
+})();
+</script>
+++++
+
+. Ask the chat agent to summarize a customer conversation by sending the following message in the chat interface. This should invoke the writing assistant agent behind the scenes, which will call the LLM API with the API key for authentication.
 +
 [.copypaste]
 ****
-iamafree{user-username}
-****
-+
-NOTE: The model name has already been pre-populated in the `forage-agent-factory.properties` file as `qwen3-14b`. This is the model that will be used for the chat interactions in this exercise.
-+
-{empty} +
-
-. Run the chat application
-+
-[.copypaste]
-****
-camel run *
+Summarize this customer conversation: Customer: Hi, I received invoice 42 but the quantity for item 3 is wrong. It shows 10 units but I only ordered 5. Agent: I apologize for the error. Let me fix that for you right away. Customer: Also the shipping address is still showing our old office. Agent: I'll update both the quantity and the address. Customer: Thanks, please send me the updated PDF when done.
 ****
 +
 {empty} +
 
-. Open the application in a new browser tab when prompted
+. Since you are using an invalid API key, the request should be rejected with an error message. 
 +
-image::m5/chat_app_launch.png[Chat application launch - placeholder,width=80%]
+image::m5/auth_error.png[Invalid API key response in Rocket.Chat - placeholder,width=80%]
 +
-{empty} +
+NOTE: Sometimes the error message might not be very descriptive in the chat interface, so feel free to navigate to the devspaces terminal and check the logs for the camel application to see the error details. You should see an error related to authentication failure due to missing or invalid API key.
+ 
 
-. You should see the chat interface as shown below. Send the below message  and see if you get a response.
-+
-[.copypaste]
-****
-Explain Kubernetes in 20 words
-****
-+
-image::m5/chat_image.png[Chat interface response - placeholder,width=80%]
-+
-{empty} +
+=== Test Authentication with a Valid API Key
 
-=== Negative Test Scenarios
-
-Since we have already tested the authentication  with the correct API key, let's test the negative scenarios to confirm that invalid keys are rejected.
+Since we have already tested the negative scenario, let's test the positive scenario to confirm that valid keys are accepted.
 
 
 . Stop the application by pressing `CTRL+C` in the terminal
 +
 {empty} +
 
-. Locate the `forage.myagent.agent.api.key` in forage-agent-factory.properties property and set the value to an invalid API key:
+. Replace the valid api key for the `forage.scribe.agent.api.key` property by running the following command in the terminal:
 +
 [.copypaste]
 ****
-invalidkey
+sed -i "s|^forage.scribe.agent.api.key=.*|forage.scribe.agent.api.key=$(oc get secret lab-config -o jsonpath='{.data.config}' | base64 -d | grep kuadrant_lite_api_key | cut -d= -f2)|" application.properties
 ****
++
+{empty} +
+
+. You can confirm that the API key value has been updated in the `application.properties` by checking the `forage.scribe.agent.api.key` property. 
 +
 {empty} +
 
@@ -102,60 +139,35 @@ invalidkey
 +
 [.copypaste]
 ****
-camel run *
+camel run * --local-kamelet-dir ../support/kamelets
 ****
 +
 {empty} +
 
-. Send the same message. The request should be **denied** with an error message.
+. Send the same message. Rocket chat should return a response generated by the LLM, confirming that the request was authenticated successfully and processed by the agent and the model.
 +
 [.copypaste]
 ****
-Explain Kubernetes in 20 words
-****
-+
-image::m5/invalid_key_response.png[Response with invalid API key - placeholder,width=80%]
-+
-{empty} +   
-
-
-. Stop the application again by pressing `CTRL+C` in the terminal
-+
-{empty} +
-
-. Reset the free-tier API key in `forage-agent-factory.properties` as we will use the valid key for the next section on rate limiting.:
-+
-[.copypaste]
-****
-iamafree{user-username}
-****
-+
-{empty} +
-
-. Run the application again and open the chat interface again if needed to prepare for the next section.
-+
-[.copypaste]
-****
-camel run *
-****
-+
-{empty} +
+Summarize this customer conversation: Customer: Hi, I received invoice 42 but the quantity for item 3 is wrong. It shows 10 units but I only ordered 5. Agent: I apologize for the error. Let me fix that for you right away. Customer: Also the shipping address is still showing our old office. Agent: I'll update both the quantity and the address. Customer: Thanks, please send me the updated PDF when done.
+****   
 
 
 
-At this point, authentication and authorization are enforced. Only users with valid API keys belonging to the `free` or `gold` groups can access the LLM.
+
+
+At this point, authentication and authorization are enforced. Only users with valid API keys belonging to the `lite` or `pro` groups can access the LLM.
 
 {empty} +
 
 [.verification]
 ****
-Did the invalid key return a error, and the valid free-tier key return a successful LLM response?
+Did the invalid key return a error, and the valid lite-tier key return a successful LLM response?
 
 [.success]
 Authentication and authorization are working correctly.
 
 [.fail]
-Review the AuthPolicy status and the secret configurations in the forage-agent-factory.properties file.
+Review the AuthPolicy status and the secret configurations in the application.properties file.
 ****
 
 {empty} +

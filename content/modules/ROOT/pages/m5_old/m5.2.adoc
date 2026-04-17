@@ -5,6 +5,7 @@ include::partial$style.adoc[]
 == Authentication
 
 
+
 === Components Provisioned for This Phase
 
 The following resources have been set up for you so you can focus on the policy configuration:
@@ -14,13 +15,13 @@ The following resources have been set up for you so you can focus on the policy 
 | Resource | Purpose
 
 | **GatewayClass, Gateway, HTTPRoute**
-| The _Gateway API_ stack that routes traffic from the chat interface to the LLM API. The LLM API could be an internal or external endpoint -- the gateway abstracts this away and provides a consistent point to apply policies.
+| The _Gateway API_ stack that routes traffic from the chat interface to the external LLM backend.
 
 | **Kuadrant Operator & System**
 | The _Connectivity Link_ operator, installed in the `kuadrant-system` namespace.
 
 | **User Secrets**
-| API key secrets for `lite` and `pro` tier users (details below).
+| API key secrets for `free` and `gold` tier users (details below).
 |===
 
 {empty} +
@@ -48,7 +49,7 @@ internal-gateway   openshift-default   internal-gateway-openshift-default.ai-gat
 ++++
 {empty} +
 
-. A dedicated HTTPRoute for you with the name `ai-proxy-route` in your namespace `{user-username}-devspaces` that targets the LLM API. The HTTPRoute is a gateway api resource that is attached to the gateway and defines the routing rules. In our exercise, we will use this HTTPRoute to apply our authentication and rate limiting policies. *Run the following command to verify the HTTPRoute is present*
+. A dedicated HTTPRoute for you with the name `ai-proxy-route` in your namespace `{user-username}-devspaces` that targets the LLM API. Run the following command to verify it is present
 +
 [.copypaste]
 ****
@@ -99,22 +100,22 @@ NOTE: We are using simple API key authentication for this workshop to keep thing
 
 Two API key secrets have already been *pre-created*. Understanding their structure is important because both policies reference the labels and annotations on these secrets.
 
-**lite-tier user:**
+**Free-tier user:**
 [source,yaml,subs="attributes"]
 ----
 apiVersion: v1
 kind: Secret
 metadata:
-  name: trlp-tutorial-api-key-lite-{username}
+  name: trlp-tutorial-api-key-free-{username}
   namespace: kuadrant-system
   labels:
     authorino.kuadrant.io/managed-by: authorino
     app: my-llm-{username}
   annotations:
-    kuadrant.io/groups: lite
+    kuadrant.io/groups: free
     secret.kuadrant.io/user-id: {username}
 stringData:
-  api_key: iamalite{username}-randomstring
+  api_key: iamafree{username}
 type: Opaque
 ----
 
@@ -122,20 +123,20 @@ Key fields in this secret:
 
 * `authorino.kuadrant.io/managed-by: authorino` -- Marks this secret as managed by _Authorino_ (the auth engine behind _Connectivity Link_).
 * `app: my-llm-{username}` -- Label selector -- the AuthPolicy uses this to discover valid API keys.
-* `kuadrant.io/groups: lite` -- Group membership -- determines which rate limit tier applies.
+* `kuadrant.io/groups: free` -- Group membership -- determines which rate limit tier applies.
 * `secret.kuadrant.io/user-id: {user-username}` -- Unique user ID -- used as a counter key for per-user rate limiting.
 
-The **pro-tier** secret follows the same structure but with `kuadrant.io/groups: pro`,`api_key: iamaprouser`.
+The **gold-tier** secret follows the same structure but with `kuadrant.io/groups: gold`,`api_key: iamagolduser`.
 
 {empty} +
 
-// == Securing the LLM with Authentication
+== Securing the LLM with Authentication
 
-// Now that you understand the architecture and the setup, it's time to lock down the LLM endpoint so that only authorized users in the organization can access it. You will create an **AuthPolicy** that is applied to the `ai-proxy-route` HTTPRoute and enforces:
+Now that you understand the architecture and the setup, it's time to lock down the LLM endpoint. You will create an **AuthPolicy** that is applied to the `ai-proxy-route` HTTPRoute and enforces:
 
-// 1. **API Key Authentication** -- Only requests with a valid Bearer token (matching a known secret) are allowed.
-// 2. **Group-based Authorization** -- Only users belonging to the `lite` or `pro` groups can access the API.
-// 3. **Identity Extraction** -- The user's group and user ID are extracted from the secret's annotations and passed downstream for use by the TokenRateLimitPolicy that we will create in the next section.
+1. **API Key Authentication** -- Only requests with a valid Bearer token (matching a known secret) are allowed.
+2. **Group-based Authorization** -- Only users belonging to the `free` or `gold` groups can access the API.
+3. **Identity Extraction** -- The user's group and user ID are extracted from the secret's annotations and passed downstream for use by the TokenRateLimitPolicy that we will create in the next section.
 
 {empty} +
 
@@ -194,15 +195,15 @@ spec:
           value: |
             {
               "error": "Forbidden",
-              "message": "Access denied. Your account does not have the required permissions (lite/pro)."
+              "message": "Access denied. Your account does not have the required permissions (Free/Gold)."
             }
     authorization:
       allow-groups:
         opa:
           rego: |
             groups := split(object.get(input.auth.identity.metadata.annotations, "kuadrant.io/groups", ""), ",")
-            allow { groups[pass:[_]] == "lite" }
-            allow { groups[pass:[_]] == "pro" }
+            allow { groups[pass:[_]] == "free" }
+            allow { groups[pass:[_]] == "gold" }
 EOF
 ****
 
@@ -211,10 +212,10 @@ Key fields in this policy:
 * `namespace: {user-username}-devspaces` -- The policy is created in your namespace.
 * `name: ai-proxy-route` -- Targets the `ai-proxy-route` HTTPRoute -- any request matching this route must pass authentication.
 * `app: my-llm-{user-username}` -- Looks for _Kubernetes_ Secrets with this label to find valid API keys.
-* `prefix: Bearer` -- Expects the API key in the `Authorization` header (e.g., `Authorization: Bearer iamaliteuser`).
+* `prefix: Bearer` -- Expects the API key in the `Authorization` header (e.g., `Authorization: Bearer iamafreeuser`).
 * `kuadrant\.io/groups` -- Extracts the group annotation from the matched secret and exposes it as `groups` in the response filter.
 * `secret\.kuadrant\.io/user-id` -- Extracts the user ID annotation and exposes it as `userid`.
-* `rego` -- OPA (Open Policy Agent) rule that only allows users whose group is `lite` or `pro`.
+* `rego` -- OPA (Open Policy Agent) rule that only allows users whose group is `free` or `gold`.
 
 {empty} +
 

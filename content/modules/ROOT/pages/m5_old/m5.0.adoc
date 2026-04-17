@@ -7,25 +7,23 @@ include::partial$style.adoc[]
 
 
 
-In the previous modules, you built an integration platform that connects chat systems, ingests client data, and uses an AI agent to resolve support issues through natural language. But your organization runs more than one AI-powered tool.
+In the previous modules, you unified chat platforms, ingested client data, and introduced an AI agent that resolves invoice issues through natural language -- all powered by _Apache Camel_, _Kafka_, and LLM APIs.
 
-The **writingAssistant** is a tool used by support agents to summarize customer conversations and draft professional email responses within the same rocket chat interface. Under the hood, it relies on the **scribe agent** -- an LLM endpoint configured with enterprise-level quotas but no internal guardrails, no system prompt, and no memory. It's an open pipe to the model.
 
-Some support agents have discovered this. Using adversarial prompts, they've started offloading massive personal tasks through the scribe -- summarizing long-form documents, generating personal content -- none of it related to customer support. The model works fine. The problem is **economic abuse**: unchecked token consumption is burning through the corporate API budget.
 
-You might think traditional rate limiting solves this -- but it doesn't. Rate limiting counts _requests_, not _tokens_. Without token-level visibility, request-based limits can't stop the abuse.
+But giving teams access to Large Language Models introduces a new challenge: **cost control**. AI costs are driven by token consumption, not simple API hits. Traditional rate limiting -- which just counts requests -- can't tell the difference between a 10-token "say hello" prompt and a 10,000-token "summarize this document" prompt. Both count as one request, but one costs 100x more than the other. Without token-level visibility, one runaway prompt -- or one team with no guardrails -- can burn through your AI budget unchecked.
 
-In this lab, you'll secure the scribe agent's LLM endpoint by placing a **governance layer** in front of it using _Red Hat Connectivity Link_. You'll implement two policies:
+In this lab, you'll place a **governance layer** in front of the LLM using _Red Hat Connectivity Link_ and implement two policies:
 
-* **AuthPolicy** -- Control _who_ can access the endpoint using API key authentication and group-based authorization.
+* **AuthPolicy** -- Control _who_ can access the LLM API using API key authentication and group-based authorization.
 * **TokenRateLimitPolicy** -- Control _how much_ each user can consume by enforcing rate limits based on actual token usage.
 
-By the end, the scribe agent will have tiered access control -- _free_ users get a limited token budget, while _gold_ users get a higher allowance.
+By the end, the AI agent will have tiered access control -- _free_ users get a limited token budget, while _gold_ users get a higher allowance.
 
 {empty} +
 
 === End-to-End Request Flow
-You'll use the same rocket chat interface to simulate agent requests to the LLM API. The same architecture applies regardless of the client -- whether it's the Rocket.Chat an internal chatbot, or an external application. 
+You'll use a simple chat interface to simulate agent requests to the LLM API. The same architecture applies regardless of the client -- whether it's the Rocket.Chat support agent from earlier, an internal chatbot, or an external application.
 
 Here's how a request flows from the chat interface through the governance layer to the LLM backend:
 
@@ -35,7 +33,7 @@ Here's how a request flows from the chat interface through the governance layer 
 flowchart LR
     subgraph outerLabel [" "]
         subgraph outer [" "]
-            Client([Rocket Chat])
+            Client([Chat Client])
             Gateway[AI Gateway]
             LLM[LLM API]
 
@@ -96,13 +94,13 @@ _Red Hat Connectivity Link_ is built on the link:https://kuadrant.io/[_Kuadrant_
 
 === The Gateway API Model
 
-The _Kubernetes Gateway API_ is the standard for managing traffic routing in _Kubernetes_. _Connectivity Link_ builds on this model, which is what makes all of the above possible. Here's how the pieces fit together:
+The _Kubernetes Gateway API_ is the standard for managing traffic routing in _Kubernetes_ -- a more flexible, layered replacement for the older Ingress API. _Connectivity Link_ builds on this model, which is what makes all of the above possible. Here's how the pieces fit together:
 
 * **GatewayClass + Gateway** -- owned by the platform team. Defines _how_ traffic enters the cluster. Already provisioned for you.
-* **HTTPRoute** -- owned by development team. Defines _where_ your traffic goes (in this case, the LLM api).
+* **HTTPRoute** -- owned by development team. Defines _where_ your traffic goes (in this case, the LLM backend).
 * **Policies** -- _Connectivity Link_ attaches AuthPolicy and TokenRateLimitPolicy to these resources. Governance is enforced at the infrastructure level -- no changes to your application code.
 
-This layered model means you can add authentication and token budgets to any service behind an HTTPRoute without touching the service or the LLM API itself.
+This layered model means you can add authentication and token budgets to any service behind an HTTPRoute without touching the service itself.
 
 [.mermaid]
 [subs="attributes"]

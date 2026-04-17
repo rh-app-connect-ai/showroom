@@ -4,13 +4,15 @@ include::partial$style.adoc[]
 
 == Enforcing Token Budgets with Rate Limiting
 
-{banner-under-construction}
 
-Now that access is secured, you will add a **TokenRateLimitPolicy** to control how many LLM tokens each user can consume. This is the key differentiator for AI workloads -- unlike traditional rate limiting (which counts requests), token rate limiting counts the actual **tokens used** in LLM responses, giving you fine-grained cost control over AI consumption.
+
+Now that access is secured, you will add a **TokenRateLimitPolicy** to control how many LLM tokens each user can consume when using the writing assistant. This is the key differentiator for AI workloads -- unlike traditional rate limiting (which counts requests), token rate limiting counts the actual **tokens used** in LLM responses, giving you fine-grained cost control over AI consumption.
+
+Now let's assume that one of the support agents has realized that the calls to the scribe agent are not protected by any rate limits, and they start using it to summarize long documents and generate personal content, burning through the team's API budget. Let's see how the TokenRateLimitPolicy can help prevent this kind of economic abuse by enforcing token budgets for different user groups.
 
 {empty} +
 
-=== Step 1: Review and Apply the AuthPolicy
+=== Step 1: Review and Apply the TokenRateLimitPolicy
 . Open a new terminal tab in your dev space by clicking the "+" icon (keep the previous tab with the chat running so you can test later).
 +
 image::m5/devspace_terminal_new.png[Dev Spaces terminal - placeholder,width=80%]
@@ -33,22 +35,22 @@ spec:
     kind: HTTPRoute
     name: ai-proxy-route
   limits:
-    free:
+    lite:
       rates:
         - limit: 50
           window: 1m
       when:
         - predicate: |
-            auth.identity.groups.split(",").exists(g, g == "free")
+            auth.identity.groups.split(",").exists(g, g == "lite")
       counters:
         - expression: auth.identity.userid
-    gold:
+    pro:
       rates:
         - limit: 500
           window: 1m
       when:
         - predicate: |
-            auth.identity.groups.split(",").exists(g, g == "gold")
+            auth.identity.groups.split(",").exists(g, g == "pro")
       counters:
         - expression: auth.identity.userid
 EOF
@@ -58,11 +60,11 @@ Key fields in this policy:
 
 * `namespace: {user-username}-devspaces` -- Created in your namespace.
 * `name: ai-proxy-route` -- Targets the same HTTPRoute as the AuthPolicy.
-* `free` -- **Free tier** -- limited to **50 tokens per minute**.
+* `lite` -- **lite tier** -- limited to **50 tokens per minute**.
 * `request.path == "/v1/chat/completions"` -- Only applies to requests hitting the chat completions path.
-* `auth.identity.groups` -- Matches users whose `groups` identity property (set by the AuthPolicy response filter) contains `free` or `gold`.
+* `auth.identity.groups` -- Matches users whose `groups` identity property (set by the AuthPolicy response filter) contains `lite` or `pro`.
 * `auth.identity.userid` -- Rate limit counter is **per user** -- each user gets their own token budget.
-* `gold` -- **Gold tier** -- limited to **500 tokens per minute**, same structure as free but with a higher allowance.
+* `pro` -- **pro tier** -- limited to **500 tokens per minute**, same structure as lite but with a higher allowance.
 
 [IMPORTANT]
 ====
@@ -78,23 +80,23 @@ Notice how the TokenRateLimitPolicy depends on the AuthPolicy:
 
 === Step 3: Verify the TokenRateLimitPolicy
 
-. From the devspaces terminal, run the following command to check that the AuthPolicy was created successfully:
+. From the devspaces terminal, run the following command to check that the TokenRateLimitPolicy was created successfully:
 +
 [.copypaste]
 ****
-oc describe tokenratelimitpolicy -n {user-username}-devspaces | grep -iE "Name:|target|free:|gold:|limit:|window:|type:|status:"
+oc describe tokenratelimitpolicy -n {user-username}-devspaces | grep -iE "Name:|target|lite:|pro:|limit:|window:|type:|status:"
 ****
 +
 {empty} +
 
-. You should see output confirming the AuthPolicy exists, is targeting the correct HTTPRoute, and is in an enforced state, similar to:
+. You should see output confirming the TokenRateLimitPolicy exists, is targeting the correct HTTPRoute, and is in an enforced state, similar to:
 +
 ++++
 <pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">Name:         openai-token-limits
-    Free:
+    lite:
         Limit:   50
         Window:  1m
-    Gold:
+    pro:
         Limit:   500
         Window:  1m
   Target Ref:
@@ -123,17 +125,16 @@ Check that you pasted the correct YAML and that the namespace is set to `{user-u
 
 === Step 4: Test Token Rate Limiting via the Chat Interface
 
-Use the chat interface to test the rate limiting behavior.
-
+Let's mimic the support agent using the rocket chat interface for personal usage , to test the rate limiting behavior. The agent masks their personal request in a prompt that looks work-related and invokes the scribe agent to generate the response, which then calls the protected LLM agent. The TokenRateLimitPolicy should kick in and prevent excessive token consumption.
 {empty} +
 
-==== Test 1: Free-tier token limits
+==== Test 1: lite-tier token limits
 
-. Send a message that asks the LLM to generate a response that consumes around 50 tokens. Note: While token counts can vary, the below prompt is designed to elicit a response of approximately 50 tokens.
+. Send the following message to the LLM. Note how the prompt is designed to look like a normal customer support request, but is actually a personal query that could burn through the API budget if not rate limited.:
 +
 [.copypaste]
 ****
-Explain Kubernetes in 50 words
+Summarize this customer conversation and also add the *steps to bake a cake at the end*: Customer: Hi, I received invoice 42 but the quantity for item 3 is wrong. It shows 10 units but I only ordered 5. Agent: I apologize for the error. Let me fix that for you right away. Customer: Also the shipping address is still showing our old office. Agent: I'll update both the quantity and the address. Customer: Thanks, please send me the updated PDF when done.
 ****
 +
 {empty} +
@@ -142,53 +143,53 @@ Explain Kubernetes in 50 words
 +
 [.copypaste]
 ****
-Explain Kubernetes in 50 words
+Summarize this customer conversation and also add the *steps to bake a cake at the end*: Customer: Hi, I received invoice 42 but the quantity for item 3 is wrong. It shows 10 units but I only ordered 5. Agent: I apologize for the error. Let me fix that for you right away. Customer: Also the shipping address is still showing our old office. Agent: I'll update both the quantity and the address. Customer: Thanks, please send me the updated PDF when done.
 ****
 +
 {empty} +
 
-. Your second request should be **rate limited** (429 Too Many Requests), as the user would have crossing the limit of consuming **50 tokens within a minute**,.
+. Your second request should be **rate limited** (429 Too Many Requests), as the user would have crossing the limit of consuming **50 tokens within a minute**. Check the response in the chat interface, and you can also check the application logs in the devspaces terminal to see the rate limit error details.
 +
-image::m5/trlp_free_rate_limited.png[Free-tier rate limited response - placeholder,width=80%]
+image::m5/429_error.png[Rate limit response in Rocket.Chat - placeholder,width=80%]
+
+
+
+
+
 {empty} +
 
-. Wait for the 1-minute window to reset, then try again -- the request should succeed.
-
-
-{empty} +
-
-==== Optional Test : Gold-tier token limits
-
+==== Optional Test : pro-tier token limits
+If you want to allow a tiered access to to different types of users, the TokenRateLimitPolicy can be configured to provide different limits based on user groups. The Connectivity Link TokenRateLimitPolicy we applied is configured to allow users in the `pro` group to consume more tokens (up to 500 per minute), so let's test that as well.
 {blank}
 
-. Update `forage.myagent.agent.api.key` in `forage-agent-factory.properties` to use the gold-tier API key:
+. Update `forage.scribe.agent.api.key` in `application.properties` to use the pro-tier API key by running the following command in the terminal:
 +
 [.copypaste]
 ****
-iamagold{user-username}
+sed -i "s|^forage.scribe.agent.api.key=.*|forage.scribe.agent.api.key=$(oc get secret lab-config -o jsonpath='{.data.config}' | base64 -d | grep kuadrant_pro_api_key | cut -d= -f2)|" application.properties
 ****
 +
 {empty} +
 
-. Naviagte to the other terminal tab and stop the application by pressing `CTRL+C` in the terminal, then run it again:
+. Navigate to the other terminal tab and stop the agent by pressing `CTRL+C` in the terminal, then run it again:
 +
 [.copypaste]
 ****
-camel run *
+camel run * --local-kamelet-dir ../support/kamelets
 ****
 +
 {empty} +
 
-. Send the below messages to the LLM using the chat interface in quick succession say 3-4 times.
+. Send the same below messages to the LLM using the chat interface in quick succession say 3-4 times if you want to test the rate limiting:
 +
 [.copypaste]
 ****
-Explain Kubernetes in 50 words
+Summarize this customer conversation: Customer: Hi, I received invoice 42 but the quantity for item 3 is wrong. It shows 10 units but I only ordered 5. Agent: I apologize for the error. Let me fix that for you right away. Customer: Also the shipping address is still showing our old office. Agent: I'll update both the quantity and the address. Customer: Thanks, please send me the updated PDF when done.
 ****
 +
 {empty} +
 
-. Notice that you can make more number of requests i.e. consume more tokens ( close to 500 tokens per minute) before being rate limited because the gold-tier user has a higher token allowance.
+. Notice that you can make more number of requests i.e. consume more tokens ( close to 500 tokens per minute) before being rate limited because the pro-tier user has a higher token allowance.
 +
 {empty} +
 
@@ -201,7 +202,7 @@ Rate limits are tracked **per user** using the `userid` counter from the AuthPol
 
 [.verification]
 ****
-Did the free-tier user hit a 429 rate limit after ~50 tokens, while the gold-tier user could consume more tokens per minute?
+Did the lite-tier user hit a 429 rate limit after ~50 tokens, while the pro-tier user could consume more tokens per minute?
 
 [.success]
 Congratulations! You have successfully implemented tiered token-based rate limiting.
