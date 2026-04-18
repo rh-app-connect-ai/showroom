@@ -114,7 +114,7 @@ flowchart LR
 
 {empty} +
 
-== Connecting the Database
+=== Connecting the Database
 
 [.mermaid]
 [subs="attributes"]
@@ -326,6 +326,140 @@ flowchart LR
     style ToolsLabel2 fill:none,stroke:none,color:#EE0000,font-weight:bold
     style ToolsInner2 fill:#fce4e4,stroke:#EE0000
 ----
+
+
+== Demo — Phase 4: AI Guardrails
+
+{empty} +
+
+=== Customer Profile Capability
+
+[.mermaid.mermaid-w60]
+----
+flowchart LR
+    AGT4 <--> AI4
+    AI4 -->|"profile request"| CP
+
+    AGT4@{ img: "../_images/test/agent-icon.svg", label: "Support Agent", pos: "b", h: 80, w: 80, constraint: "on" }
+    AI4@{ img: "../_images/test/ai-icon.svg", label: "AI Assistant", pos: "b", h: 80, w: 80, constraint: "on" }
+    CP@{ img: "../_images/test/customer-icon.svg", label: "Customer Profile", pos: "b", h: 80, w: 80, constraint: "on" }
+
+    style AGT4 fill:none,stroke:none
+    style AI4 fill:none,stroke:none
+    style CP fill:none,stroke:none
+----
+
+{empty} +
+
+=== Fallback Strategy
+
+[.mermaid]
+----
+flowchart LR
+    REQ([Profile Request]) --> G{{"🥇 Gold Tier"}}
+    G -->|"✅ success"| GOLD["<div style='text-align:left'><b>Gold Analysis</b><br/>• Full purchase history<br/>• Spending patterns<br/>• Loyalty status</div>"]
+    G -->|"❌ fail"| S{{"🥈 Silver Tier"}}
+    S -->|"✅ success"| SILVER["<div style='text-align:left'><b>Silver Analysis</b><br/>• Recent orders<br/>• Basic profile</div>"]
+    S -->|"❌ fail"| ERR["⚠️ Notify error"]
+
+    style REQ fill:#f5f5f5,stroke:#EE0000,color:#333
+    style G fill:#fff3e0,stroke:#fb8c00,color:#333
+    style S fill:#f5f5f5,stroke:#999,color:#333
+    style GOLD fill:#e8f5e9,stroke:#66bb6a,color:#333
+    style SILVER fill:#e8f5e9,stroke:#66bb6a,color:#333
+    style ERR fill:#fce4e4,stroke:#EE0000,color:#333
+----
+
+
+[.mermaid]
+----
+flowchart LR
+    REQ([Profile Request]) --> GOLD
+    SILVER -.->|"fallback"| ERR
+
+    subgraph Tiers [" "]
+        direction TB
+        GOLD -.->|"fallback"| SILVER
+    end
+
+    GOLD["<div style='text-align:left'><b>🥇 Gold Tier</b><br/>• Full purchase history<br/>• Spending patterns<br/>• Loyalty status</div>"]
+    SILVER["<div style='text-align:left'><b>🥈 Silver Tier</b><br/>• Recent orders<br/>• Basic profile</div>"]
+    ERR["⚠️ Try again later"]
+
+    style REQ fill:#f5f5f5,stroke:#EE0000,color:#333
+    style GOLD fill:#fff3e0,stroke:#fb8c00,color:#333
+    style SILVER fill:#f5f5f5,stroke:#999,color:#333
+    style ERR fill:#fce4e4,stroke:#EE0000,color:#333
+    style Tiers fill:none,stroke:none
+----
+
+
+[.mermaid]
+----
+flowchart LR
+    REQ([Profile Request]) --> 
+    
+    REQ --> B
+
+    subgraph Tiers ["sdfsfg "]
+        direction TB
+        GOLD -.->|"falldback"| SILVER
+    end
+
+    Tiers -.->|"fallback"| ERR
+
+    GOLD["<div style='text-align:left'><b>🥇 Gold Tier</b><br/>• Full purchase history<br/>• Spending patterns<br/>• Loyalty status</div>"]
+    SILVER["<div style='text-align:left'><b>🥈 Silver Tier</b><br/>• Recent orders<br/>• Basic profile</div>"]
+    ERR["⚠️ Try again later"]
+
+    style REQ fill:#f5f5f5,stroke:#EE0000,color:#333
+    style GOLD fill:#fff3e0,stroke:#fb8c00,color:#333
+    style SILVER fill:#f5f5f5,stroke:#999,color:#333
+    style ERR fill:#fce4e4,stroke:#EE0000,color:#333
+    style Tiers fill:none,stroke:none
+----
+
+{empty} +
+
+[.mermaid]
+----
+flowchart TD
+    REQ(["Profile Request"]) --> QA["🥇 Gold quota available?"]
+    QA -->|"✅ yes"| GOLDBox
+    QA2 -->|"✅ yes"| SILVERBox
+    QA --> |"❌ no"| QA2["🥈 Silver quota available?"]
+    QA2 -->|"❌ no"| ERR["⚠️ Try again later"]
+
+    subgraph fallback [" "]
+        direction TD
+        SILVERBox
+        ERR
+    end
+
+    GOLDBox["<div style='display:flex;align-items:center;gap:20px;min-width:280px'><img src='../_images/test/gold-stamp-icon.svg' style='width:60px;min-width:60px;max-width:60px'/><div style='text-align:left'><b style='font-size:1.3em'>Gold Analysis</b><br/>• Full purchase history<br/>• Spending patterns<br/>• Loyalty status</div></div>"]
+
+    SILVERBox["<div style='display:flex;align-items:center;gap:20px;min-width:230px'><img src='../_images/test/silver-stamp-icon.svg' style='width:60px;min-width:60px;max-width:60px'/><div style='text-align:left'><b style='font-size:1.3em'>Silver Analysis</b><br/>• Recent orders<br/>• Basic profile</div></div>"]
+
+    style REQ fill:#f5f5f5,stroke:#EE0000,color:#333
+    style QA fill:none,stroke:none,color:#333
+    style QA2 fill:none,stroke:none,color:#333
+    style GOLDBox fill:#e8f5e9,stroke:#66bb6a,color:#333
+    style SILVERBox fill:#e8f5e9,stroke:#66bb6a,color:#333
+    style ERR fill:#fce4e4,stroke:#EE0000,color:#333
+    style fallback fill:none,stroke:none
+----
+
+[.mermaid]
+----
+flowchart TD
+    A[Start] --> B{Is it?}
+    B -- No ----> E[End]
+    B -- Yes --> C[OK]
+    C --> D[Rethink]
+    D --> B
+----
+
+{empty} +
 
 '''
 
