@@ -5,8 +5,6 @@ include::partial$style.adoc[]
 [id="whats-next"]
 == What's next
 
-{banner-under-construction}
-
 You now have both messaging platforms open and ready — *Matrix* on the customer side, *Rocket.Chat* on the support agent side. But right now, they're completely separate. A message sent in one has no way of reaching the other.
 
 {blank}

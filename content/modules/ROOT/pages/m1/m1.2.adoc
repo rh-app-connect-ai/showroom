@@ -5,8 +5,6 @@ include::partial$style.adoc[]
 [id='lab3-service-interconnect']
 == Enabling Database Connectivity
 
-{banner-under-construction}
-
 Your `application.properties` includes database connectivity settings — but the database isn't reachable yet. Let's find out why, and enable the connection.
 
 {empty} +

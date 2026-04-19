@@ -5,7 +5,7 @@ include::partial$style.adoc[]
 [id='lab1-introduction']
 == Introduction
 
-{banner-under-construction}
+
 
 Ingest data from customers, store it in a backend database, and generate PDF invoices — all orchestrated by Apache Camel with secure cross-cluster connectivity powered by {rhsi}.
 

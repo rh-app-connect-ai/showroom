@@ -5,8 +5,6 @@ include::partial$style.adoc[]
 [id="kafka-to-rocketchat"]
 == Kafka to Rocket.Chat
 
-{banner-under-construction}
-
 Bridging _Matrix_ and _Rocket.Chat_ bidirectionally requires four flows (as covered in the introduction). The path that carries customer messages to the support agent alone needs two:
 
 * *Flow 1* — Matrix to Kafka _(pre-configured)_

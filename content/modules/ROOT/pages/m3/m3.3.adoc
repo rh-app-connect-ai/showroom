@@ -5,8 +5,6 @@ include::partial$style.adoc[]
 [id="deploy-kafka-to-rocketchat"]
 == Deploy to OpenShift [.small]#(parked)#
 
-{banner-under-construction}
-
 Now that the _Kafka_ to _Rocket.Chat_ flow has been validated locally, it's time to deploy it on _OpenShift_.
 
 {empty} +

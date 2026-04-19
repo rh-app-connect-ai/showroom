@@ -5,8 +5,6 @@ include::partial$style.adoc[]
 [id='lab3-introduction']
 == Introduction
 
-{banner-under-construction}
-
 Build the integration flows that connect Matrix and Rocket.Chat through Apache Kafka — creating a decoupled, event-driven architecture ready to welcome new systems.
 
 {empty} +

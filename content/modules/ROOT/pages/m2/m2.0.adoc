@@ -5,8 +5,6 @@ include::partial$style.adoc[]
 [id='messaging-access']
 == Lab 2 - Messaging Access
 
-{banner-under-construction}
-
 Get familiar with the two messaging platforms used in this workshop — Matrix and Rocket.Chat — and log in to both so you're ready for the integration exercises ahead.
 
 {empty} +

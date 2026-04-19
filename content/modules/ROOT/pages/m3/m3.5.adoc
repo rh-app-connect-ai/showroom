@@ -5,8 +5,6 @@ include::partial$style.adoc[]
 [id="deploy-test"]
 == Deploy and test [.small]#(parked)#
 
-{banner-under-construction}
-
 You've covered a lot of ground. Now it is time to deploy the new data flows.
 
 [NOTE]

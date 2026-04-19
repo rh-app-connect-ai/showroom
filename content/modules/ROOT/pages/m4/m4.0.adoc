@@ -5,8 +5,6 @@ include::partial$style.adoc[]
 [id='lab4-ai-customer-support']
 == Lab 4 - AI Customer Support
 
-{banner-under-construction}
-
 Use an AI agent to orchestrate backend actions based on natural language chat — powered by Agentic Apache Camel and Model-as-a-Service (MaaS).
 
 {empty} +

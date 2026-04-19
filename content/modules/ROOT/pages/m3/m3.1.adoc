@@ -5,13 +5,7 @@ include::partial$style.adoc[]
 [id="setup"]
 == Setup the Lab working folder
 
-{banner-under-construction}
-
-{empty} +
-
-
 The following set of instructions prepare the set of files you will be working with:
-
 
 . Close tabs
 +

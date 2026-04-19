@@ -5,8 +5,6 @@ include::partial$style.adoc[]
 [id='lab3-flow-implementation']
 == Flow Implementation
 
-{banner-under-construction}
-
 Now that you understand the full ingestion flow, let's build it step by step. Here's the Camel route you'll be working with:
 
 {blank}

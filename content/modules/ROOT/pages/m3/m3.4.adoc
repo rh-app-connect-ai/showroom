@@ -5,8 +5,6 @@ include::partial$style.adoc[]
 [id="enable-and-test"]
 == Go live on OpenShift
 
-{banner-under-construction}
-
 You've completed the _Kafka_ to _Rocket.Chat_ flow. To save time, all four flows have been deployed on _OpenShift_ — you'll now have the chance to test them out and simulate a conversation between customers and support agents.
 
 The diagram below shows the four flows enabling bidirectional communication between customer and support agent:

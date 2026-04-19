@@ -5,10 +5,6 @@ include::partial$style.adoc[]
 [id="setup-lab4"]
 == Setup the Lab working folder
 
-{banner-under-construction}
-
-{empty} +
-
 The following steps prepare the files you'll need for the AI customer support exercise:
 
 . Close tabs

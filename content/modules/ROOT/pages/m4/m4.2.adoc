@@ -5,8 +5,6 @@ include::partial$style.adoc[]
 [id='lab4-agentic-flow']
 == Developing the AI assistant
 
-{banner-under-construction}
-
 === Open the Camel route
 
 In your editor's file explorer, click on the following file — Kaoto will automatically open it and render the route as a visual diagram.
