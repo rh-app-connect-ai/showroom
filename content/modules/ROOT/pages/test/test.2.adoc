@@ -99,7 +99,7 @@ flowchart LR
     DB@{ img: "../_images/test/database-icon.svg", label: "Database", pos: "b", h: 80, w: 80, constraint: "on" }
 
     subgraph INT["⚙️ Integration&nbsp;"]
-        S["① Transform EDI data\n② Insert DB record\n③ Generate invoice"]
+        S["<div style='text-align:left'>① Transform EDI data<br/>② Insert DB record<br/>③ Generate invoice</div>"]
     end
 
     style C fill:none,stroke:none
@@ -120,7 +120,7 @@ flowchart LR
 [subs="attributes"]
 ----
 flowchart LR
-    subgraph yoursLabel [OpenShift -&nbsp;]
+    subgraph yoursLabel [OpenShift  .]
         subgraph yours [" "]
             Client
             SI1{{"Service\nInterconnect"}}
@@ -131,11 +131,11 @@ flowchart LR
 
     SI1 -.-|"🔒 secure link"| SI2
 
-    subgraph sharedLabel ["Remote Environment&#160;"]
+    subgraph sharedLabel ["Remote Environment ."]
         subgraph shared [" "]
             SI2{{"Service\nInterconnect"}}
             SVC((svc))
-            SVC --- DB
+            SVC --> DB
         end
     end
 
@@ -235,8 +235,8 @@ flowchart TB
     KF@{ img: "../_images/common/kafka-icon.svg", label: "Kafka", pos: "b", h: 80, w: 80, constraint: "on" }
     RC@{ img: "../_images/m4/rocketchat-icon.svg", label: "Rocket.Chat", pos: "b", h: 80, w: 80, constraint: "on" }
     AGT@{ img: "../_images/test/agent-icon.svg", label: "Support Agent", pos: "b", h: 80, w: 80, constraint: "on" }
-    P1@{ img: "../_images/test/platform-icon.svg", label: "Platform A", pos: "b", h: 80, w: 80, constraint: "on" }
-    P2@{ img: "../_images/test/platform-icon.svg", label: "Platform B", pos: "b", h: 80, w: 80, constraint: "on" }
+    P1@{ img: "../_images/test/platform-icon.svg", label: "Platform B", pos: "b", h: 80, w: 80, constraint: "on" }
+    P2@{ img: "../_images/test/platform-icon.svg", label: "Platform A", pos: "b", h: 80, w: 80, constraint: "on" }
 
     style CUST fill:none,stroke:none
     style MX fill:none,stroke:none
@@ -388,7 +388,7 @@ flowchart LR
 
     GW --- GWp
     GWp[" "] --> |"🥇 Rate Limit"| GP
-    GWp --> |"🥈 rate limit"| SP
+    GWp --> |"🥈 Rate Limit"| SP
 
     AGT5@{ img: "../_images/test/agent-icon.svg", label: "Support Agent", pos: "b", h: 80, w: 80, constraint: "on" }
     AI5@{ img: "../_images/test/ai-icon.svg", label: "AI Assistant", pos: "b", h: 80, w: 80, constraint: "on" }
