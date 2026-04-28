@@ -144,6 +144,8 @@ NOTE: In this exercise you're connecting two namespaces on the same cluster — 
 
 Service Interconnect uses a set of resources to establish and manage the connection. Here's how the previous diagram breaks down:
 
+TIP: Hover over each component in the diagram to learn what it does.
+
 {blank}
 
 [.mermaid]
@@ -200,8 +202,6 @@ Listener | Listener | Exposes a remote service locally in your namespace. It mat
 Connector | Connector | Connects a local service to the Skupper network. It publishes the service so that matching Listeners in other namespaces can reach it. +
 SVC2 | Service (auto-created) | When a Listener is created, Service Interconnect automatically creates a local Kubernetes service. Your application connects to this service as if the database were local.
 ****
-
-TIP: Hover over each component in the diagram to learn what it does.
 
 NOTE: The database lives in a secure, air-tight environment — no inbound ports are exposed. To keep it that way, the link is initiated *from* the database side *outward* to your site. This is why you create an AccessGrant on your side: it gives the database site permission to connect to you and establish a bidirectional communication link. Its environment never opens an entrypoint that could be exploited.
 

@@ -62,11 +62,10 @@ window.addEventListener('DOMContentLoaded', function() {
     pop.style.display = 'none';
   });
 
-  // Find a Mermaid node in the SVG by its diagram ID.
-  // Regular nodes use "flowchart-{id}-{n}", subgraphs use just "{id}".
   function findNode(svg, key) {
     return svg.querySelector('[id*="flowchart-' + key + '-"]')
-        || svg.getElementById(key);
+        || svg.getElementById(key)
+        || svg.querySelector('[id$="-' + key + '"]');
   }
 
   hintBlocks.forEach(function(sb) {
