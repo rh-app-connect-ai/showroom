@@ -20,7 +20,7 @@ The following resources have been set up for you so you can focus on the policy 
 | The _Connectivity Link_ operator, installed in the `kuadrant-system` namespace.
 
 | **User Secrets**
-| API key secrets for `lite` and `pro` tier users (details below).
+| API key secrets for two tiers: `lite` (Silver) and `pro` (Gold). Details below.
 |===
 
 {empty} +
@@ -99,7 +99,9 @@ NOTE: We are using simple API key authentication for this workshop to keep thing
 
 Two API key secrets have already been *pre-created*. Understanding their structure is important because both policies reference the labels and annotations on these secrets.
 
-**lite-tier user:**
+NOTE: In the lab infrastructure, the Gold tier maps to the `pro` group and the Silver tier maps to the `lite` group. These identifiers appear in the Kubernetes secrets and policy configurations below.
+
+**Silver tier (`lite`) user:**
 [source,yaml,subs="attributes"]
 ----
 apiVersion: v1
@@ -122,10 +124,10 @@ Key fields in this secret:
 
 * `authorino.kuadrant.io/managed-by: authorino` -- Marks this secret as managed by _Authorino_ (the auth engine behind _Connectivity Link_).
 * `app: my-llm-{username}` -- Label selector -- the AuthPolicy uses this to discover valid API keys.
-* `kuadrant.io/groups: lite` -- Group membership -- determines which rate limit tier applies.
+* `kuadrant.io/groups: lite` -- Group membership (Silver tier) -- determines which rate limit tier applies.
 * `secret.kuadrant.io/user-id: {user-username}` -- Unique user ID -- used as a counter key for per-user rate limiting.
 
-The **pro-tier** secret follows the same structure but with `kuadrant.io/groups: pro`, `api_key: iamaprouser`.
+The **Gold tier (`pro`)** secret follows the same structure but with `kuadrant.io/groups: pro`, `api_key: iamaprouser`.
 
 {empty} +
 

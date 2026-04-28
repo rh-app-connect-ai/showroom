@@ -113,6 +113,22 @@ summary  {
   font-size: 14px;
 }
 
+/* Properties source blocks — dark theme overriding highlight.js */
+.doc .listingblock pre:has(code[data-lang="properties"]) {
+  background-color: #2b2b2b !important;
+  color: #CBCBCB !important;
+}
+.doc .listingblock pre code[data-lang="properties"] {
+  background-color: transparent !important;
+  color: #CBCBCB !important;
+}
+.doc .listingblock code[data-lang="properties"] .hljs-comment { color: #689956 !important; font-style: italic; }
+.doc .listingblock code[data-lang="properties"] .hljs-attr { color: #569DD6 !important; }
+.doc .listingblock code[data-lang="properties"] .hljs-string { color: #CBCBCB !important; }
+.doc .listingblock code[data-lang="properties"] .hljs-meta,
+.doc .listingblock code[data-lang="properties"] .hljs-keyword { color: #569DD6 !important; }
+.doc .listingblock code[data-lang="properties"] .hljs-link { color: #CBCBCB !important; }
+
 /* Ensure topbar dropdown appears above fixed overlays */
 .navbar {
   z-index: 1001 !important;
@@ -240,6 +256,7 @@ details[open] .triangle::before {
     }
   } catch(e) { /* cross-origin iframe — cannot access top */ }
 })();
+
 </script>
 
 ++++

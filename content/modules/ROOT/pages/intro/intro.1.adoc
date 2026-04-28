@@ -71,9 +71,9 @@ The commerce platform sends purchase orders in EDI format. A Camel flow picks th
 // flowchart LR
 //     C --> PO --> ING
 
-//     C@{ img: "../_images/test/customer-icon.svg", label: "Customer", pos: "b", h: 80, w: 80, constraint: "on" }
-//     PO@{ img: "../_images/test/po-icon.svg", label: "Purchase Order", pos: "b", h: 80, w: 70, constraint: "on" }
-//     ING@{ img: "../_images/test/integration-icon.svg", label: "Ingest", pos: "b", h: 80, w: 80, constraint: "on" }
+//     C@{ img: "../_images/common/customer-icon.svg", label: "Customer", pos: "b", h: 80, w: 80, constraint: "on" }
+//     PO@{ img: "../_images/common/po-icon.svg", label: "Purchase Order", pos: "b", h: 80, w: 70, constraint: "on" }
+//     ING@{ img: "../_images/common/integration-icon.svg", label: "Ingest", pos: "b", h: 80, w: 80, constraint: "on" }
 
 //     style C fill:none,stroke:none
 //     style PO fill:none,stroke:none

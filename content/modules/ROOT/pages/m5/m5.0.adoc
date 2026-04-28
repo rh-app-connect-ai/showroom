@@ -2,23 +2,26 @@
 :page-time: 4
 include::partial$style.adoc[]
 
-[id='lab5-protect-llm-consumption-with-connectivity-link']
-== Lab 5 - Protect LLM consumption with Connectivity Link
+[id='lab5-govern-ai-consumption']
+== Lab 5 - LLM Governance
 
 
 
-In the previous modules, you built an integration platform that connects chat systems, ingests client data, and uses an AI agent to resolve support issues through natural language. But your organization runs more than one AI-powered tool.
+In the previous labs, you built an AI agent that resolves customer support issues through natural language. The agent queries the database, updates records, and regenerates invoices, all from within the chat interface.
 
-Introducing the **writingAssistant**, which is a tool used by support agents to summarize customer conversations and draft professional email responses within the same Rocket.Chat interface. Under the hood, it relies on the **scribe agent** -- an LLM endpoint configured with enterprise-level quotas but no internal guardrails, no system prompt, and no memory. It's an open pipe to the model.
+Now you want to extend it with a new capability: **customer profile analysis**. When a support agent asks about a customer, the AI analyzes their data and returns a structured summary. Two tiers of analysis are available:
 
-Some support agents have discovered this. Using adversarial prompts, they've started offloading massive personal tasks through the scribe -- summarizing long-form documents, generating personal content -- none of it related to customer support. The model works fine. The problem is **economic abuse**: unchecked token consumption is burning through the corporate API budget.
+* **Gold** -- full purchase history, spending patterns, and loyalty status.
+* **Silver** -- recent orders and basic profile information.
 
-You might think traditional rate limiting solves this -- but it doesn't. Rate limiting counts _requests_, not _tokens_. Without token-level visibility, request-based limits can't stop the abuse.
+Gold consumes more tokens because the analysis is deeper and the response is richer. Silver is lighter. The system is designed with a fallback strategy: if the Gold tier's token budget is exhausted, the service falls back to Silver. If Silver is also exhausted, the request is deferred.
 
-In this lab, you'll secure the scribe agent's LLM endpoint by placing a **governance layer** in front of it using link:https://www.redhat.com/en/technologies/cloud-computing/connectivity-link[*_Red Hat Connectivity Link_*]. You'll implement two policies:
+But before any of this works, you need governance. Who can access the LLM endpoint? How many tokens can each tier consume? Without controls, there is nothing stopping unchecked consumption from burning through the organization's API budget.
+
+In this lab, you'll place a **governance layer** in front of the LLM endpoint using link:https://www.redhat.com/en/technologies/cloud-computing/connectivity-link[*_Red Hat Connectivity Link_*]. You'll implement two policies:
 
 * **AuthPolicy** -- Control _who_ can access the endpoint using API key authentication and group-based authorization.
-* **TokenRateLimitPolicy** -- Control _how much_ each user can consume by enforcing rate limits based on actual token usage.
+* **TokenRateLimitPolicy** -- Control _how much_ each tier can consume by enforcing rate limits based on actual token usage.
 
 {empty} +
 
@@ -26,10 +29,10 @@ In this lab, you'll secure the scribe agent's LLM endpoint by placing a **govern
 
 This is exactly the kind of problem _Red Hat Connectivity Link_ was designed for. Built on the link:https://kuadrant.io/[_Kuadrant_ project], it brings AI-aware governance to _Kubernetes_:
 
-* **Token-aware rate limiting** -- limits are based on actual tokens consumed, not request counts. This is the only way to stop the kind of economic abuse the scribe agent enables.
-* **Zero code changes** -- policies are applied at the infrastructure level. Your scribe agent and integration code stay untouched.
+* **Token-aware rate limiting** -- limits are based on actual tokens consumed, not request counts. This is what makes tiered AI services viable: each tier gets its own token budget, enforced at the gateway.
+* **Zero code changes** -- policies are applied at the infrastructure level. Your AI agent and integration code stay untouched.
 * **Kubernetes-native** -- policies are standard CRDs, applied with `oc apply`, stored in Git, reviewed in PRs. No separate management console or vendor control plane.
-* **Composable** -- one policy extracts identity, another uses it for per-user token budgets. They layer on top of each other declaratively.
+* **Composable** -- one policy extracts identity, another uses it for per-tier token budgets. They layer on top of each other declaratively.
 
 These capabilities come from how Connectivity Link builds on the _Kubernetes Gateway API_ standard. Before you start configuring policies, let's look at the Gateway API model.
 
@@ -123,7 +126,7 @@ flowchart LR
 
 === End-to-End Request Flow
 
-Now that you understand the model, here's how it maps to your setup. You'll use the same Rocket.Chat interface to interact with the scribe agent -- the request flows from the chat client, through the governance layer, to the LLM API:
+Now that you understand the model, here's how it maps to your setup. You'll use the same Rocket.Chat interface to interact with the AI agent -- the request flows from the chat client, through the governance layer, to the LLM API:
 
 [.mermaid]
 ----

@@ -85,6 +85,10 @@ Example:
 - The `[.success]` message should acknowledge completion and lead into the next exercise.
 - The `[.fail]` message should guide the student on what to review.
 
+## Punctuation
+
+- **Avoid em dashes (`--`).** They are overused in AI-generated text and feel unnatural. Use commas, colons, periods, or parentheses instead. Classic punctuation reads better.
+
 ## Spacing and Layout
 
 - Use `{empty} +` for vertical spacing between sections.

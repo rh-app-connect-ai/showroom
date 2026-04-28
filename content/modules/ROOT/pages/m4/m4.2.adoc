@@ -136,7 +136,7 @@ Wait for _Camel_ to fully start — you should see `Running` in the terminal.
 
 Switch to your _Rocket.Chat_ window.
 
-TIP: If you haven't logged in yet, follow the xref:m2/m2.2.adoc[Rocket.Chat platform onboarding] instructions.
+TIP: If you haven't logged in yet, follow the xref:m2/m2.2.adoc[Rocket.Chat platform onboarding,window=_blank] instructions (opens in a new tab).
 
 In the left sidebar, find and select the `ai-support` channel that matches your user number:
 
