@@ -5,7 +5,7 @@ include::partial$style.adoc[]
 [id='lab3-service-interconnect']
 == Enabling Database Connectivity
 
-Your `application.properties` includes database connectivity settings — but the database isn't reachable yet. Let's find out why, and enable the connection.
+The integration flow needs access to the database, but it isn't reachable yet. Let's find out why, and enable the connection.
 
 {empty} +
 
@@ -96,6 +96,8 @@ The connection will time out — the database is not directly accessible from yo
 
 === Bridging namespaces with Service Interconnect
 
+NOTE: {rhsi} is a supported offering built from the upstream https://skupper.io[Skupper.io,window=_blank] open source project.
+
 {rhsi} solves this by creating encrypted application-level connections between namespaces — without requiring VPNs, firewall rules, or exposing services to the public network.
 
 Once configured, a local service is created in your namespace that transparently forwards traffic to the remote database:
@@ -143,8 +145,6 @@ NOTE: In this exercise you're connecting two namespaces on the same cluster — 
 === Under the hood
 
 Service Interconnect uses a set of resources to establish and manage the connection. Here's how the previous diagram breaks down:
-
-TIP: Hover over each component in the diagram to learn what it does.
 
 {blank}
 
@@ -202,6 +202,8 @@ Listener | Listener | Exposes a remote service locally in your namespace. It mat
 Connector | Connector | Connects a local service to the Skupper network. It publishes the service so that matching Listeners in other namespaces can reach it. +
 SVC2 | Service (auto-created) | When a Listener is created, Service Interconnect automatically creates a local Kubernetes service. Your application connects to this service as if the database were local.
 ****
+
+TIP: Hover over each component in the diagram to learn what it does.
 
 NOTE: The database lives in a secure, air-tight environment — no inbound ports are exposed. To keep it that way, the link is initiated *from* the database side *outward* to your site. This is why you create an AccessGrant on your side: it gives the database site permission to connect to you and establish a bidirectional communication link. Its environment never opens an entrypoint that could be exploited.
 

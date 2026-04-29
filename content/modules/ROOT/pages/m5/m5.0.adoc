@@ -50,6 +50,12 @@ Here are the building blocks:
 [.mermaid]
 [subs="attributes"]
 ----
+---
+title: The Gateway API Model
+config:
+    flowchart:
+        titleTopMargin: -200
+---
 %%{init: {'theme': 'base', 'themeVariables': {'fontSize': '18px'}}}%%
 flowchart LR
     subgraph yoursLabel [" "]
@@ -69,9 +75,9 @@ flowchart LR
     style HTTP fill:#fff,stroke:#7986cb
 ----
 
-++++
-<p style="text-align: center; margin-top: -2rem; padding-right: 12rem; font-style: italic; color: #555">The Gateway API Model</p>
-++++
+// ++++
+// <p style="text-align: center; margin-top: -2rem; padding-right: 12rem; font-style: italic; color: #555">The Gateway API Model</p>
+// ++++
 
 [.mermaid-hints-simple]
 ****

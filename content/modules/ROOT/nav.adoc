@@ -7,7 +7,7 @@
 
 * xref:m1/m1.0.adoc[Lab 1 - Ingest Service]
 ** xref:m1/m1.0.adoc[Introduction]
-** xref:m1/m1.1.adoc[Setup the Lab working folder]
+// ** xref:m1/m1.1.adoc[Setup the Lab working folder] //originally needed for Camel to run as a DB client. Forage needs a fix.
 ** xref:m1/m1.2.adoc[Enabling Database Connectivity]
 ** xref:m1/m1.2b.adoc[The Ingestion Flow]
 ** xref:m1/m1.3.adoc[Flow Implementation]
