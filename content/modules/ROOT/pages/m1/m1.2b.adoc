@@ -11,28 +11,41 @@ With database connectivity in place via {rhsi}, you can now implement the comple
 
 *Data Flow Overview*
 
+{blank}
+
 [.mermaid]
 ----
 flowchart LR
-    Customer([Customer])
 
-    subgraph ocp [OpenShift]
-        API[API Endpoint]
-        Camel[Apache Camel]
-        S3[(S3 / ODF)]
+    Customer --> Shop -->|"EDI message"| Camel
+
+    subgraph LocalEnvironment [OpenShift]
+        Shop
+        Camel --> |"① XML data"|ServiceInterconnect{{"Service\nInterconnect"}}
+        Camel --> |"② PDF Invoices"|Storage
     end
 
-    subgraph backend [Remote Backend]
-        DB[(Database)]
+    subgraph RemoteEnvironment [Remote Environment]
+        ServiceInterconnect2{{"Service\nInterconnect"}} --> Database
     end
 
-    Customer -->|EDI Purchase Orders| API
-    API --> Camel
-    Camel -->|① XML data| SI
-    SI{{Service Interconnect}} -.->|Secure Link| DB
-    DB -.-> SI
-    SI --> Camel
-    Camel -->|② PDF Invoices| S3
+    ServiceInterconnect --- |"🔒 secure link"| ServiceInterconnect2{{"Service\nInterconnect"}}
+
+    Camel@{ img: "../_images/common/integration-icon.svg", label: "Camel Integration", pos: "b", h: 80, w: 80, constraint: "on" }
+    Customer@{ img: "../_images/common/customer-icon.svg", label: "Customer", pos: "b", h: 80, w: 80, constraint: "on" }
+    Shop@{ img: "../_images/common/shop-icon.svg", label: "Shop", pos: "b", h: 80, w: 80, constraint: "on" }
+    Storage@{ img: "../_images/common/s3-icon.svg", label: "OpenShift<br>Data Foundation", pos: "b", h: 80, w: 80, constraint: "on" }
+    Database@{ img: "../_images/common/database-icon.svg", label: "Database", pos: "b", h: 70, w: 70, constraint: "on" }
+
+    style LocalEnvironment fill:#fce4e4,stroke:#EE0000
+    style RemoteEnvironment fill:#fce4e4,stroke:#EE0000
+    style ServiceInterconnect2 fill:#f8b4b4,stroke:#EE0000,color:#333
+    style ServiceInterconnect fill:#f8b4b4,stroke:#EE0000,color:#333
+    style Customer fill:none,stroke:none
+    style Camel fill:none,stroke:none,font-weight:bold
+    style Shop fill:none,stroke:none
+    style Storage fill:none,stroke:none
+    style Database fill:none,stroke:none
 ----
 
 {empty} +
@@ -40,6 +53,8 @@ flowchart LR
 *Sequence of Operations*
 
 The sequence diagram below details each step the Camel integration performs when processing a Purchase Order:
+
+{blank}
 
 [.mermaid]
 ----

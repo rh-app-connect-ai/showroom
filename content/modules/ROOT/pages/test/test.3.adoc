@@ -1,0 +1,33 @@
+:imagesdir: ../../assets/images
+include::partial$style.adoc[]
+
+== TEST ZONE
+
+
+=== Red Hat Logo
+
+[.mermaid]
+----
+flowchart LR
+    Agent([Support Agent]) -->|"① message"| RC
+    RC -->|"② forward"| Camel["<img src='../_images/common/rh-logo-sm.svg'/>Agentic Camel"]
+    Camel <-->|"③ reason"| MaaS[MaaS]
+    Camel -->|"④ tool calls"| Tools
+
+    RC@{ img: "../_images/m4/rocketchat-icon.svg", label: "Rocket.Chat", pos: "b", h: 100, w: 100, constraint: "on" }
+
+    subgraph Tools [Backend Tools]
+        DB[(Database)]
+        S3[(S3 / ODF)]
+        HD[HelpDesk]
+    end
+
+    Camel -->|"⑤ response"| RC
+    RC -->|"⑥ reply"| Agent
+
+    style RC fill:none,stroke:none
+----
+
+=== Red Hat Logo in text
+
+Hello image:common/rh-logo.svg[width=20] World!

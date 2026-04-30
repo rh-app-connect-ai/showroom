@@ -9,6 +9,15 @@ Use an AI agent to orchestrate backend actions based on natural language chat �
 
 {empty} +
 
+Recommended: +
+--
+* For the best experience, complete the following modules first to follow the storyline:
++
+image::m4/prereq.png[width=75%]
+
+{empty} +
+--
+
 *The Business Need*
 
 When a customer reaches out about a purchase order — whether to update details, return items, or resolve a discrepancy — support agents traditionally have to manually navigate multiple backend databases and file systems to address the request. This is slow, error-prone, and frustrating for both agents and customers. They need a faster, frictionless way to handle these cases.
@@ -26,20 +35,48 @@ Support agents interact with an AI bot directly within their Rocket.Chat window 
 [.mermaid]
 ----
 flowchart LR
-    Agent([Support Agent]) -->|"① message"| RC[Rocket.Chat]
-    RC -->|"② forward"| Camel[Agentic Camel]
-    Camel <-->|"③ reason"| MaaS[MaaS]
-    Camel -->|"④ tool calls"| Tools
 
-    subgraph Tools [Backend Tools]
-        DB[(Database)]
-        S3[(S3 / ODF)]
-        HD[HelpDesk]
+    Agent -->|① message| RC <-->|② forward| INTLabel
+
+    INTLabel -- ⑤ reply--> RC
+
+    RC -- ⑥ response --> Agent
+
+    INTLabel <--> |"③ reason"| MaaSLabel
+    INTLabel --> |"④ tool calls"| ToolsInner
+
+    INTLabel[⚙️ <span style='font-weight:bold;font-size:1.2em;color: #EE0000'>Agentic Integration\n</span><p style='margin-top:5px'/><div style='border: solid 1px red; padding: 10px;background-color: #fce4e4'><div style='padding: 5px 0px 5px 25px;text-align:left;color: black;'>• AI reasoning<br>• Tool calling<br>• Integrations</div></div>\n]
+
+    subgraph ToolsLabel ["Backend Systems&nbsp;"]
+        subgraph ToolsInner [" "]
+            direction LR
+            DB ~~~ S3 ~~~ HD
+        end
     end
 
-    Camel -->|"⑤ response"| RC
-    RC -->|"⑥ reply"| Agent
+    subgraph MaaSLabel [" "]
+        MaaS
+    end
+
+    Agent@{ img: "../_images/common/agent-icon.svg", label: "Support Agent", pos: "b", h: 80, w: 80, constraint: "on" }
+    RC@{ img: "../_images/m4/rocketchat-icon.svg", label: "Rocket.Chat", pos: "b", h: 80, w: 80, constraint: "on" }
+    MaaS@{ img: "../_images/common/ai-model-icon.svg", label: "AI Model", pos: "b", h: 80, w: 80, constraint: "on" }
+    DB@{ img: "../_images/common/database-icon.svg", label: "Database", pos: "b", h: 70, w: 70, constraint: "on" }
+    S3@{ img: "../_images/common/s3-icon.svg", label: "S3 / ODF", pos: "b", h: 70, w: 70, constraint: "on" }
+    HD@{ img: "../_images/common/helpdesk-icon.svg", label: "HelpDesk", pos: "b", h: 70, w: 70, constraint: "on" }
+
+    style Agent fill:none,stroke:none
+    style RC fill:none,stroke:none
+    style MaaS fill:none,stroke:none
+    style DB fill:none,stroke:none
+    style S3 fill:none,stroke:none
+    style HD fill:none,stroke:none
+    style INTLabel fill:none,stroke:none
+    style MaaSLabel fill:none,stroke:none
+    style ToolsLabel fill:none,stroke:none,color:#EE0000,font-weight:bold
+    style ToolsInner fill:#fce4e4,stroke:#EE0000
 ----
+
 
 The AI agent follows a reasoning loop — it consults the LLM via MaaS, which decides what actions to take. Camel then executes the appropriate tools (update the database, regenerate a PDF invoice in S3), feeds the results back to the LLM, and returns the final answer to the support agent in Rocket.Chat.
 
@@ -50,33 +87,6 @@ The AI agent follows a reasoning loop — it consults the LLM via MaaS, which de
 . *Set up the environment* — Prepare the working folder and configure the AI agent.
 . *Develop the Agent* — Progressively enable the AI agent, from basic routes to fully-equipped with tools.
 . *Complete the flow* — Finish the integration that links Rocket.Chat, the AI agent, the database, and S3 storage.
-. *Test and deploy* — Simulate a customer/agent interaction, validate the results, and deploy to OpenShift.
+. *Test the flow* — Simulate a customer/agent interaction and validate the results.
 
 {empty} +
-
-
-== TEST ZONE
-
-[.mermaid]
-----
-flowchart LR
-    Agent([Support Agent]) -->|"① message"| RC
-    RC -->|"② forward"| Camel["<img src='../_images/common/rh-logo-sm.svg'/>Agentic Camel"]
-    Camel <-->|"③ reason"| MaaS[MaaS]
-    Camel -->|"④ tool calls"| Tools
-
-    RC@{ img: "../_images/m4/rocketchat-icon.svg", label: "Rocket.Chat", pos: "b", h: 100, w: 100, constraint: "on" }
-
-    subgraph Tools [Backend Tools]
-        DB[(Database)]
-        S3[(S3 / ODF)]
-        HD[HelpDesk]
-    end
-
-    Camel -->|"⑤ response"| RC
-    RC -->|"⑥ reply"| Agent
-
-    style RC fill:none,stroke:none
-----
-
-image:common/rh-logo.svg[width=20] HERE

@@ -166,7 +166,7 @@ flowchart LR
     style ConnectivityLink fill:none,stroke:none
 ----
 
-Each lab includes its own detailed architecture diagram. This one just shows how the pieces fit together end to end.
+NOTE: Each lab includes its own detailed architecture diagram at a more granular level. This one just shows how the pieces fit together end to end.
 
 {empty} +
 
