@@ -14,10 +14,6 @@ Welcome to the *Build fast and more secure AI data flows with Red Hat Applicatio
 For the best experience, we recommend following the workshop in order. Each section builds on the previous one, allowing you to gradually develop your skills and understanding of the concepts, but feel free to select specific modules that interest you the most. In the Home page, you'll find a roadmap that outlines the progression of the workshop, along with links to each module. You can also use the navigation menu to jump directly to any section.
 
 [.text-center]
-
-{empty} +
-
-[.text-center]
-image::intro/tiles-progression.png[width=60%]
+image::intro/tiles-progression.png[width=70%]
 
 If during the execution of the labs you have any questions, please reach out to the workshop facilitators. They are here to help you and ensure you have a great learning experience. Next, let's dive into the workshop journey and see what exciting challenges await you!
