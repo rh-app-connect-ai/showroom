@@ -5,7 +5,7 @@ include::partial$style.adoc[]
 [id="rocketchat-chat"]
 == Rocket.Chat platform onboarding
 
-TIP: If you're unfamiliar with link:https://www.rocket.chat/[_Rocket.Chat_,window="_blank"], it is an open-source communications platform with high data protection standards. It enables real-time conversations between colleagues, other companies, or your customers across web, desktop, or mobile devices.
+TIP: If you're unfamiliar with link:https://www.rocket.chat/[_Rocket.Chat_,window="_blank"], it is an open-source communications platform with strict data protection standards. It enables real-time conversations between colleagues, other companies, or your customers across web, desktop, or mobile devices.
 
 {empty} +
 
@@ -59,7 +59,7 @@ REPLACE
 +
 {empty} +
 
-. When you login, you'll see your home page in _Rocket.Chat_, and your room listed in the left panel of your screen, as shown below:
+. When you log in, you'll see your home page in _Rocket.Chat_, and your room listed in the left panel of your screen, as shown below:
 +
 image::m2/rchat-room.png[width=60%]
 

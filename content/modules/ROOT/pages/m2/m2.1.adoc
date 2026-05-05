@@ -5,7 +5,7 @@ include::partial$style.adoc[]
 [id="matrix-chat"]
 == Matrix platform onboarding
 
-TIP: If you're unfamiliar with link:https://matrix.org/[_Matrix_,window="_blank"], it is an open standard and communication protocol for real-time decentralised communication. It works seamlessly between different service providers.
+TIP: If you're unfamiliar with link:https://matrix.org/[_Matrix_,window="_blank"], it is an open standard and communication protocol for real-time decentralized communication. It works seamlessly between different service providers.
 
 {empty} +
 
@@ -75,7 +75,7 @@ Confirm by clicking on _"Continue"_.
 +
 {empty} +
 +
-Finally, you'll notice, looking at your _Matrix_ screen, a pending invitation to join your room. +
+Finally, you'll notice looking at your _Matrix_ screen, a pending invitation to join your room. +
 Follow the steps below to accept your invitation:
 +
 image::m2/matrix-room-accept-invite.jpg[width=70%]

@@ -36,9 +36,9 @@ The interesting part is that each side uses a *different* messaging platform:
 .What are these platforms?
 [%collapsible]
 ====
-*Matrix* is an open standard and communication protocol for real-time decentralised communication. It works seamlessly between different service providers.
+*Matrix* is an open standard and communication protocol for real-time decentralized communication. It works seamlessly between different service providers.
 
-*Rocket.Chat* is an open-source communications platform with high data protection standards. It enables real-time conversations between colleagues, other companies, or your customers across web, desktop, or mobile devices.
+*Rocket.Chat* is an open-source communications platform with strict data protection standards. It enables real-time conversations between colleagues, other companies, or your customers across web, desktop, or mobile devices.
 ====
 --
 
@@ -58,6 +58,6 @@ flowchart LR
     style RC fill:none,stroke:none
 ----
 
-Both platforms are deployed in OpenShift with web access, so you can interact with them directly from your browser. The next pages will guide you through logging in to each one, so you're ready when the integration work begins.
+Both platforms are deployed on OpenShift with web access, so you can interact with them directly from your browser. The next pages will guide you through logging in to each one, so you're ready when the integration work begins.
 
 {empty} +

@@ -5,7 +5,7 @@ include::partial$style.adoc[]
 [id="workshop-journey"]
 == The Workshop Journey
 
-You'll play the role of an integration developer at a company that operates a commerce platform. Through the workshop labs you will build the integrations that ingest purchase orders data, bridge messaging systems for customer support, plug in AI to help agents resolve issues, and add governance on top, all with application integration and connectivity tools.
+You'll play the role of an integration developer at a company that operates an e-commerce platform. Through the workshop labs you will build the integrations that ingest purchase orders data, bridge messaging systems for customer support, plug in AI to help agents resolve issues, and add governance on top, all with application integration and connectivity tools.
 
 {empty} +
 
@@ -21,7 +21,7 @@ You will work with all of these as you progress through the labs.
 
 === The Business Scenario
 
-Your company operates a commerce platform. Customers place purchase orders; the system ingests them, transforms the data, stores it in a database, and generates invoices. When a customer spots a problem with their order, they contact support through an instant messaging platform. A support agent investigates, fixes the issue, and regenerates the invoice.
+Your company operates an e-commerce platform. Customers place purchase orders; the system ingests them, transforms the data, stores it in a database, and generates invoices. When a customer spots a problem with their order, they contact support through an instant messaging platform. A support agent investigates, fixes the issue, and regenerates the invoice.
 
 The challenge: the systems involved don't talk to each other. The database sits on separate infrastructure. The messaging platforms are disconnected. The support team handles every step manually, jumping between systems to fix issues. There's no AI in the loop, and no controls around AI even if there were.
 

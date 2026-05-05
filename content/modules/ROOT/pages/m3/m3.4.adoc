@@ -82,7 +82,7 @@ Now that all flows are running, it's time to simulate a conversation between cus
 
 {empty} +
 
-Let's simulate a brief exchange between a customer and a support agent.
+Let's simulate a brief exchange between a customer and a support agent(you will impersonate both personas).
 
 . *Customer sends a message* — go to your _Matrix_ room and type:
 +
