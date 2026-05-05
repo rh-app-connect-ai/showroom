@@ -69,7 +69,7 @@ In this lab, you'll place a **governance layer** in front of the LLM endpoint us
 
 === Why Connectivity Link?
 
-This is exactly the kind of problem _Red Hat Connectivity Link_ was designed for. Built on the link:https://kuadrant.io/[_Kuadrant_ project,window=_blank], it brings AI-aware governance to _Kubernetes_:
+This is exactly the kind of problem _Red Hat Connectivity Link_ was designed for. Built on the link:https://kuadrant.io/[_Kuadrant_ project,window=_blank], it brings AI-aware governance to *Kubernetes*:
 
 * **Token-aware rate limiting** -- limits are based on actual tokens consumed, not request counts. This is what makes tiered AI services viable: each tier gets its own token budget, enforced at the gateway.
 * **Zero code changes** -- policies are applied at the infrastructure level. Your AI agent and integration code stay untouched.

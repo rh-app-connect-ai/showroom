@@ -98,7 +98,7 @@ The connection will time out — the database is not directly accessible from yo
 
 === Bridging namespaces with Service Interconnect
 
-NOTE: {rhsi} is a supported offering built from the upstream https://skupper.io[Skupper.io,window=_blank] open source project.
+NOTE: {rhsi} is a supported offering built from the upstream https://skupper.io[Skupper.io,window=_blank] open-source project.
 
 {rhsi} solves this by creating encrypted application-level connections between namespaces — without requiring VPNs, firewall rules, or exposing services to the public network.
 
@@ -834,9 +834,9 @@ flowchart LR
 
 You have successfully:
 
-* *Established the network* — Created a Site and AccessGrant in your namespace, and an AccessToken in the database namespace to form an encrypted link
-* *Exposed the service* — Created a Listener that makes the remote database accessible locally through the network
-* *Verified connectivity* — Used a Camel JBang command to query the database through the encrypted link
+* *Established the network* — Created a Site and AccessGrant in your namespace, and an AccessToken in the database namespace to form an encrypted link.
+* *Exposed the service* — Created a Listener that makes the remote database accessible locally through the network.
+* *Verified connectivity* — Used a script to query the database through the encrypted link.
 
 The database lives in a secure, air-tight environment — the connection was initiated *from* the database side *to* yours through an encrypted Skupper link. No network policy changes, no VPNs, no elevated permissions required.
 
@@ -848,7 +848,7 @@ The link you've established will stay active — you'll need it in the next exer
 
 In this lab you connected two namespaces on the same cluster — a simple setup to demonstrate the concepts. In the real world, Service Interconnect shines when connecting services across multiple clusters, regions, and cloud providers — all sharing the same secure mesh.
 
-Consider a retail organisation with stores across different regions, each running AI-powered services. Edge sites collect training data and run inference against locally deployed models. Redundant on-prem data centers handle the heavy lifting — training new AI/ML models and pushing updated versions back to the stores. Regional hubs aggregate traffic from nearby edges before forwarding it to the core.
+Consider a retail organization with stores across different regions, each running AI-powered services. Edge sites collect training data and run inference against locally deployed models. Redundant on-prem data centers handle the heavy lifting — training new AI/ML models and pushing updated versions back to the stores. Regional hubs aggregate traffic from nearby edges before forwarding it to the core.
 
 {blank}
 
