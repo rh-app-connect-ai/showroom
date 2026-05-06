@@ -1,0 +1,212 @@
+:imagesdir: ../../assets/images
+include::partial$style.adoc[]
+
+== HOW-TO
+
+This section shows examples of how to make use of the patterns provided in this project.
+
+{empty} +
+
+=== Red Hat Logo in text
+
+Hello image:common/rh-logo.svg[width=20] World!
+
+{empty} +
+
+=== Image with overlay (arrows, numbers, labels)
+
+Below an image with an overlay containing arrows and numbered circles.
+
+[#flow-k2r-todo-new]
+[.bordered]
+image::m3/flow-k2r-todo-new.png[width=60%]
+
+[.overlay]
+****
+[.target]
+flow-k2r-todo-new
+
+[.arrows]
+{x: 10, y: 72, rot: 0, size: 1, color: "red"}
+{x: 33, y: 26, rot: 220, size: 1, color: "red"}
+{x: 61.5, y: 68, rot: 0, size: 1, color: "red"}
+
+[.numbers]
+{x: 10, y: 117, size: 1.2, color: "red"} +
+{x: 40.5, y: -8, size: 1.2, color: "red"} +
+{x: 61.5, y: 117, size: 1.2, color: "red"}
+****
+
+{empty} +
+{empty} +
+
+
+=== Passthrough with overlay (arrows, numbers, labels)
+
+{empty} +
+
+++++
+<pre id="test-output" style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">$ oc get pods
+NAME                   READY   STATUS    RESTARTS   AGE
+k2r-6b4f8c9d5f-x7p2q  1/1     <span style="color: #a6e22e">Running</span>   0          2m
+
+$ oc get routes
+NAME   HOST                              READY
+k2r    k2r-user11.apps.cluster.local     <span style="color: #a6e22e">True</span></pre>
+++++
+
+[.overlay]
+****
+[.target]
+test-output
+
+[.arrows]
+{x: 45, y: 30, rot: -80}
+{x: 37, y: 82, rot: -100}
+
+[.numbers]
+{x: 54, y: 40}
+{x: 46, y: 68}
+
+[.labels]
+{x: 55, y: 10, text: "1) Status", size: 1.2}
+{x: 54, y: 82, text: "2) Age", size: 1.2}
+****
+
+{empty} +
+
+=== Diagram with overlay (arrows, numbers, labels)
+
+{empty} +
+
+[#test-diagram.mermaid]
+----
+flowchart LR
+    A([Kafka]) -->|message| B[Apache Camel]
+    B -->|transformed| C([Rocket.Chat])
+
+    style A fill:#e8f5e9,stroke:#66bb6a
+    style B fill:#fff3e0,stroke:#fb8c00
+    style C fill:#e8f5e9,stroke:#66bb6a
+----
+
+[.overlay]
+****
+[.target]
+test-diagram
+
+[.arrows]
+{x: 13, y: 75, size: 1.5} +
+{x: 50, y: 75, size: 1.5} +
+{x: 88, y: 75, size: 1.5}
+
+[.labels]
+{x: 18, y: 95, text: "Source", size: 1.2} +
+{x: 45, y: 110, text: "Process", size: 1.2} +
+{x: 82, y: 95, text: "Destination", size: 1.2}
+****
+
+{empty} +
+{empty} +
+
+=== Sequence diagram with overlay (arrows, numbers, labels)
+
+{empty} +
+
+[#test-sequence.mermaid]
+----
+sequenceDiagram
+    actor Student
+    participant LLM as LLM Endpoint
+
+    Student->>LLM: Hi
+    LLM-->>Student: Hi, what can I do for you?
+----
+
+[.overlay]
+****
+[.target]
+test-sequence
+
+[.arrows]
+{x: 20, y: 28, rot: 45, size: 1.2} 
+
+[.numbers]
+{x: 10, y: 38, size: 2}
+
+[.labels]
+{x: 10, y: 20, text: "Chat", size: 2}
+****
+
+{empty} +
+
+=== Diagram with SVG icons
+
+[.mermaid]
+----
+flowchart LR
+    RC -->|"message"| K -->|"❌ same event"| RC
+
+    RC@{ img: "../_images/m4/rocketchat-icon.svg", label: "Rocket.Chat", pos: "b", h: 100, w: 100, constraint: "on" }
+    K@{ img: "../_images/common/kafka-icon.svg", label: "Kafka topic", pos: "b", h: 100, w: 80, constraint: "on" }
+
+    style RC fill:none,stroke:none
+    style K fill:none,stroke:none
+
+    linkStyle 0 stroke:#66bb6a,stroke-width:2px
+    linkStyle 1 stroke:#d32f2f,stroke-width:2px,stroke-dasharray:5
+----
+
+{empty} +
+
+
+=== Diagram with SVG icons (Centered)
+
+[.text-center]
+[.mermaid]
+----
+flowchart LR
+    RC -->|"message"| K -->|"❌ same event"| RC
+
+    RC@{ img: "../_images/m4/rocketchat-icon.svg", label: "Rocket.Chat", pos: "b", h: 100, w: 100, constraint: "on" }
+    K@{ img: "../_images/common/kafka-icon.svg", label: "Kafka topic", pos: "b", h: 100, w: 80, constraint: "on" }
+
+    style RC fill:none,stroke:none
+    style K fill:none,stroke:none
+
+    linkStyle 0 stroke:#66bb6a,stroke-width:2px
+    linkStyle 1 stroke:#d32f2f,stroke-width:2px,stroke-dasharray:5
+----
+
+{empty} +
+
+=== Diagram with Title
+
+{empty} +
+
+[.mermaid]
+----
+---
+title: The Diagram Title
+---
+flowchart LR
+    A -->|defines| B
+----
+
+{empty} +
+
+=== Diagram with Title (under)
+
+{empty} +
+
+[.mermaid]
+----
+---
+title: The Diagram Title
+config:
+    flowchart:
+        titleTopMargin: -100
+---
+flowchart LR
+    A -->|defines| B
+----

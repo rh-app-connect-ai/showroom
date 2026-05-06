@@ -4,6 +4,10 @@ include::partial$style.adoc[]
 == TEST ZONE
 
 
+=== Red Hat Logo in text
+
+Hello image:common/rh-logo.svg[width=20] World!
+
 === Red Hat Logo
 
 [.mermaid]
@@ -27,7 +31,3 @@ flowchart LR
 
     style RC fill:none,stroke:none
 ----
-
-=== Red Hat Logo in text
-
-Hello image:common/rh-logo.svg[width=20] World!

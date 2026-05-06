@@ -50,3 +50,4 @@
 ** xref:test/test.1.adoc[Test 1 - Image Overlay]
 ** xref:test/test.3.adoc[Test 2 - Miscellaneous]
 ** xref:test/test.2.adoc[Demo]
+** xref:test/test.4.adoc[How-To]

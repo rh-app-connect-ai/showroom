@@ -33,6 +33,28 @@
     from:
       uri: platform-http
       parameters:
+        path: /credentials/openshift
+      steps:
+        - to:
+            uri: direct:cors
+        # - to:
+        #     uri: language:constant:resource:file:/etc/camel/resources.d/_secrets/im-credentials/openshift.json
+        - setBody:
+            constant: |
+              [
+                {"name": "user1", "password": "XVyfSuB00sVvmUAf"},
+                {"name": "user2", "password": "QiqUL6htygt6nko7"},
+                {"name": "user3", "password": "Qqxb4pNiPv5dDcAw"},
+                {"name": "user11", "password": "aSRKyF2e6TOCGnwW"}
+              ]
+        - setBody:
+            jq:
+              expression: '.[] | select(.name == header("user")) | .password'
+
+- route:
+    from:
+      uri: platform-http
+      parameters:
         path: /credentials/im
       steps:
         - to:

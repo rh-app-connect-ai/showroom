@@ -261,7 +261,7 @@ The workshop provides a set of helper commands to navigate the lab:
 +
 {empty} +
 
-. Open `application.properties` and verify that the API keys are now populated. pass:[<span style="display:inline-flex;align-items:center;justify-content:center;width:1.4em;height:1.4em;border-radius:50%;background:#EE0000;color:white;font-size:0.85em;font-weight:bold">1</span>] the Gold key (from the `pro` group) and pass:[<span style="display:inline-flex;align-items:center;justify-content:center;width:1.4em;height:1.4em;border-radius:50%;background:#EE0000;color:white;font-size:0.85em;font-weight:bold">2</span>] the Silver key (from the `lite` group) should no longer be `EMPTY` -- each should contain a valid API key value.
+. Open `application.properties` and verify that the API keys are now populated. pass:[<span style="display:inline-flex;align-items:center;justify-content:center;width:1.4em;height:1.4em;border-radius:50%;background:#EE0000;color:white;font-size:0.85em;font-weight:bold">1</span>] the Gold key and pass:[<span style="display:inline-flex;align-items:center;justify-content:center;width:1.4em;height:1.4em;border-radius:50%;background:#EE0000;color:white;font-size:0.85em;font-weight:bold">2</span>] the Silver key should no longer be `EMPTY` -- each should contain a valid API key value.
 +
 [#config-snippet-2]
 [source,properties, subs="attributes"]
@@ -339,7 +339,7 @@ NOTE: Because LLM responses are non-deterministic, the exact wording may differ 
 
 {empty} +
 
-At this point, authentication is enforced. Both Gold (`pro`) and Silver (`lite`) keys are configured, and the AuthPolicy validates them before allowing access to the LLM. In the next exercise, you'll discover how the gateway controls how much each tier can consume, and what happens when a tier reaches its limit.
+At this point, authentication is enforced. Both Gold and Silver keys are configured, and the AuthPolicy validates them before allowing access to the LLM. In the next exercise, you'll discover how the gateway controls how much each tier can consume, and what happens when a tier reaches its limit.
 
 {empty} +
 

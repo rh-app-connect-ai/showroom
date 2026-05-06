@@ -126,8 +126,8 @@ NOTE: Because the policy operates at the infrastructure level, you can apply it 
 --
 The policy defines two token budgets that reflect the cost of each tier:
 
-* *Gold* (`pro`) — richer analysis, higher compute cost. A stricter token allowance with a slower renewal window.
-* *Silver* (`lite`) — lighter analysis, lower compute cost. A more generous token allowance that renews faster.
+* *Gold* — richer analysis, higher compute cost. A stricter token allowance with a slower renewal window.
+* *Silver* — lighter analysis, lower compute cost. A more generous token allowance that renews faster.
 --
 +
 {blank}
@@ -150,28 +150,28 @@ spec:
     kind: HTTPRoute
     name: ai-proxy-route
   limits:
-    pro:
+    gold:
       rates:
         - limit: 50
           window: 4m
       when:
         - predicate: |
-            auth.identity.groups.split(",").exists(g, g == "pro")
+            auth.identity.groups.split(",").exists(g, g == "gold")
       counters:
         - expression: auth.identity.userid
-    lite:
+    silver:
       rates:
         - limit: 500
           window: 2m
       when:
         - predicate: |
-            auth.identity.groups.split(",").exists(g, g == "lite")
+            auth.identity.groups.split(",").exists(g, g == "silver")
       counters:
         - expression: auth.identity.userid
 EOF
 ****
 +
-Notice how the YAML matches the tier budgets described above: `pro` with a tighter limit and longer window, `lite` with a more generous allowance that renews faster.
+Notice how the YAML matches the tier budgets described above: `gold` with a tighter limit and longer window, `silver` with a more generous allowance that renews faster.
 +
 [IMPORTANT]
 ====
@@ -187,7 +187,7 @@ From the devspaces terminal, run the following command to check that the TokenRa
 [.copypaste]
 ****
 oc describe tokenratelimitpolicy -n {user-username}-devspaces \
-| grep -iE "Name:|target|lite:|pro:|limit:|window:|type:|status:"
+| grep -iE "Name:|target|gold:|silver:|limit:|window:|type:|status:"
 ****
 +
 [TIP]
@@ -207,12 +207,12 @@ You should see output confirming the TokenRateLimitPolicy exists, is targeting t
 +
 ++++
 <pre style="background-color: #181818; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #CBCBCB"><span style="color: #F14C4B;font-weight:bold">Name:</span>         openai-token-limits
-    <span style="color: #F14C4B;font-weight:bold">Lite:</span>
-        <span style="color: #F14C4B;font-weight:bold">Limit:</span>   500
-        <span style="color: #F14C4B;font-weight:bold">Window:</span>  2m
-    <span style="color: #F14C4B;font-weight:bold">Pro:</span>
+    <span style="color: #F14C4B;font-weight:bold">Gold:</span>
         <span style="color: #F14C4B;font-weight:bold">Limit:</span>   50
         <span style="color: #F14C4B;font-weight:bold">Window:</span>  4m
+    <span style="color: #F14C4B;font-weight:bold">Silver:</span>
+        <span style="color: #F14C4B;font-weight:bold">Limit:</span>   500
+        <span style="color: #F14C4B;font-weight:bold">Window:</span>  2m
   <span style="color: #F14C4B;font-weight:bold">Target</span> Ref:
     <span style="color: #F14C4B;font-weight:bold">Name:</span>   ai-proxy-route
 <span style="color: #F14C4B;font-weight:bold">Status:</span>

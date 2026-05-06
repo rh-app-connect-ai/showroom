@@ -20,7 +20,7 @@ The following resources have been set up for you so you can focus on the policy 
 | The _Connectivity Link_ operator, installed in the `kuadrant-system` namespace.
 
 | **User Secrets**
-| API key secrets for two tiers: `lite` (Silver) and `pro` (Gold). Details below.
+| API key secrets for two tiers: `silver` and `gold`. Details below.
 |===
 
 {empty} +
@@ -77,8 +77,6 @@ This command lists the HTTPRoute details including the backend reference to the 
     <span style="color: #F14C4B;font-weight:bold">Backend </span>Refs:
       <span style="color: #F14C4B;font-weight:bold">Name:</span>       ai-api-external
           <span style="color: #F14C4B;font-weight:bold">Name:</span>   Host
-    Controller<span style="color: #F14C4B;font-weight:bold"> Name:</span>         kuadrant.io/policy-controller
-      <span style="color: #F14C4B;font-weight:bold">Name:</span>       internal-ai-gateway
     Controller<span style="color: #F14C4B;font-weight:bold"> Name:</span>         openshift.io/gateway-controller/v1
       <span style="color: #F14C4B;font-weight:bold">Name:</span>       internal-ai-gateway
 
@@ -101,24 +99,22 @@ NOTE: We are using simple API key authentication for this workshop to keep thing
 
 Two API key secrets have already been *pre-created*. Understanding their structure is important because both policies reference the labels and annotations on these secrets.
 
-NOTE: In the lab infrastructure, the Gold tier maps to the `pro` group and the Silver tier maps to the `lite` group. These identifiers appear in the Kubernetes secrets and policy configurations below.
-
-**Silver tier (`lite`) user:**
+**Silver tier user:**
 [source,yaml,subs="attributes"]
 ----
 apiVersion: v1
 kind: Secret
 metadata:
-  name: trlp-tutorial-api-key-lite-{user-username}
+  name: trlp-tutorial-api-key-silver-{user-username}
   namespace: kuadrant-system
   labels:
     authorino.kuadrant.io/managed-by: authorino
     app: my-llm-{user-username}
   annotations:
-    kuadrant.io/groups: lite
+    kuadrant.io/groups: silver
     secret.kuadrant.io/user-id: {user-username}
 stringData:
-  api_key: iamalite{user-username}-randomstring
+  api_key: [some_random_string]
 type: Opaque
 ----
 
@@ -126,10 +122,14 @@ Key fields in this secret:
 
 * `authorino.kuadrant.io/managed-by: authorino` -- Marks this secret as managed by _Authorino_ (the auth engine behind _Connectivity Link_).
 * `app: my-llm-{username}` -- Label selector -- the AuthPolicy uses this to discover valid API keys.
-* `kuadrant.io/groups: lite` -- Group membership (Silver tier) -- determines which rate limit tier applies.
+* `kuadrant.io/groups: silver` -- Group membership (Silver tier) -- determines which rate limit tier applies.
 * `secret.kuadrant.io/user-id: {user-username}` -- Unique user ID -- used as a counter key for per-user rate limiting.
 
-The **Gold tier (`pro`)** secret follows the same structure but with `kuadrant.io/groups: pro`, `api_key: iamaprouser`.
+{empty} +
+
+The **Gold tier** secret follows the same structure but with:
+
+* `kuadrant.io/groups: gold`
 
 {empty} +
 
@@ -202,15 +202,15 @@ spec:
           value: |
             {
               "error": "Forbidden",
-              "message": "Access denied. Your account does not have the required permissions (lite/pro)."
+              "message": "Access denied. Your account does not have the required permissions (gold/silver)."
             }
     authorization:
       allow-groups:
         opa:
           rego: |
             groups := split(object.get(input.auth.identity.metadata.annotations, "kuadrant.io/groups", ""), ",")
-            allow { groups[pass:[_]] == "lite" }
-            allow { groups[pass:[_]] == "pro" }
+            allow { groups[pass:[_]] == "gold" }
+            allow { groups[pass:[_]] == "silver" }
 EOF
 ****
 
@@ -219,10 +219,10 @@ Key fields in this policy:
 * `namespace: {user-username}-devspaces` -- The policy is created in your namespace.
 * `name: ai-proxy-route` -- Targets the `ai-proxy-route` HTTPRoute -- any request matching this route must pass authentication.
 * `app: my-llm-{user-username}` -- Looks for _Kubernetes_ Secrets with this label to find valid API keys.
-* `prefix: Bearer` -- Expects the API key in the `Authorization` header (e.g., `Authorization: Bearer iamaliteuser`).
+* `prefix: Bearer` -- Expects the API key in the `Authorization` header.
 * `kuadrant\.io/groups` -- Extracts the group annotation from the matched secret and exposes it as `groups` in the response filter.
 * `secret\.kuadrant\.io/user-id` -- Extracts the user ID annotation and exposes it as `userid`.
-* `rego` -- OPA (Open Policy Agent) rule that only allows users whose group is `lite` or `pro`.
+* `rego` -- OPA (Open Policy Agent) rule that only allows users whose group is `gold` or `silver`.
 
 {empty} +
 

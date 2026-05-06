@@ -190,16 +190,38 @@ image::m1/kaoto-datamapper-overview.png[width=100%]
 
 ==== Open and explore the data mapping
 
+
 . *Find the data mappeing definition as follows:*
 +
+[cols="5a,4a", grid=none]
+|===
 --
-[lowerroman]
-. Click the `kaoto-datamapper` step inside the pass:[<code style="background-color: #4494E5; color: white;">&nbsp;To do: Update&nbsp;</code>] container
+{empty} +
 
+. Click the `kaoto-datamapper` step inside the pass:[<code style="background-color: #4494E5; color: white;">&nbsp;To do: Update&nbsp;</code>] container
 . Click the pass:a[<span {btn-stl-blue}>{map-wrench}  Configure</span>] button to open the data mapper
 --
-+
-{empty} +
+|
+--
+[.bordered]
+[#kaoto-datamapper-configure]
+image::m1/kaoto-datamapper-configure.png[width=70%]
+
+[.overlay]
+****
+[.target]
+kaoto-datamapper-configure
+
+[.arrows]
+{x: 12, y: 52, rot: 90, size: 1}
+{x: 40, y: 91, rot: 90, size: 1}
+
+[.numbers]
+{x: -22, y: 52, rot: 0, size: 3}
+{x: -1, y: 91, rot: 0, size: 3}
+****
+--
+|===
 +
 You should see the mapping with the EDI source fields on the left (X12_850) connected to the XML target fields on the right (Invoice):
 +

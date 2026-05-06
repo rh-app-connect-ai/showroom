@@ -12,9 +12,10 @@ Checking...
     Resources
   </summary>
   <div style="background:#e1e1e1; border-radius:0 0 4px 4px; padding:0.5rem 0.75rem; font-size:0.85em;">
-    <p style="margin:0.3rem 0;"><strong>Credentials</strong></p>
+    <p style="margin:0.3rem 0;"><strong>OpenShift Credentials</strong></p>
     <ul style="margin:0; padding-left:1.2rem;">
       <li>username: <code>{user-username}</code></li>
+      <li>password: <code id="sidebar-ocp-password">unavailable</code></li>
     </ul>
     <p style="margin:0.5rem 0 0.3rem;"><strong>Dev Spaces</strong></p>
     <ul style="margin:0; padding-left:1.2rem;">
@@ -35,4 +36,21 @@ Checking...
   </div>
 </details>
 </div>
+<script>
+(function() {
+  var el = document.getElementById('sidebar-ocp-password');
+  if (!el) return;
+  var user = '';
+  document.cookie.split(';').forEach(function(c) {
+    var parts = c.trim().split('=');
+    if (parts[0] === 'username') user = decodeURIComponent(parts[1]);
+  });
+  var headers = {};
+  if (user) headers['user'] = user;
+  fetch('{url-docserver}/credentials/openshift', { headers: headers })
+    .then(function(r) { return r.text(); })
+    .then(function(data) { if (data) el.textContent = data.trim(); })
+    .catch(function() {});
+})();
+</script>
 ++++

@@ -238,12 +238,28 @@ Because you're running in dev mode, _Camel_ hot-reloads automatically. Watch the
 
 . *Check the updated flow*
 +
-The system prompt is now active and the AI agent has replaced the dummy response. Your route should look like this:
+The system prompt is now active (1) and the AI agent has replaced (2) the dummy response. Your route should look like this:
 +
 {blank}
 +
 [.bordered]
+[#kaoto-agent-route-complete]
 image::m4/kaoto-agent-route-complete.png[width=90%]
++
+
+[.overlay]
+****
+[.target]
+kaoto-agent-route-complete
+
+[.arrows]
+{x: 35.5, y: 72, rot: 0, size: 1, color: "red"}
+{x: 52.5, y: 72, rot: 0, size: 1, color: "red"}
+
+[.numbers]
+{x: 35.5, y: 117, size: 1.2, color: "red"}
+{x: 52.5, y: 117, size: 1.2, color: "red"}
+****
 +
 {empty} +
 
