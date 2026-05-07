@@ -132,7 +132,7 @@ flowchart LR
 +
 [.copypaste]
 ****
-step 7
+step 9
 ****
 +
 [TIP]
@@ -149,17 +149,6 @@ The workshop includes handy helper scripts that let you jump to any step or rese
 * `rw` — rewind to the *previous* step
 ====
 --
-+
-{empty} +
-
-. From your terminal in _Dev Spaces_, run the following command:
-+
-{blank}
-+
-[.copypaste]
-****
-step 9
-****
 +
 {empty} +
 
