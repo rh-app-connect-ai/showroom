@@ -238,7 +238,6 @@ Reading left to right, each step in the pipeline handles a stage of the Purchase
 
 NOTE: Notice the two blue *To do: Enable* blocks — these are disabled steps that you'll activate in the next exercise. By the end, the full flow will be connected and functional.
 
-
 {empty} +
 
 [.verification]
@@ -251,5 +250,3 @@ You're all set — continue to the next exercise to complete the flow.
 [.fail]
 Make sure you ran the `step 2` command, opened `ingest.camel.yaml`, and selected the `service-x12` route.
 ****
-
-{empty} +

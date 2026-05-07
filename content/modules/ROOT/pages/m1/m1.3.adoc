@@ -190,11 +190,11 @@ image::m1/kaoto-datamapper-overview.png[width=100%]
 
 ==== Open and explore the data mapping
 
-
-. *Find the data mappeing definition as follows:*
+. *Find the data mapping definition as follows:*
 +
 [cols="5a,4a", grid=none]
 |===
+|
 --
 {empty} +
 
@@ -259,6 +259,7 @@ IMPORTANT: String values must be wrapped in double quotes (e.g. `"Atlanta"`). Wi
 .Need an address? Use this one:
 [%collapsible]
 ====
+`Name`:
 [.copypaste]
 ****
 "Georgia World Congress Center"
@@ -266,6 +267,7 @@ IMPORTANT: String values must be wrapped in double quotes (e.g. `"Atlanta"`). Wi
 
 {blank}
 
+`Street`:
 [.copypaste]
 ****
 "285 Andrew Young International Blvd NW"
@@ -273,6 +275,7 @@ IMPORTANT: String values must be wrapped in double quotes (e.g. `"Atlanta"`). Wi
 
 {blank}
 
+`City`:
 [.copypaste]
 ****
 "Atlanta"
@@ -280,6 +283,7 @@ IMPORTANT: String values must be wrapped in double quotes (e.g. `"Atlanta"`). Wi
 
 {blank}
 
+`State`:
 [.copypaste]
 ****
 "Georgia"
@@ -287,6 +291,7 @@ IMPORTANT: String values must be wrapped in double quotes (e.g. `"Atlanta"`). Wi
 
 {blank}
 
+`PostalCode`:
 [.copypaste]
 ****
 "GA 30313"
@@ -571,5 +576,3 @@ The full ingestion flow is working — EDI transformation, database storage, and
 [.fail]
 Review the data mapper values and make sure Camel reloaded after saving. Try sending the request again.
 ****
-
-{empty} +
