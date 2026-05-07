@@ -141,8 +141,40 @@ Scale up the Kafka integration with Matrix
 ****
 oc scale deployment k2m --replicas=1
 ****
-======
 
+The pod will enable the following notification flow:
+
+[.mermaid]
+----
+flowchart LR
+    AI --> KF --> |"k2m\n(pod)"| MX --> CUST
+    
+    CUST@{ img: "../_images/common/customer-icon.svg", label: "Customer", pos: "b", h: 80, w: 80, constraint: "on" }
+    MX@{ img: "../_images/common/element-icon.svg", label: "Matrix", pos: "b", h: 80, w: 80, constraint: "on" }
+    KF@{ img: "../_images/common/kafka-icon.svg", label: "Kafka", pos: "b", h: 80, w: 80, constraint: "on" }
+    AI@{ img: "../_images/common/ai-icon.svg", label: "AI Assistant", pos: "b", h: 80, w: 80, constraint: "on" }
+
+    style CUST fill:none,stroke:none
+    style MX fill:none,stroke:none
+    style KF fill:none,stroke:none
+    style AI fill:none,stroke:none
+----
+
+To verify the pod is running, run the following command:
+
+[.copypaste]
+****
+oc get deployment k2m
+****
+
+You should see the deployment `Ready 1/1`:
+
+++++
+<pre style="background-color: #181818; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #CBCBCB">NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+k2m    1/1     1            1           27h</pre>
+++++
+
+======
 ====
 --
 
