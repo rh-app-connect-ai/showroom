@@ -196,19 +196,31 @@ Now replace the dummy response with a real AI agent. Head back to the _Kaoto_ ca
 +
 The `set system prompt` step is currently disabled — it's greyed out because there was no AI agent to use it.
 +
-.Enable it:
 [caption=]
-====
-Hover the step and click the {btn-enable} button (next to the {nbsp}{btn-replace}{nbsp} button).
-====
-+
-{empty} +
+.Enable it:
+[cols="1a,6a"]
+|===
+|
+[.bordered]
+[#kaoto-enable-step]
+image::m4/kaoto-enable-step.png[width=100%]
+
+[.overlay]
+****
+[.target]
+kaoto-enable-step
+
+[.numbers]
+{x: 80, y: 5, size: 8}
+****
+|
+. Hover the step and click the {btn-enable} button (next to the {nbsp}{btn-replace}{nbsp} button).
+|===
 
 . *Replace the dummy response with an Agent*
 +
 The `dummy response` step is a placeholder — it always returns "Hello World". Replace it with the _LangChain4j Agent_ component that connects to MaaS.
 +
-
 1. Hover the `dummy response` step and click the floating {nbsp}{btn-replace}{nbsp} button.
 1. Type `lang` in the {ui-filter} to find the _LangChain4j Agent_ component, then select it.
 1. Click the _LangChain4j Agent_ step to open the configuration panel.
@@ -221,6 +233,10 @@ The `dummy response` step is a placeholder — it always returns "Hello World". 
 ****
 myagent
 ****
++
+image::m4/kaoto-agent-steps.png[width=100%]
++
+{empty} +
 +
 Because you're running in dev mode, _Camel_ hot-reloads automatically. Watch the terminal — the logs should confirm the agent is running:
 +

@@ -35,7 +35,12 @@ image:intro/devspaces-login-with-ocp.png[width=30%]
 +
 {empty} +
 
-. Then, log in using your username (`{user-username}`) and your lab password.
+. Then, log in using your lab credentials:
++
+--
+* Username: `{user-username}`
+* Password: `{user-password}`
+--
 +
 image:intro/devspaces-login.jpg[width=50%]
 +

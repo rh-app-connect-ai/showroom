@@ -10,16 +10,7 @@ window.addEventListener('DOMContentLoaded', function() {
   // or plain text (local dev mode)
   var innerSpan = source.querySelector('.uservar');
 
-  if (!innerSpan) {
-    // Local dev: attribute resolved at build time, set the cookie
-    var username = source.textContent.trim();
-    if (username) {
-      document.cookie = 'username=' + encodeURIComponent(username) + '; Path=/';
-    }
-    return;
-  }
-
-  // Production: read cookies and replace .uservar spans
+  // Read cookies (needed by both modes)
   var cookies = {};
   document.cookie.split(';').forEach(function(c) {
     var parts = c.trim().split('=');
@@ -28,13 +19,48 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  var spans = document.querySelectorAll('.uservar');
-  spans.forEach(function(span) {
-    var key = span.textContent.trim();
-    if (cookies[key] !== undefined) {
-      span.textContent = cookies[key];
+  if (!innerSpan) {
+    // Local dev: attribute resolved at build time, set the cookie
+    var username = source.textContent.trim();
+    if (username) {
+      document.cookie = 'username=' + encodeURIComponent(username) + '; Path=/';
+      cookies['username'] = username;
     }
-  });
+  } else {
+    // Production: replace .uservar spans from cookies
+    var spans = document.querySelectorAll('.uservar');
+    spans.forEach(function(span) {
+      var key = span.textContent.trim();
+      if (cookies[key] !== undefined) {
+        span.textContent = cookies[key];
+      }
+    });
+  }
+
+  // Fetch-based uservars: spans with data-fetch get their value from the docserver
+  var dsDiv = document.getElementById('cp-docserver-url');
+  var dsUrl = dsDiv ? dsDiv.getAttribute('data-url') : '';
+  if (dsUrl) {
+    var fetchSpans = document.querySelectorAll('.uservar[data-fetch]');
+    var fetchPaths = {};
+    fetchSpans.forEach(function(span) {
+      var path = span.getAttribute('data-fetch');
+      if (!fetchPaths[path]) fetchPaths[path] = [];
+      fetchPaths[path].push(span);
+    });
+    var fetchHeaders = {};
+    if (cookies['username']) fetchHeaders['user'] = cookies['username'];
+    Object.keys(fetchPaths).forEach(function(path) {
+      fetch(dsUrl + path, { headers: fetchHeaders })
+        .then(function(r) { return r.text(); })
+        .then(function(data) {
+          if (data) {
+            fetchPaths[path].forEach(function(s) { s.textContent = data.trim(); });
+          }
+        })
+        .catch(function() {});
+    });
+  }
 
   // Fix hrefs that use the SHOWROOM_USERNAME placeholder
   // (used by {username-url} in URL attributes where HTML spans can't go)

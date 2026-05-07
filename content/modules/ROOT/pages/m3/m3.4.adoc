@@ -34,6 +34,8 @@ flowchart LR
 You can see the four pre-deployed flows in the _OpenShift_ Developer Console by opening the *Topology* view:
 
 * {url-devconsole}[Open the Topology view^]
+** Username: `{user-username}`
+** Password: `{user-password}`
 
 The image below shows what you should find — the four Camel integrations (`m2k`, `k2r`, `r2k`, `k2m`) connected to the central _Kafka_ cluster. Notice the deployments are currently scaled down to zero — they're not running yet. That's what you'll do next.
 

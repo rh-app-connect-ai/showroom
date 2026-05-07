@@ -42,7 +42,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     var r = iw * 0.012, fontSize = r * 1.4;
-    numbers.forEach(function(n, i) {
+    var numCounter = 1;
+    numbers.forEach(function(n) {
+      if (n.n !== undefined) numCounter = n.n;
       var x = n.x / 100 * iw, y = n.y / 100 * ih + overflow, s = n.size || 1;
       var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', r * s);
@@ -53,8 +55,9 @@ document.addEventListener('DOMContentLoaded', function() {
       t.setAttribute('text-anchor', 'middle'); t.setAttribute('dominant-baseline', 'central');
       t.setAttribute('fill', 'white'); t.setAttribute('font-size', fontSize * s);
       t.setAttribute('font-weight', 'bold'); t.setAttribute('font-family', 'sans-serif');
-      t.textContent = i + 1;
+      t.textContent = numCounter;
       overlaySvg.appendChild(t);
+      numCounter++;
     });
 
     var labelSize = iw * 0.014;

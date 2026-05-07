@@ -42,9 +42,9 @@
 ** xref:m5/m5.4.adoc[Testing Token Rate Limiting]
 ** xref:m5/m5.5.adoc[Summary]
 
-* xref:conclusion/summary.adoc[Workshop Summary]
+// * xref:conclusion/summary.adoc[Workshop Summary]
 
-* xref:myenv.adoc[My Env Details]
+// * xref:myenv.adoc[My Env Details]
 
 * xref:test/test.1.adoc[Test Zone]
 ** xref:test/test.1.adoc[Test 1 - Image Overlay]

@@ -133,11 +133,11 @@ NOTE: Your _OpenShift_ namespace already contains an _Streams for Apache Kafka_ 
 1. Select the `All` configuration tab.
 1. Configure the following 2 properties:
 +
-TIP: The `All` tab has many properties. Use the {ui-filter} at the top to quickly find each one.
+(Use the {ui-filter} at the top to quickly find each one)
++
+image::m3/kaoto-kafka-steps.png[width=100%]
 +
 `Topic`:
-+
-{blank}
 +
 [.copypaste]
 ****
@@ -146,15 +146,15 @@ myroom
 +
 `Brokers`:
 +
-{blank}
-+
 [.copypaste]
 ****
 my-cluster-kafka-bootstrap:9092
 ****
 +
-TIP: Click anywhere outside the configuration panel to close it.
+{empty} +
 +
+TIP: Click anywhere outside the configuration panel to close it.
+
 {empty} +
 
 === Define the filter
@@ -167,9 +167,28 @@ Events arriving from _Kafka_ can originate from any source system. Without a fil
 
 The filter prevents this by checking where the event came from.
 
+[cols="3a,6a"]
+|===
+|
+[.bordered]
+[#kaoto-datamapper-configure]
+image::m3/kaoto-filter-config.png[width=100%]
+
+[.overlay]
+****
+[.target]
+kaoto-datamapper-configure
+
+[.numbers]
+{x: 43, y: 41, size: 4}
+{x: 80, y: 29, size: 4}
+{x: 80, y: 86, size: 4}
+****
+|
+
 1. Click the bar pass:[<code style="background-color: #B0380C; color: white;">&nbsp;To do: Filter&nbsp;</code>]
-+
-Ensure the `Required` tab is selected. You should see the `JQ` expression language selected by default.
+
+1. Ensure the `Required` tab is selected. You should see the `JQ` expression language selected by default.
 +
 {blank}
 +
@@ -179,11 +198,13 @@ Ensure the `Required` tab is selected. You should see the `JQ` expression langua
 +
 [.copypaste]
 ****
-pass:[.source | test("rocketchat")]
+pass:[.source \| test("rocketchat")]
 ****
 +
 NOTE: The expression picks the `source` field from the _Kafka_ event and checks if it originates from _Rocket.Chat_. Events from _Rocket.Chat_ are filtered out to prevent loopbacks.
-+
+
+|===
+
 {empty} +
 
 === Define the data transformation
@@ -202,6 +223,9 @@ From Kaoto:
 . Click the _Kaoto DataMapper_ tile
 . Click the mapper to open the configuration panel
 . Click the pass:a[<span {btn-stl-blue}>{map-wrench}  Configure</span>] button
++
+image::m3/kaoto-datamapper-steps.png[width=100%]
+
 --
 +
 {empty} +

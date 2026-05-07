@@ -141,8 +141,6 @@ The **Gold tier** secret follows the same structure but with:
 // 2. **Group-based Authorization** -- Only users belonging to the `lite` or `pro` groups can access the API.
 // 3. **Identity Extraction** -- The user's group and user ID are extracted from the secret's annotations and passed downstream for use by the TokenRateLimitPolicy that we will create in the next section.
 
-{empty} +
-
 === Review and Apply the AuthPolicy
 
 Examine the AuthPolicy and *apply* it by pasting the following command in your terminal:

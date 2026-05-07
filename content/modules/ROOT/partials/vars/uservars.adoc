@@ -12,3 +12,7 @@ endif::[]
 
 // Old Solution Explorer safety net
 :user-username: {username}
+
+ifndef::user-password[]
+:user-password: pass:[<span class="uservar" data-fetch="/credentials/openshift">user-password</span>]
+endif::[]
