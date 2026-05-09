@@ -556,16 +556,17 @@ After a few moments, a *Link* resource is automatically created in `shared-datab
 
 [.copypaste]
 ****
-oc get link -n shared-database
+oc get link token-{username} -n shared-database
 ****
 
 Wait until the link status shows `Ready`:
 
 {blank}
 
+[subs="attributes"]
 ++++
 <pre style="background-color: #272822; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: white">NAME            STATUS   REMOTE SITE    MESSAGE
-token-userN     Ready    userN-site     OK</pre>
+token-{username}     Ready    {username}-site     OK</pre>
 ++++
 
 Almost there — one more resource to go:
