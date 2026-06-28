@@ -13,7 +13,8 @@ In your editor's file explorer, click on the following file — Kaoto will autom
 [.indent2]
 📁 workshop +
 &nbsp;&nbsp;📁 lab +
-pass:[<mark style="padding-left: 1rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *agent.camel.yaml* +
+&nbsp;&nbsp;&nbsp;&nbsp;📁 agent +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: purple"><b><i>&nbsp;!&nbsp;&nbsp;</i></b></mark>] *agent.camel.yaml* +
 --
 
 [TIP]
@@ -52,12 +53,12 @@ image::m4/kaoto-routes-dropdown.png[width=50%]
 kaoto-routes-m4
 
 [.arrows]
-{x: 26, y: 25, rot: 210, size: .8}
-{x: 29, y: 66, rot: 230, size: .8}
+{x: 24, y: 24, rot: 210, size: .8}
+{x: 30, y: 63, rot: 230, size: .8}
 
 [.numbers]
-{x: 35, y: -7, size: 1.5}
-{x: 44, y: 40, size: 1.5}
+{x: 33, y: -8, size: 1.5}
+{x: 45, y: 39, size: 1.5}
 ****
 
 {empty} +
@@ -116,9 +117,7 @@ Start by running the Camel route as-is to see the placeholder behaviour in actio
 
 [.copypaste]
 ****
-camel run * \
---dev \
---local-kamelet-dir ../support/kamelets
+camel run agent --dev
 ****
 
 [TIP]
@@ -126,13 +125,12 @@ camel run * \
 .What does this command do?
 [%collapsible]
 ====
-* `camel run *` — runs all Camel route files in the current directory
-* `--dev` — dev mode, automatically reloads when you save changes to any source file
-* `--local-kamelet-dir ../support/kamelets` — loads custom Kamelets from the support folder
+* `camel run agent` — loads the resources under the `agent` directory and runs the route defined inside it.
+* `--dev` — dev mode, automatically reloads when you save changes to any source file.
 ====
 --
 
-Wait for _Camel_ to fully start — you should see `Running` in the terminal.
+Wait for _Camel_ to fully start — you should see `...(agent) started...` in the terminal.
 
 Switch to your _Rocket.Chat_ window.
 
@@ -243,10 +241,8 @@ Because you're running in dev mode, _Camel_ hot-reloads automatically. Watch the
 {blank}
 +
 ++++
-<pre style="background-color: #181818; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #818181">2026-03-24 18:14:11.113  <span style="color:#A649A6">INFO</span> <span style="color:#10A9CD">camel.support.RouteWatcherReloadStrategy</span> : <span style="color:#fff">Routes reloaded summary</span> (total:<span style="color:#0FBC7A">4</span> started:<span style="color:#0FBC7A">4</span>)
-2026-03-24 18:14:11.115  <span style="color:#A649A6">INFO</span> <span style="color:#10A9CD">camel.support.RouteWatcherReloadStrategy</span> :     Started <span style="color:#0FBC7A">agent</span> (platform-http:///ai-support)
-2026-03-24 18:14:11.115  <span style="color:#A649A6">INFO</span> <span style="color:#10A9CD">camel.support.RouteWatcherReloadStrategy</span> :     Started <span style="color:#0FBC7A">tool-get-pdf</span> (langchain4j-tools://getInvoicePDFurl)
-2026-03-24 18:14:11.115  <span style="color:#A649A6">INFO</span> <span style="color:#10A9CD">camel.support.RouteWatcherReloadStrategy</span> :     Started <span style="color:#0FBC7A">get-pdf</span> (direct://get-pdf-url)
+<pre style="background-color: #181818; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 12px; color: #818181">2026-03-24 18:14:11.113  <span style="color:#A649A6">INFO</span> <span style="color:#10A9CD">camel.support.RouteWatcherReloadStrategy</span> : <span style="color:#fff">Routes reloaded summary</span> (total:<span style="color:#0FBC7A">2</span> started:<span style="color:#0FBC7A">2</span>)
+2026-03-24 18:14:11.115  <span style="color:#A649A6">INFO</span> <span style="color:#10A9CD">camel.support.RouteWatcherReloadStrategy</span> :     Started <span style="color:#0FBC7A">rocketchat-to-agent</span> (platform-http:///ai-support)
 2026-03-24 18:14:11.116  <span style="color:#A649A6">INFO</span> <span style="color:#10A9CD">camel.support.RouteWatcherReloadStrategy</span> :     Started <span style="color:#0FBC7A">to-rocketchat</span> (direct://to-rocketchat)</pre>
 ++++
 +
@@ -302,7 +298,7 @@ include::_figures/rc-interaction.adoc[]
 {empty} +
 +
 The bot is responding, but can it do real work? +
-*Not yet*. The tools exist in the project but are not active yet.
+*Not yet*. The MCP servers and tools exist in the exercise but are not active yet.
 +
 {blank}
 +
@@ -336,7 +332,7 @@ As expected, the bot declines the request.
 .Why did the bot respond that way?
 [caption=]
 ====
-In short, the tools exist in the project but the AI agent can't see them yet.
+The AI agent doesn't have access to the tools it needs — the MCP servers haven't been wired in yet.
 
 The `system.message` file contains the system prompt that guides the AI agent's behaviour. One of its rules explicitly instructs the model to decline when it lacks the right tool:
 
@@ -353,55 +349,184 @@ Once you register the tools, the agent will discover and use them automatically.
 
 {empty} +
 
-=== Hook the tools
+=== Wire in the MCP servers
 
-The project includes a number of tools that integrate with the necessary backends — but the agent doesn't know about them yet. Camel uses _tags_ to match agents with their tools: when an agent's tag matches a tool's tag, the tool becomes available.
+The project includes MCP servers to provide the necessary tools for the Camel agentic flow — but the agent doesn't know about them yet. You need to wire them in to the agentic flow.
 
-[.indent2]
+The diagram below shows how the Agentic Integration (once MCP is active) routes tool calls from the AI model. Two MCP servers provide distinct toolsets — Node.js and Camel Quarkus. When the AI model needs a tool, the Agentic Integration routes the request to the appropriate MCP server, which executes the tool against the backend systems and returns the result.
+
+[.mermaid]
+----
+flowchart LR
+
+    MaaS <-->|Tool calls| INTLabel
+
+    INTLabel <--> |"Toolset 1"| NodeJSLabel
+    INTLabel <--> |"Toolset 2"| CamelQuarkusLabel
+    NodeJSLabel --> |"Integrations"| ToolsInner
+    CamelQuarkusLabel --> |"Integrations"| ToolsInner
+
+    INTLabel[⚙️ <span style='font-weight:bold;font-size:1.2em;color: #EE0000'>Agentic Integration\n</span><p style='margin-top:5px'/><div style='border: solid 1px red; padding: 10px;background-color: #fce4e4'><div style='padding: 5px 0px 5px 25px;text-align:left;color: black;'>• AI reasoning<br>• Tool calling<br>• Integrations</div></div>\n]
+
+    subgraph ToolsLabel ["<br><br><br>Backend Systems&nbsp;"]
+        subgraph ToolsInner [" "]
+            direction LR
+            DB ~~~ S3 ~~~ HD
+        end
+    end
+
+    subgraph NodeJSLabel [" "]
+        NodeJS
+    end
+
+  subgraph CamelQuarkusLabel [" "]
+        CamelQuarkus
+    end
+
+    MaaS@{ img: "../_images/common/ai-model-icon.svg", label: "AI Model", pos: "b", h: 80, w: 80, constraint: "on" }
+    NodeJS@{ img: "../_images/common/nodejs-icon.svg", label: "MCP NodeJS", pos: "b", h: 80, w: 80, constraint: "on" }
+    CamelQuarkus@{ img: "../_images/common/camel-quarkus-icon.svg", label: "MCP Camel Quarkus", pos: "b", h: 80, w: 80, constraint: "on" }
+    DB@{ img: "../_images/common/database-icon.svg", label: "Database", pos: "b", h: 70, w: 70, constraint: "on" }
+    S3@{ img: "../_images/common/s3-icon.svg", label: "S3 / ODF", pos: "b", h: 70, w: 70, constraint: "on" }
+    HD@{ img: "../_images/common/helpdesk-icon.svg", label: "HelpDesk", pos: "b", h: 70, w: 70, constraint: "on" }
+
+    style MaaS fill:none,stroke:none
+    style NodeJS fill:none,stroke:none
+    style CamelQuarkus fill:none,stroke:none
+    style DB fill:none,stroke:none
+    style S3 fill:none,stroke:none
+    style HD fill:none,stroke:none
+    style INTLabel fill:none,stroke:none
+    style NodeJSLabel fill:none,stroke:none
+    style CamelQuarkusLabel fill:none,stroke:none
+    style ToolsLabel fill:none,stroke:none,color:#EE0000,font-weight:bold
+    style ToolsInner fill:#fce4e4,stroke:#EE0000
+----
+
+NOTE: The Agentic Integration can work with MCP servers implemented in different languages. This lab includes a Node.js MCP server and a Camel Quarkus MCP server — each providing distinct tools to the AI model.
+
+
+[TIP]
 --
-.How are tools defined in Apache Camel?
-//[%collapsible]
-[caption=]
-====
-In Camel, a tool is just a regular route that starts with the `langchain4j-tools` component. The route describes what the tool does — the agent discovers it automatically via tags and invokes it when needed.
+In Camel you don't need MCP servers to define tools. You can define them directly as regular routes that starts with the `langchain4j-tools` component. The route describes what the tool does — the agent discovers it automatically via tags and invokes it when needed.
 
-For example, here's one of the project's tool routes — it retrieves the PDF URL for a given invoice:
+For example, this is how you would define a local tool that retrieves the PDF URL for a given invoice:
 
 image::m4/kaoto-tool-route.png[width=50%]
 
-The route starts with the `langchain4j-tools` source, processes the request through a series of steps, and returns the result to the LLM. No special wiring is needed — once the tags match, the agent can call the tool.
-====
+The route starts with the `langchain4j-tools` source, processes the request through a series of steps, and returns the result to the LLM. No special wiring is needed. Camel uses tags to match agents with tools — when an agent's tag matches a tool's tag, the agent can call that tool.
 --
 
 {empty} +
 
-. *Configure the agent's tags*
+. *Wire in the MCP servers* (Node.js and Camel Quarkus)
 +
+[loweralpha]
+1. Stop the process running in your terminal with kbd:[CTRL+C].
+1. Open your agent's configuration file file.
++
+&nbsp;&nbsp;📁 lab +
+&nbsp;&nbsp;&nbsp;&nbsp;📁 agent +
+pass:[<mark style="padding-left: 2rem; background-color: white; color: grey"><b>&nbsp;⚙&nbsp;&nbsp;</b></mark>] *application.properties*
++
+1. Uncomment the properties for the MCP servers. You should see this:
++
+{blank}
++
+++++
+<pre style="background-color: #1F1F1F; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #CBCBCB"><span style="color: #689956"># MCP server (Node JS)</span>
+camel.component.langchain4j-agent.mcpServer<span style="color: #FFD800">[</span>nodejs.transportType<span style="color: #FFD800">]</span>=http
+camel.component.langchain4j-agent.mcpServer<span style="color: #FFD800">[</span>nodejs.url<span style="color: #FFD800">]</span>=http://localhost:9090/mcp
 
-1. Click the `LangChain4j Agent` step to open its configuration.
-1. Select the `All` configuration tab.
-1. Type `tags` in the {ui-filter} to find the `Tags` property, then set it to:
+<span style="color: #689956"># MCP server (Camel Quarkus)</span>
+camel.component.langchain4j-agent.mcpServer<span style="color: #FFD800">[</span>quarkus.transportType<span style="color: #FFD800">]</span>=http
+camel.component.langchain4j-agent.mcpServer<span style="color: #FFD800">[</span>quarkus.url<span style="color: #FFD800">]</span>=http://localhost:9091/mcp</pre>
+++++
++
+{blank}
++
+1. Now, use the `mcp` script to start the MCP servers, as follows:
 +
 {blank}
 +
 [.copypaste]
 ****
-all
++++./mcp start+++
 ****
 +
-_Camel_ hot-reloads and the agent now discovers the tools.
+{blank}
++
+You should see the MCP servers starting up in the terminal:
++
+{blank}
++
+++++
+<pre style="background-color: #1F1F1F; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #CBCBCB"><span style="color: #07BC7A">[INFO]</span> <span style="color: #4F8ED2">[Node.js]</span> Starting MCP server...
+<span style="color: #07BC7A">[INFO]</span> <span style="color: #4F8ED2">[Node.js]</span> Starting server...
+<span style="color: #07BC7A">[INFO]</span> <span style="color: #4F8ED2">[Node.js]</span> Server started (PID: 89810)
+<span style="color: #07BC7A">[INFO]</span> <span style="color: #4F8ED2">[Node.js]</span> Endpoint: http://localhost:9090/mcp
+
+<span style="color: #07BC7A">[INFO]</span> <span style="color: #F5F541">[Quarkus]</span> Starting MCP server...
+<span style="color: #07BC7A">[INFO]</span> <span style="color: #F5F541">[Quarkus]</span> Starting Quarkus dev mode...
+<span style="color: #07BC7A">[INFO]</span> <span style="color: #F5F541">[Quarkus]</span> Waiting for Quarkus to start (this may take 10–20 seconds)...
+<span style="color: #07BC7A">[INFO]</span> <span style="color: #F5F541">[Quarkus]</span> Server started (PID: 89867)
+<span style="color: #07BC7A">[INFO]</span> <span style="color: #F5F541">[Quarkus]</span> Endpoint: http://localhost:9091/mcp</pre>
+++++
++
+[TIP]
+--
+.How do I check if the MCP servers are running?
+[%collapsible]
+====
+You can check the status of the MCP servers at any time by running:
+
+{blank}
+
+[.copypaste]
+****
++++./mcp status+++
+****
+
+{blank}
+
+You should see output similar to:
+
+{blank}
+
+++++
+<pre style="background-color: #1F1F1F; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #CBCBCB"><span style="color: #07BC7A">[INFO]</span> Checking MCP servers status...
+
+<span style="color: #07BC7A">[INFO]</span> <span style="color: #4F8ED2">[Node.js]</span> Server is <span style="color: #07BC7A">RUNNING</span> (PID: 89810)
+<span style="color: #07BC7A">[INFO]</span> <span style="color: #4F8ED2">[Node.js]</span> Endpoint: http://localhost:9090/mcp
+
+<span style="color: #07BC7A">[INFO]</span> <span style="color: #F5F541">[Quarkus]</span> Server is <span style="color: #07BC7A">RUNNING</span> (PID: 89867)
+<span style="color: #07BC7A">[INFO]</span> <span style="color: #F5F541">[Quarkus]</span> Endpoint: http://localhost:9091/mcp</pre>
+++++
+====
+--
++
+{blank}
++
+1. Restart the Camel agent.
++
+The MCP servers are not running and your agent configured. Restart it to pick up the new configuration:
++
+[.copypaste]
+****
+camel run agent
+****
 +
 {empty} +
 
 . *Try it out*
 +
-Go back to _Rocket.Chat_ and ask:
+Go back to _Rocket.Chat_ and ask again:
 +
 {blank}
 +
 [.copypaste]
 ****
-What about now?
+Can you show me invoice 61356291
 ****
 +
 [TIP]
@@ -414,7 +539,7 @@ The workshop uses a small LLM that can be inconsistent. The system prompt tells 
 {blank}
 
 :fig-time: 5:10 PM
-:fig-user-msg: What about now?
+:fig-user-msg: Can you show me invoice 61356291
 :fig-bot-msg: I'm sorry, I don't have the capability to retrieve that PDF right now.
 include::_figures/rc-interaction.adoc[]
 
@@ -442,7 +567,7 @@ If all goes well, this time the LLM discovers the tool, calls it, and responds w
 {blank}
 +
 :fig-time: 6:47 PM
-:fig-user-msg: What about now?
+:fig-user-msg: Can you show me invoice 61356291
 :fig-bot-msg: Here is the PDF for Invoice 61356291.
 :fig-attach-title: Invoice 61356291 PDF ▾
 :fig-attach-desc: Click to view or download

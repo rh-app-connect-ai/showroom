@@ -43,11 +43,11 @@ flowchart LR
     RC -- ⑥ response --> Agent
 
     INTLabel <--> |"③ reason"| MaaSLabel
-    INTLabel --> |"④ tool calls"| ToolsInner
+    INTLabel --> |"④ tool calls\n(MCP)"| ToolsInner
 
     INTLabel[⚙️ <span style='font-weight:bold;font-size:1.2em;color: #EE0000'>Agentic Integration\n</span><p style='margin-top:5px'/><div style='border: solid 1px red; padding: 10px;background-color: #fce4e4'><div style='padding: 5px 0px 5px 25px;text-align:left;color: black;'>• AI reasoning<br>• Tool calling<br>• Integrations</div></div>\n]
 
-    subgraph ToolsLabel ["Backend Systems&nbsp;"]
+    subgraph ToolsLabel ["MCP & Backend Systems&nbsp;&nbsp;"]
         subgraph ToolsInner [" "]
             direction LR
             DB ~~~ S3 ~~~ HD
@@ -78,7 +78,12 @@ flowchart LR
 ----
 
 
-The AI agent follows a reasoning loop — it consults the LLM via MaaS, which decides what actions to take. Camel then executes the appropriate tools (update the database, regenerate a PDF invoice in S3), feeds the results back to the LLM, and returns the final answer to the support agent in Rocket.Chat.
+The AI agent follows a reasoning loop — it consults the LLM via MaaS, which decides what actions to take. Camel then executes the appropriate tools via *MCP* (update the database, regenerate a PDF invoice in S3), feeds the results back to the LLM, and returns the final answer to the support agent in Rocket.Chat.
+
+[NOTE]
+====
+*What is MCP?* The Model Context Protocol (MCP) is an open standard that lets AI agents interact with external systems — databases, APIs, file storage, and more — using a consistent set of tools. In this lab, Apache Camel implements an MCP server that exposes backend actions (e.g. update database, upload to S3) as callable tools. The AI model decides which tools to invoke based on the user's natural language request.
+====
 
 {empty} +
 
