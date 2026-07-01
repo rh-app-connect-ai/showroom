@@ -486,8 +486,10 @@ You can monitor the startup logs with:
 
 [.copypaste]
 ****
-+++./mcp logs quarkus+++
++++./mcp logs quarkus -f+++
 ****
+
+The `-f` flag follows the logs in real-time.
 
 {blank}
 
@@ -544,11 +546,14 @@ You should see output similar to:
 ====
 --
 +
+{empty} +
+
+. *Restart the Camel agent*
++
+The MCP servers are now running and your agent is configured. +
+Restart it to pick up the new configuration:
++
 {blank}
-+
-1. Restart the Camel agent.
-+
-The MCP servers are not running and your agent configured. Restart it to pick up the new configuration:
 +
 [.copypaste]
 ****
