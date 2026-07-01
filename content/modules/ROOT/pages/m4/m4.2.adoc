@@ -475,6 +475,45 @@ You should see the MCP servers starting up in the terminal:
 +
 [TIP]
 --
+.First-time startup delay
+[%collapsible]
+====
+The first time the Camel Quarkus MCP server starts, it needs to compile code and download dependencies. This can take 1-2 minutes.
+
+You can monitor the startup logs with:
+
+{blank}
+
+[.copypaste]
+****
++++./mcp logs quarkus+++
+****
+
+{blank}
+
+Camel Quarkus is ready when you see the routes started and the final startup message:
+
+{blank}
+
+++++
+<pre style="background-color: #1F1F1F; padding: 10px 15px; line-height: 1.4; white-space: pre-wrap; font-family: monospace; font-size: 14px; color: #CBCBCB">... (Quarkus Main Thread) Routes startup (total:6 started:6 kamelets:1)
+... (Quarkus Main Thread)     Started route1 (direct://tool-amend-invoice)
+... (Quarkus Main Thread)     Started get-invoice-data (direct://get-invoice-data)
+... (Quarkus Main Thread)     Started route2 (direct://tool-get-data)
+... (Quarkus Main Thread)     Started route3 (direct://tool-create-ticket)
+... (Quarkus Main Thread)     Started store-pdf-s3 (direct://store-pdf-s3)
+... (Quarkus Main Thread)     Started route4 (direct://tool-share-ticket)
+<span style="background-color: #F5F541; color: #1F1F1F; padding: 2px 4px;">... (Quarkus Main Thread) Apache Camel 4.18.2 (camel-1) started in 1s543ms</span></pre>
+++++
+
+{blank}
+
+Once you see the highlighted line confirming Apache Camel has started, the server is ready.
+====
+--
++
+[TIP]
+--
 .How do I check if the MCP servers are running?
 [%collapsible]
 ====

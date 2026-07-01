@@ -2,6 +2,11 @@
 ++++
 
 <style>
+/* Ensure dynamically created nav-next is right-aligned */
+nav.pagination .nav-next {
+  text-align: right;
+}
+
 .celebration-overlay {
   display: none;
   position: fixed;
@@ -80,28 +85,109 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-  // Find Antora's Next page link
+  // Find Antora's Next page link (page navigation only, not sidebar nav)
   var navNext = document.querySelector('.nav-next a')
     || document.querySelector('.pagination .next a')
     || document.querySelector('a.page-next');
   if (!navNext) {
+    // Look in toolbar/page navigation only (exclude sidebar .nav)
     document.querySelectorAll('a').forEach(function(a) {
-      if (a.closest('.toolbar') || a.closest('.nav-container')) {
+      // Skip if it's in the sidebar navigation
+      if (a.closest('nav.nav') || a.closest('aside.nav')) return;
+
+      if (a.closest('.toolbar') || a.closest('.nav-container') || a.closest('.page-navigation')) {
         if (a.textContent.trim().toLowerCase().indexOf('next') !== -1) navNext = a;
       }
     });
   }
-  if (!navNext) return;
+
+  console.log('[Celebration] Found navNext:', navNext);
+
+  // Verify it's actually a page navigation link, not sidebar
+  if (navNext && (navNext.closest('nav.nav') || navNext.closest('aside.nav'))) {
+    console.log('[Celebration] navNext was in sidebar, ignoring it');
+    navNext = null;
+  }
+
+  // If no Next link exists, check if we're on a module page and create "Finish" button
+  var createdButton = false;
+  if (!navNext) {
+    console.log('[Celebration] No Next link found, checking if module page...');
+    console.log('[Celebration] Current pathname:', window.location.pathname);
+
+    // Check if we're on a module page (m*/m*.adoc or m*/m*.html pattern)
+    var isModulePage = /\/m\d+\/m\d+/.test(window.location.pathname);
+    console.log('[Celebration] Is module page:', isModulePage);
+
+    if (isModulePage) {
+      // Find the article/content container
+      var article = document.querySelector('article.doc')
+        || document.querySelector('.doc')
+        || document.querySelector('article')
+        || document.querySelector('main');
+
+      console.log('[Celebration] Article element:', article);
+
+      if (article) {
+        // Check if there's an existing pagination nav with prev button
+        var existingNav = document.querySelector('nav.pagination');
+        console.log('[Celebration] Existing nav:', existingNav);
+
+        if (existingNav) {
+          // Add to existing nav
+          var navNextDiv = document.createElement('div');
+          navNextDiv.className = 'nav-next';
+          navNext = document.createElement('a');
+          navNext.href = '#';
+          navNext.textContent = 'Finish';
+          navNextDiv.appendChild(navNext);
+          existingNav.appendChild(navNextDiv);
+          console.log('[Celebration] Added Finish button to existing nav');
+        } else {
+          // Create complete navigation structure
+          var navContainer = document.createElement('nav');
+          navContainer.className = 'pagination';
+          navContainer.setAttribute('role', 'navigation');
+          navContainer.setAttribute('aria-label', 'pagination');
+
+          var navNextDiv = document.createElement('div');
+          navNextDiv.className = 'nav-next';
+          navNext = document.createElement('a');
+          navNext.href = '#';
+          navNext.textContent = 'Finish';
+
+          navNextDiv.appendChild(navNext);
+          navContainer.appendChild(navNextDiv);
+          article.appendChild(navContainer);
+          console.log('[Celebration] Created new nav with Finish button');
+        }
+
+        createdButton = true;
+      } else {
+        console.log('[Celebration] No article container found');
+      }
+    }
+  }
+
+  if (!navNext) {
+    console.log('[Celebration] Still no navNext, exiting');
+    return;
+  }
+  console.log('[Celebration] navNext found or created:', navNext);
 
   // Only activate on the last page of a module:
   // if the Next link points to the same directory, this is a mid-module page
-  var currentDir = window.location.pathname.replace(/[^\/]*$/, '');
-  var nextUrl = new URL(navNext.getAttribute('href'), window.location.href);
-  var nextDir = nextUrl.pathname.replace(/[^\/]*$/, '');
-  if (currentDir === nextDir) return;
+  // (skip this check if we created the button ourselves)
+  if (!createdButton) {
+    var currentDir = window.location.pathname.replace(/[^\/]*$/, '');
+    var nextUrl = new URL(navNext.getAttribute('href'), window.location.href);
+    var nextDir = nextUrl.pathname.replace(/[^\/]*$/, '');
+    if (currentDir === nextDir) return;
 
-  // Replace Next link text with "Finish"
-  navNext.textContent = 'Finish';
+    // Replace Next link text with "Finish"
+    navNext.textContent = 'Finish';
+  }
+  // If we created the button, it's already labeled "Finish"
 
   // Find module name from nav sidebar
   var moduleName = '';
@@ -158,15 +244,32 @@ document.addEventListener('DOMContentLoaded', function() {
     return Math.min(100, Math.round((earned / totalTasks) * 100));
   }
 
+  // Create status message element
+  var statusMsg = document.createElement('div');
+  statusMsg.style.cssText = 'margin-top: 0.5rem; font-size: 0.9rem; color: #999; display: none;';
+
+  // Insert status message after the Finish button
+  if (navNext.parentNode) {
+    navNext.parentNode.appendChild(statusMsg);
+  }
+
   // Keep Next link disabled until module progress is 100%
   function updateNextState() {
     var progress = getModuleProgress();
+
     if (progress >= 0 && progress < 100) {
       navNext.style.pointerEvents = 'none';
       navNext.style.opacity = '0.3';
+
+      // Show helpful status message
+      var totalTasks = parseInt(localStorage.getItem('module:' + modulePrefix + 'tasks'), 10) || 0;
+      var completedTasks = Math.round((progress / 100) * totalTasks);
+      statusMsg.innerHTML = '⚠ Visit all module pages and complete verification checks (' + completedTasks + ' of ' + totalTasks + ' done)';
+      statusMsg.style.display = 'block';
     } else {
       navNext.style.pointerEvents = '';
       navNext.style.opacity = '';
+      statusMsg.style.display = 'none';
     }
   }
 

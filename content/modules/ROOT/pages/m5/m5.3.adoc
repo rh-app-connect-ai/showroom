@@ -59,8 +59,8 @@ flowchart LR
 auth-diagram
 
 [.numbers]
-{x: 54, y: 5} +
-{x: 96, y: 55}
+{x: 62.3, y: 5}
+{x: 96.2, y: 55}
 ****
 
 [NOTE]

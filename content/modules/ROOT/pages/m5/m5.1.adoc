@@ -168,6 +168,9 @@ pass:[<mark style="padding-left: 1rem; background-color: white; color: grey"><b>
 pass:[<mark style="padding-left: 1rem; background-color: white; color: #b07219"><b>&nbsp;J&nbsp;&nbsp;</b></mark>] *PdfRenderer.java* +
 pass:[<mark style="padding-left: 1rem; background-color: white; color: #b07219"><b>&nbsp;J&nbsp;&nbsp;</b></mark>] *s3Presigner.java* +
 pass:[<mark style="padding-left: 1rem; background-color: white; color: grey"><b>&nbsp;≡&nbsp;&nbsp;</b></mark>] *template-pdf.xsl* +
+
+[.indent2]
+NOTE: This version of the exercise does not use MCP servers to simplify execution. All tools are embedded directly in the Camel agentic process — they're defined as regular Camel routes that the agent can discover and call.
 --
 +
 {empty} +
